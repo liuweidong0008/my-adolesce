@@ -167,6 +167,9 @@ public class StreamAndOptionalTest {
         System.out.println("noneMatch: " + noneMatch);
     }
 
+    /**
+     * stream 集合转换
+     */
     @Test
     public void testCollect() {
         List<MyUser> users = this.getUsers();
