@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.adolesce.common.mapper.BatisUserXmlMapper">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.adolesce.common.bo.BatisUser">
+        <id column="id" property="id"/>
+        <result column="user_name" property="userName"/>
+        <result column="password" property="password"/>
+        <result column="name" property="name"/>
+        <result column="age" property="age"/>
+        <result column="email" property="email"/>
+        <result column="birthday" property="birthday"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, user_name, password, name, age, email, birthday, create_time, update_time
+
+    </sql>
+
+    <insert id="insert" parameterType="com.adolesce.common.bo.BatisUser">
+        INSERT INTO my_batis_user ( user_name, password, name, age, email, birthday, create_time, update_time)
+        VALUES ( #{userName}, #{password}, #{name}, #{age},#{email},#{birthday},#{createTime},#{updateTime})
+    </insert>
+
+    <insert id="batchInsert" parameterType="List">
+        INSERT INTO
+        my_batis_user
+        (user_name, password, name, age, email, birthday, create_time, update_time)
+        VALUES
+        <foreach collection="list" item="user" separator=",">
+            (#{user.userName}, #{user.password}, #{user.name}, #{user.age},#{user.email},#{user.birthday},#{user.createTime},#{user.updateTime})
+        </foreach>
+    </insert>
+
+    <delete id="deleteById" parameterType="Long">
+        DELETE
+        FROM my_batis_user
+        WHERE id = #{id}
+    </delete>
+
+    <delete id="deleteByIds" parameterType="List">
+        DELETE FROM
+        my_batis_user
+        WHERE
+        id IN
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="deleteByIdsStr" parameterType="String">
+        DELETE
+        FROM my_batis_user
+        WHERE FIND_IN_SET(id, #{ids})
+    </delete>
+
+    <update id="update" parameterType="com.adolesce.common.bo.BatisUser">
+        UPDATE
+        my_batis_user
+        <set>
+            <if test="userName != null">
+                user_name = #{userName},
+            </if>
+            <if test="password != null">
+                password = #{password},
+            </if>
+            <if test="birthday != null">
+                birthday = #{birthday},
+            </if>
+            <if test="age != null">
+                age = #{age},
+            </if>
+        </set>
+        WHERE
+        id = #{id}
+    </update>
+
+    <select id="getById" parameterType="Long" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM my_batis_user
+        WHERE id = #{id}
+    </select>
+
+    <select id="queryByParam" parameterType="com.adolesce.common.bo.BatisUser" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM my_batis_user
+        <where>
+            <if test="userName != null and userName !=''">
+                <!--AND user_name like CONCAT('%' ,#{userName}, '%')-->
+                AND user_name like '%${userName}%'
+            </if>
+            <if test="password != null and password !=''">
+                AND pass_word = #{password}
+            </if>
+            <if test="startTime != null and startTime !=''">
+                AND DATE_FORMAT(create_time,'%Y-%m-%d %H:%i:%s') &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime !=''">
+                AND DATE_FORMAT(create_time,'%Y-%m-%d %H:%i:%s') &lt;= #{endTime}
+            </if>
+            <choose>
+                <when test="birthday != null">
+                    and DATE_FORMAT(birthday,'%Y-%m-%d') = #{birthdayStr}
+                </when>
+                <when test="birthday == null">
+                </when>
+                <otherwise>
+                    AND age = #{age}
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+</mapper>

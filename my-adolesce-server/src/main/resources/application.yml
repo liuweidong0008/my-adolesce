@@ -1,0 +1,84 @@
+server:
+  port: 8081  #自定义监听端口,默认8080
+  servlet:
+    context-path: /my_adolesce #配置项目名
+
+spring:
+  #热部署
+  devtools:
+    restart:
+      #热部署开关，false即不启用热部署
+      enabled: true
+      #指定目录不更新
+      exclude: test/**
+  #servlet配置
+  servlet:
+    encoding:
+      charset: UTF-8 #防止@Value自动注入   中文乱码
+    multipart:
+      enabled: true  #默认支持文件上传.
+      location: D://filetest/ # 上传文件的临时目录
+      max-request-size: 150MB
+      max-file-size: 15MB
+  #指定使用哪个环境的配置文件
+  profiles:
+    #active: dev #可永于指定用哪个配置文件  application-{active}.yml or application-{active}.properties
+    active:
+      - dev
+
+mybatis-plus:
+  type-enums-package:
+      com.adolesce.common.enums
+  global-config:
+    db-config:
+      # 表名前缀
+      table-prefix: my_
+      # id生成策略 数据库自增
+      id-type: auto
+  configuration:
+    # 日志
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# mybatis
+mybatis:
+  mapper-locations: classpath:mapper/*Mapper.xml # mapper映射文件路径
+  type-aliases-package: com.adolesce.**.bo
+
+#pagehelper分页插件
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
+
+---
+# 测试环境配置
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+      url: jdbc:mysql:///mydatabase
+      username: root
+      password: root
+      driver-class-name: com.mysql.jdbc.Driver
+      initial-size: 10
+      minIdle: 30
+      maxActive: 50
+      maxWait: 60000
+      timeBetweenEvictionRunsMillis: 60000
+      minEvictableIdleTimeMillis: 300000
+      validationQuery: SELECT 1 FROM DUAL
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      poolPreparedStatements: true
+      maxPoolPreparedStatementPerConnectionSize: 50
+  jpa:
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: update
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+    show-sql: true
+

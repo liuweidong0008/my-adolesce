@@ -1,0 +1,84 @@
+package com.adolesce.common.bo;
+
+import com.adolesce.common.enums.SexEnum;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+
+import java.time.LocalDate;
+
+/**
+ * <p>
+ *
+ * </p>
+ *
+ * @author lwd
+ * @since 2021-05-18
+ */
+@Data
+@TableName("my_mp_user")
+public class MpUser extends BasePojo{
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * 主键ID
+     */
+    @TableId(value = "id", type = IdType.AUTO)
+    private Long id;
+
+    /**
+     * 用户名
+     */
+    private String userName;
+
+    /**
+     * 密码
+     */
+    private String password;
+
+    /**
+     * 姓名
+     */
+    private String name;
+
+    /**
+     * 年龄
+     */
+    private Integer age;
+
+    /**
+     * 性别
+     */
+    private SexEnum sex;
+
+    /**
+     * 手机号
+     */
+    private String phone;
+
+    /**
+     * 生日
+     */
+    private LocalDate birthday;
+
+
+    //不希望该值存入数据库
+    @TableField(exist = false)
+    private String totalAge;
+
+    //不希望该值存入数据库
+    @TableField(exist = false)
+    private String count;
+
+    //不希望该值存入数据库
+    @TableField(exist = false)
+    private String maxBirthday;
+
+    //不希望该值存入数据库
+    @TableField(exist = false)
+    private String cardNo;
+
+}
