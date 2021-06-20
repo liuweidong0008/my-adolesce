@@ -173,6 +173,24 @@
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.11.4" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.11.4" level="project" />
     <orderEntry type="library" name="Maven: joda-time:joda-time:2.9.9" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.rocketmq:rocketmq-spring-boot-starter:2.0.4" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.rocketmq:rocketmq-spring-boot:2.0.4" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.rocketmq:rocketmq-acl:4.5.2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.rocketmq:rocketmq-logging:4.5.2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.rocketmq:rocketmq-srvutil:4.5.2" level="project" />
+    <orderEntry type="library" name="Maven: commons-cli:commons-cli:1.2" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-messaging:5.3.6" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-validation:2.4.5" level="project" />
+    <orderEntry type="library" name="Maven: org.hibernate.validator:hibernate-validator:6.1.7.Final" level="project" />
+    <orderEntry type="library" name="Maven: jakarta.validation:jakarta.validation-api:2.0.2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.rocketmq:rocketmq-client:4.8.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.rocketmq:rocketmq-common:4.8.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.rocketmq:rocketmq-remoting:4.8.0" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-all:4.1.63.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-tcnative-boringssl-static:2.0.38.Final" level="project" />
+    <orderEntry type="library" name="Maven: commons-validator:commons-validator:1.6" level="project" />
+    <orderEntry type="library" name="Maven: commons-beanutils:commons-beanutils:1.9.4" level="project" />
+    <orderEntry type="library" name="Maven: commons-digester:commons-digester:1.8.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.springframework.boot:spring-boot-starter-test:2.4.5" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.springframework.boot:spring-boot-test:2.4.5" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.springframework.boot:spring-boot-test-autoconfigure:2.4.5" level="project" />

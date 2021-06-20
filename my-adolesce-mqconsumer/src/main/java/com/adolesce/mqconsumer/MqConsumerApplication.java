@@ -1,4 +1,4 @@
-package com.adolesce.server;
+package com.adolesce.mqconsumer;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
@@ -12,8 +12,8 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication
 @MapperScan("com.adolesce.common.mapper")
 @ComponentScan(basePackages = "com.adolesce")
-public class ServerApplication {
+public class MqConsumerApplication {
     public static void main(String[] args) {
-        SpringApplication.run(ServerApplication.class, args);
+        SpringApplication.run(MqConsumerApplication.class, args);
     }
 }

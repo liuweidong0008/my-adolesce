@@ -56,6 +56,13 @@ spring:
       host: 127.0.0.1
       #uri: mongodb://127.0.0.1:27017/adolesce   #无权限设置
 
+# RocketMQ相关配置
+rocketmq:
+    name-server: 192.168.31.82:9876
+    producer:
+      group: adolesce-group
+      send-message-timeout: 50000  #消息发送超时时长
+
 jwt:
   secret: 76bd425b6f29f7fcc2e0bfc286043df1
 #是否开启数据缓存

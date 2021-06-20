@@ -69,4 +69,14 @@ public class UserController {
     public Response queryUserByToken(@PathVariable("token") String token) {
         return this.userService.queryUserByToken(token);
     }
+
+    /**
+     * 发送rabbitmq消息
+     *
+     * @return
+     */
+    @GetMapping("sendMqMsg")
+    public Response sendMqMsg() {
+        return this.userService.sendMqMsg();
+    }
 }

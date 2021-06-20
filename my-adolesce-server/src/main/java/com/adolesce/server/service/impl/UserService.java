@@ -11,6 +11,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +32,9 @@ public class UserService {
     private RedisTemplate<String,String> redisTemplate;
     @Autowired
     private IMpUserService mpUserService;
+    @Autowired
+    private RocketMQTemplate rocketMQTemplate;
+
     @Value("${jwt.secret}")
     private String secret;
 
@@ -154,5 +158,13 @@ public class UserService {
             log.error("token不合法！ token = "+ token, e);
         }
         return response;
+    }
+
+    public Response sendMqMsg() {
+        Map<String,String> map = new HashMap<>();
+        String msg = "Hello RocketMQ!";
+        map.put("mymsg",msg);
+        this.rocketMQTemplate.convertAndSend("adolesce-topic", map);
+        return Response.success();
     }
 }

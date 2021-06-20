@@ -1,0 +1,28 @@
+# RocketMQ相关配置
+rocketmq:
+    name-server: 192.168.31.82:9876
+
+spring:
+    #数据源配置
+    datasource:
+        #druid:
+        url: jdbc:mysql://localhost:3306/adolesce?serverTimezone=UTC&characterEncoding=utf8&useUnicode=true&useSSL=true
+        username: root
+        password: root
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        initial-size: 10
+        minIdle: 30
+        maxActive: 50
+        maxWait: 60000
+        timeBetweenEvictionRunsMillis: 60000
+        minEvictableIdleTimeMillis: 300000
+        validationQuery: SELECT 1 FROM DUAL
+        testWhileIdle: true
+        testOnBorrow: false
+        testOnReturn: false
+        poolPreparedStatements: true
+        maxPoolPreparedStatementPerConnectionSize: 50
+
+#是否开启数据缓存
+cache:
+    enable: true

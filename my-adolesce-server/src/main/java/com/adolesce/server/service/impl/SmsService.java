@@ -54,7 +54,6 @@ public class SmsService {
         try {
             client.executeMethod(method);
             String SubmitResult = method.getResponseBodyAsString();
-            //System.out.println(SubmitResult);
 
             Document doc = DocumentHelper.parseText(SubmitResult);
             Element root = doc.getRootElement();
