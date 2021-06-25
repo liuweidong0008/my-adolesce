@@ -41,7 +41,7 @@ public class AccountTxMsgConsumer {
                         accountInfoService.addAccountInfoBalance(ace);
                         System.out.println("消息："+plusAmountMsg);
                     }
-                    return ConsumeConcurrentlyStatus.RECONSUME_LATER;
+                    return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
                 } catch (Exception e) {
                     e.printStackTrace();
                     return ConsumeConcurrentlyStatus.RECONSUME_LATER;

@@ -1,12 +1,12 @@
 package com.adolesce.common.mapper;
 
-import org.apache.ibatis.annotations.*;
-import org.springframework.stereotype.Component;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.math.BigDecimal;
 
-@Mapper
-@Component
 public interface AccountInfoMapper {
     @Update("update account_info set account_balance = account_balance - #{amount} where account_no = #{accountNo}")
     int subtractAccountBalance(@Param("accountNo") String accountNo, @Param("amount") BigDecimal amount);

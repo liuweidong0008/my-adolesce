@@ -21,4 +21,5 @@ public interface IMpUserService extends IService<MpUser> {
     List<MpUser> queryByNameCustom(String name);
 
     public IPage<MpUser> queryPageByNameCustom(Page page,String name);
+
 }

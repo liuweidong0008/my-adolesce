@@ -11,38 +11,54 @@
 
     <artifactId>my-adolesce-common</artifactId>
     <dependencies>
+        <!-- 支持全栈式Web开发，包括Tomcat和spring-webmvc（advice/aop/webConfig/handler/intercepter） -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <!--Spring Boot默认使用Logback日志框架，但在Java中，Log4j2框架的性能是最强的，所以一般使用Log4j2框架-->
+            <!--要在Spring Boot使用Log4j2的话，那么第一件事就是去除默认自带的Logback的jar包，并引入Log4j2的jar。-->
+            <!--声明exclustion的时候只需要groupId和artifactId，而不需要version元素，这是因为只需要groupId和artifactId就能唯一定位依赖图中的某个依赖。-->
+            <!--<exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>-->
         </dependency>
+        <!--实体代码自动生成-->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
+        <!--mybatis/mybatis-plus支持（实体注解/MybatisPlusInterceptor分页拦截器/枚举/字段自动填充/查询注解/BaseMapper等）-->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
         </dependency>
+        <!--pageHelper分页插件公共模块引入-->
         <dependency>
             <groupId>com.github.pagehelper</groupId>
             <artifactId>pagehelper-spring-boot-starter</artifactId>
             <version>1.2.10</version>
         </dependency>
+        <!--Mybatis @Transient指定不参与映射字段-->
         <dependency>
             <groupId>javax.persistence</groupId>
             <artifactId>javax.persistence-api</artifactId>
             <version>2.2</version>
         </dependency>
+        <!--mongoDB公共模块引入-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-mongodb</artifactId>
         </dependency>
+        <!--aop切面支持-->
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
             <version>1.9.4</version>
         </dependency>
-        <!-- springboot整合 redis -->
+        <!-- springboot整合 redis(全局缓存)-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
@@ -59,5 +75,4 @@
             <artifactId>hutool-all</artifactId>
         </dependency>
     </dependencies>
-
 </project>

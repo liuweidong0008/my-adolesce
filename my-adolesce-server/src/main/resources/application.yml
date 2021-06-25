@@ -19,12 +19,12 @@ spring:
       enabled: true  #默认支持文件上传.
       location: D://filetest/ # 上传文件的临时目录
       max-request-size: 150MB
-max-file-size: 15MB
-          #指定使用哪个环境的配置文件
-          profiles:
-            #active: dev #可永于指定用哪个配置文件  application-{active}.yml or application-{active}.properties
-            active:
-              - dev
+      max-file-size: 15MB
+  #指定使用哪个环境的配置文件
+  profiles:
+    #active: dev #可永于指定用哪个配置文件  application-{active}.yml or application-{active}.properties
+    active:
+      - dev
 
 mybatis-plus:
   type-enums-package:

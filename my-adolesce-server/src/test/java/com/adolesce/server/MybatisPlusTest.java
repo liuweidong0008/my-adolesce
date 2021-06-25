@@ -430,6 +430,18 @@ public class MybatisPlusTest {
     }
 
     /**
+     * 自定义查询
+     */
+    @Test
+    public void testSelectByCustom() {
+        List<MpUser> list = this.mpUserService.queryByNameCustom("赵晓雅");
+        for (MpUser record : list) {
+            System.err.println("------------printResult---------");
+            System.err.println(record);
+        }
+    }
+
+    /**
      * groupBy 分组查询
      */
     @Test
@@ -459,6 +471,8 @@ public class MybatisPlusTest {
                 .groupBy("age");
         wrapper.having("COUNT(1)>1 and age != 28");
         wrapper.having("age != {0}", "24");
+
+        this.list(wrapper);
         //SELECT age,count(1) as count,max(birthday) as maxbirthday,sum(age) as totalage FROM my_mp_user WHERE (user_name IN (?,?,?,?,?,?)) GROUP BY age HAVING COUNT(1)>1 and age != '28' AND age != ?
     }
 
@@ -487,25 +501,16 @@ public class MybatisPlusTest {
         }
 
         //mybatis_plus分页查询
-        Page page = new Page<>(1, 3);
+        Page<MpUser> page = new Page(1, 3);
         this.mpUserService.page(page, wrapper);
 
         List<MpUser> pageList = page.getRecords();
         for (MpUser record : pageList) {
             System.err.println(record);
         }
-    }
+        long pages = page.getPages();//总页数
+        long total = page.getTotal();//总记录数
 
-    /**
-     * 自定义查询
-     */
-    @Test
-    public void testSelectByCustom() {
-        List<MpUser> list = this.mpUserService.queryByNameCustom("赵晓雅");
-        for (MpUser record : list) {
-            System.err.println("------------printResult---------");
-            System.err.println(record);
-        }
     }
 
     /**
@@ -513,7 +518,7 @@ public class MybatisPlusTest {
      */
     @Test
     public void testSelectPageyCustom() {
-        Page page = new Page<>(1, 2);
+        Page<MpUser> page = new Page<>(2, 3);
         IPage<MpUser> pateList = this.mpUserService.queryPageByNameCustom(page, "赵晓雅");
         for (MpUser record : pateList.getRecords()) {
             System.err.println("------------printResult---------");

@@ -7,6 +7,7 @@ import com.adolesce.common.vo.AccountChangeEvent;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.LocalTransactionState;
 import org.apache.rocketmq.client.producer.TransactionListener;
 import org.apache.rocketmq.client.producer.TransactionMQProducer;
@@ -19,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -28,6 +28,20 @@ public class AccountInfoService {
     AccountInfoService accountInfoService;
     @Autowired
     private AccountInfoMapper accountInfoMapper;
+    //初始化生产者
+    private static TransactionMQProducer producer;
+    static {
+        //事务消息使用的生产者是TransactionMQProducer
+        producer = new TransactionMQProducer(RocketConfig.GROUP1);
+        producer.setSendMsgTimeout(10000);
+        producer.setNamesrvAddr(RocketConfig.NAMESRVADDR);
+        try {
+            producer.start();
+        } catch (MQClientException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     /**
      * 更新帐号余额‐发送消息
@@ -37,10 +51,7 @@ public class AccountInfoService {
         //构件消息体
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("accountChange", ace);
-        //事务消息使用的生产者是TransactionMQProducer
-        TransactionMQProducer producer = new TransactionMQProducer(RocketConfig.GROUP1);
-        producer.setSendMsgTimeout(10000);
-        producer.setNamesrvAddr(RocketConfig.NAMESRVADDR);
+
         //添加本地事务对应的监听
         producer.setTransactionListener(new TransactionListener() {
             //正常事务过程
@@ -54,7 +65,6 @@ public class AccountInfoService {
                     //扣除金额
                     boolean isOperationDataBase = accountInfoService.doUpdateAccountBalance(ace);
                     if(isOperationDataBase){
-                        TimeUnit.SECONDS.sleep(120);
                         return LocalTransactionState.COMMIT_MESSAGE;
                     }else{
                         return LocalTransactionState.ROLLBACK_MESSAGE;
@@ -85,13 +95,13 @@ public class AccountInfoService {
                 return state;
             }
         });
-        producer.start();
+
 
         Message msg = new Message("accountTxTopic", jsonObject.toJSONString().getBytes(StandardCharsets.UTF_8));
         TransactionSendResult sendResult = producer.sendMessageInTransaction(msg, null);
         System.out.println("send transcation message body=" + msg.getBody() + ",result=" + sendResult.getSendStatus());
         //事务补偿过程必须保障服务器在运行过程中，否则将无法进行正常的事务补偿
-        producer.shutdown();
+        //producer.shutdown();
     }
 
     /**
