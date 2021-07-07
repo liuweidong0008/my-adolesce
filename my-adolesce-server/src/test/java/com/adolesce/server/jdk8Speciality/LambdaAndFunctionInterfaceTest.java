@@ -39,9 +39,9 @@ import java.util.function.*;
  *          lambda 表达式的语法格式如下：
  *              (parameters) -> expression 或 (parameters) ->{ statements; }
  *      5、重要特征
- *          1）、可选类型声明：不需要声明参数类型，编译器可以统一识别参数值。
+ *          1）、可选类型声明：不需要声明参数类型，编译器可以统一识别参数值。   (
  *          2）、可选的参数圆括号：一个参数无需定义圆括号，但多个参数需要定义圆括号。
- *          3）、可选的大括号：如果主体只包含了一个语句，就不需要使用大括号。
+ *          3）、可选的大括号：如果主体只包含了一个语句，就不需要使用大括号.
  *          4）、可选的返回关键字：如果主体只有一个表达式返回值则编译器会自动返回值，大括号需要指定明表达式返回了一个数值。
  *
  *
@@ -118,13 +118,16 @@ public class LambdaAndFunctionInterfaceTest {
     public void testFunctionInterface() {
         //带有类型声明的表达式
         //这个表达式的目标类型必须是一个函数接口,只有一个方法的接口叫函数接口,这样的接口可以隐式地转换成lambda表达式
-        MathOperation add = (int a, int b) -> a + b;
+        MathOperation add = (a, b) -> a + b;
 
         //没有类型声明的表达式
         MathOperation sub = (a, b) -> a - b;
 
         //带有大括号，带有返回语句的表达式
         MathOperation mul = (int a, int b) -> {
+            if(a > 0){
+                System.out.println("aaa");
+            }
             return a * b;
         };
 
@@ -134,8 +137,10 @@ public class LambdaAndFunctionInterfaceTest {
         //没有类型声明的表达式
         //也可以写成： (info) -> System.out.println(info); 或(String info) ->System.out.println(info);
         MyConsumer myConsumer = info -> System.out.println(info);
+
+
         //函数式接口/Lamdba表达式作为方法参数传递
-        myConsumer.accept("10 + 5 =" + operator(10, 5, add));
+        myConsumer.accept("10 + 5 =" + operator(10, 5, (a, b) -> a + b));
         myConsumer.accept("10 - 5 =" + operator(10, 5, sub));
         myConsumer.accept("10 * 5 =" + operator(10, 5, mul));
         myConsumer.accept("10 / 5 =" + operator(10, 5, div));

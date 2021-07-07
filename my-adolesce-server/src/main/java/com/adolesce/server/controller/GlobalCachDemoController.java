@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 /**
- * 通用缓存解决方案
+ * 通用缓存解决方案演示类
  * 1、所有请求都添加缓存吗？否，只针对GET请求
  * 2、所有GET请求都添加缓存吗？否，只针对添加了@Cach的请求方法
  * 3、缓存的时间长短如何控制？通过在@Cach注解上指定缓存时间来控制

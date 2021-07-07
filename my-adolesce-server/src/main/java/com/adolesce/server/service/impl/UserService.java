@@ -1,6 +1,7 @@
 package com.adolesce.server.service.impl;
 
 import com.adolesce.common.bo.MpUser;
+import com.adolesce.common.sms.SmsService;
 import com.adolesce.common.vo.Response;
 import com.adolesce.server.service.IMpUserService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -108,6 +109,7 @@ public class UserService {
                 .setHeader(header)  //header，可省略
                 .setClaims(claims) //payload，存放数据的位置，不能放置敏感数据，如：密码等
                 .signWith(SignatureAlgorithm.HS256, secret) //设置加密方法和加密盐
+                .signWith(SignatureAlgorithm.RS256, secret)
                 .setExpiration(new DateTime().plusHours(12).toDate()) //设置过期时间，12小时后过期
                 //.setExpiration(new cn.hutool.core.date.DateTime().offset(DateField.HOUR, 12)) //设置过期时间，12小时后过期
                 .compact();

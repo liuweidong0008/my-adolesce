@@ -86,7 +86,7 @@ public class StreamAndOptionalTest {
         System.out.println("跳过后的列表: " + skipStrs);
 
         //map(Function f) 接受一个函数型接口作为参数，该函数会对流中的每个元素进行处理，返回处理后的流
-        List<String> mapStrs = strs.stream().map(str ->str = str+" hello").collect(Collectors.toList());
+        List<String> mapStrs = strs.stream().map(str -> str = str+" hello").collect(Collectors.toList());
         System.out.println("map聚合后的列表: " + mapStrs);
 
         //sorted 返回一个新流，流中的元素按照自然排序进行排序 sorted(Comparator comp) 返回一个新流，并且Comparator指定的排序方式进行排序
@@ -132,15 +132,13 @@ public class StreamAndOptionalTest {
         //map(Function f) 接受一个函数型接口作为参数，该函数会对流中的每个元素进行处理，返回处理后的流
         myUsers.stream().map(u -> u.getUserName()).collect(Collectors.toList()).forEach(System.out::println);
 
-        //sorted 返回一个新流，流中的元素按照自然排序进行排序 sorted(Comparator comp) 返回一个新流，并且Comparator指定的排序方式进行排序
-        myUsers.stream().sorted().forEach(System.out::println);//排序（正序）
-
         myUsers.sort((u1,u2) -> u1.getAge().compareTo(u2.getAge()));
         myUsers.forEach(System.out::println);
 
         myUsers.sort(Comparator.comparing(MyUser::getAge));
         myUsers.forEach(System.out::println);
 
+        //sorted 返回一个新流，流中的元素按照自然排序进行排序 sorted(Comparator comp) 返回一个新流，并且Comparator指定的排序方式进行排序
         myUsers.stream().sorted(Comparator.comparing(MyUser::getAge)).forEach(System.out::println);
 
         //peek 接受Consumer，改变值
@@ -186,7 +184,7 @@ public class StreamAndOptionalTest {
 
         //转换成Map（第三个参数表示当key出现重复时保留哪一个）
         Map<String, MyUser> userMap = users.stream().limit(5).collect(Collectors.toMap(MyUser::getUserName, Function.identity(),
-                (name1, name2)->name1));
+                (name1, name2)-> name1));
         System.out.println(userMap);
 
         //结果个数
@@ -214,10 +212,10 @@ public class StreamAndOptionalTest {
 
         //按给定值进行分组（按姓名分组）
         Map<String, List<MyUser>> kv = users.stream().collect(Collectors.groupingBy(MyUser::getUserName));
+        kv.forEach((k,v) -> System.out.println(k + ":" + v));
 
         //按是否符合条件（true|false）进行分组
-        Map<Boolean, List<MyUser>> kvv = users.stream().collect(Collectors.partitioningBy(user -> user.getAge() > 10));
-
+        Map<Boolean, List<MyUser>> kvb = users.stream().collect(Collectors.partitioningBy(user -> user.getAge() > 10));
         //users.stream().limit(5).forEach(System.out::println);
     }
 
@@ -267,11 +265,6 @@ public class StreamAndOptionalTest {
         double b = myUsers.stream().mapToInt(user -> user.getAge()).summaryStatistics().getAverage();
         double a = myUsers.stream().collect(Collectors.averagingDouble(user -> user.getAge()));
     }
-
-
-
-
-
 
 
     @Test

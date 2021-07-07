@@ -28,6 +28,7 @@ public class AccountInfoService {
     AccountInfoService accountInfoService;
     @Autowired
     private AccountInfoMapper accountInfoMapper;
+
     //初始化生产者
     private static TransactionMQProducer producer;
     static {

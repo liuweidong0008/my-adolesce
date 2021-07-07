@@ -1,4 +1,4 @@
-package com.adolesce.server.service.impl;
+package com.adolesce.common.sms;
 
 import com.adolesce.common.config.HuyiSMSConfig;
 import com.adolesce.common.config.YiMeiSMSConfig;

@@ -13,6 +13,7 @@ import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
@@ -22,7 +23,7 @@ import java.util.concurrent.TimeUnit;
  * 全局缓存响应体增强
  */
 @Slf4j
-//@ControllerAdvice
+@ControllerAdvice
 public class GlobalCacheResponseBodyAdvice implements ResponseBodyAdvice {
 
     @Value("${cache.enable}")

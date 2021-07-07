@@ -15,8 +15,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "my_user")
-public class MyUser implements java.io.Serializable{
-
+public class MyUser implements java.io.Serializable {
     private static final long serialVersionUID = -291788258125767614L;
 
     //@Id
@@ -31,12 +30,14 @@ public class MyUser implements java.io.Serializable{
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) return true;
+        if (o == this) {
+            return true;
+        }
         if (!(o instanceof MyUser)) {
             return false;
         }
         MyUser user = (MyUser) o;
-        return age == user.age &&
+        return age.equals(user.age) &&
                 Objects.equals(userName, user.userName) &&
                 Objects.equals(sex, user.sex);
     }
@@ -45,6 +46,4 @@ public class MyUser implements java.io.Serializable{
     public int hashCode() {
         return Objects.hash(userName, age, sex);
     }
-
-
 }
