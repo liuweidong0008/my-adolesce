@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.4.5</version>
+        <version>2.1.0.RELEASE</version>
     </parent>
     <packaging>pom</packaging>
 
@@ -13,6 +13,11 @@
         <module>my-adolesce-server</module>
         <module>my-adolesce-common</module>
         <module>my-adolesce-mqconsumer</module>
+        <module>my-adolesce-eureka-server</module>
+        <module>my-adolesce-eureka-provider</module>
+        <module>my-adolesce-eureka-server2</module>
+        <module>my-adolesce-consul-provider</module>
+        <module>my-adolesce-nacos-provider</module>
     </modules>
 
     <groupId>com.boot.adolesce</groupId>
@@ -39,6 +44,7 @@
         <dom4j.version>2.1.3</dom4j.version>
         <commons-beanutils.version>1.9.4</commons-beanutils.version>
         <rocketmq.version>4.8.0</rocketmq.version>
+        <spring-cloud.version>Greenwich.RELEASE</spring-cloud.version>
     </properties>
 
     <!--通用依赖-->
@@ -226,6 +232,14 @@
                 <groupId>org.apache.rocketmq</groupId>
                 <artifactId>rocketmq-client</artifactId>
                 <version>${rocketmq.version}</version>
+            </dependency>
+            <!--引入Spring Cloud 依赖 查看对应版本 https://start.spring.io/actuator/info-->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

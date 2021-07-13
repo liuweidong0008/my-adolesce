@@ -1,0 +1,18 @@
+server:
+  port: 8762  #自定义监听端口,默认8080
+  servlet:
+    context-path: /eureka-server2 #配置项目名
+
+spring:
+  application:
+    name: eureka-server-ha
+
+eureka:
+  instance:
+    hostname: eureka-server2
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka-server/eureka #集群模式 相互注册,配置其他节点地址
+    register-with-eureka: false # 是否将自己的路径 注册到eureka上，默认为true。eureka server 不需要的，eureka provider client 需要
+    fetch-registry: false # 是否需要从eureka中抓取路径，默认为true。eureka server 不需要的，eureka consumer client 需要
+    #集群模式，是否将自己注册到注册中心、是否抓取地址配置 设置为ture和fasle都可以

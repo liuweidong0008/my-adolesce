@@ -35,8 +35,8 @@ public class RequestStyleDemo {
     public String requestTest1(String userName, Integer age,
                                @RequestHeader(value = "myHeader",required = false) String myHeader,
                                @RequestHeader(value = "Authorization",required = false) String token,
-                               @CookieValue("mycookie1")String mycookie1,
-                               @CookieValue("mycookie2")String mycookie2) {
+                               @CookieValue(value = "mycookie1",required = false)String mycookie1,
+                               @CookieValue(value = "mycookie2",required = false)String mycookie2) {
         //userName = new String(userName.getBytes("ISO-8859-1"),"utf-8");
         System.out.println("userName:" + userName + ",age:" + age);
         return userName;
@@ -299,8 +299,9 @@ public class RequestStyleDemo {
      */
     @PostMapping("upload")
     public Response upload(@RequestParam(value = "files",required = false) List<MultipartFile> multipartFiles,
-                           @RequestHeader(value = "Authorization",required = false)String token, String userName,
-                           @RequestHeader(value = "myHead")String myHead,HttpServletRequest request) {
+                           @RequestHeader(value = "Authorization",required = false)String token,
+                           String userName, @RequestHeader(value = "myHead")String myHead,
+                           HttpServletRequest request) {
         multipartFiles.stream().forEach(file -> System.out.println(file.getOriginalFilename()));
 
         Enumeration<String> headerNames = request.getHeaderNames();

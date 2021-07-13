@@ -55,6 +55,16 @@ spring:
       port: 27017
       host: 127.0.0.1
       #uri: mongodb://127.0.0.1:27017/adolesce   #无权限设置
+  cloud:
+    consul:
+      host: localhost # consul 服务端的 ip
+      port: 8500 # consul 服务端的端口 默认8500
+      discovery:
+        service-name: ${spring.application.name} # 当前应用注册到consul的名称
+        prefer-ip-address: true # 是否以ip形式注册
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848 # 配置nacos 服务端地址
 
 # RocketMQ相关配置
 rocketmq:
@@ -68,3 +78,17 @@ jwt:
 #是否开启数据缓存
 cache:
   enable: true
+
+#eureka相关配置
+eureka:
+  instance:
+    hostname: localhost # 主机名
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka-server/eureka # eureka服务端地址，将来客户端使用该地址和eureka进行通信
+      #defaultZone: http://eureka-server:8761/eureka-server/eureka,http://eureka-server2:8762/eureka-server2/eureka
+
+#通过配置的方式设置Ribbon的负载均衡策略
+EUREKA-PROVIDER:  #为哪个服务设置负载均衡策略（服务应用名称）
+  ribbon:
+    NFloadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule  #指定策略类

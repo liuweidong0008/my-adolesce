@@ -11,6 +11,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.util.HashMap;
@@ -348,6 +349,21 @@ public class RestTemplateTest {
 
         ResponseEntity<String> responseEntity = RestTemplateConfig.TEMPLATE.exchange(url, HttpMethod.GET, httpEntity, String.class);
         System.out.println(responseEntity.getBody());
+    }
+
+
+    /**
+     * 测试get请求 设置请求头、Cookie
+     */
+    @Test
+    public void testBigDecimal(){
+        BigDecimal a = new BigDecimal(10.897);
+        BigDecimal b = new BigDecimal("10.897");
+        BigDecimal c = BigDecimal.valueOf(10.897);
+
+        System.out.println(a);
+        System.out.println(b);
+        System.out.println(c);
     }
 
 

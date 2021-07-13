@@ -4,6 +4,8 @@ server:
     context-path: /my_adolesce #配置项目名
 
 spring:
+  application:
+    name: my-adolesce
   #热部署
   devtools:
     restart:

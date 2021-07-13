@@ -1,0 +1,28 @@
+server:
+  port: 8001  #自定义监听端口,默认8080
+  servlet:
+    context-path: /eureka-provider #配置项目名
+
+spring:
+  application:
+    name: eureka-provider # 设置当前应用的名称。将来会在eureka中Application显示。将来需要使用该名称来获取路径
+
+# eureka 配置
+# eureka 一共有4部分 配置
+# 1. dashboard:eureka的web控制台配置
+# 2. server:eureka的服务端配置
+# 3. client:eureka的客户端配置
+# 4. instance:eureka的实例配置
+
+eureka:
+  instance:
+    hostname: localhost # 主机名
+    prefer-ip-address: true # 将当前实例的ip注册到eureka server 中。默认为false注册主机名，如果设置为true，默认IP为非回环地址的第一个，可用ip-address属性指定自己的IP
+    ip-address: 127.0.0.1 # 设置当前实例的ip
+    instance-id: ${eureka.instance.ip-address}:${spring.application.name}:${server.port} # 设置web控制台显示的 实例id，不能重复
+    lease-renewal-interval-in-seconds: 120 # 默认每隔30秒eureka client向eureka server发送一次心跳包（又称续约时间）
+    lease-expiration-duration-in-seconds: 90 # 默认如果90秒内eureka client没有向eureka server发心跳包，服务器呀，你把我干掉吧~（又称服务剔除时间）
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka-server/eureka # eureka服务端地址，将来客户端使用该地址和eureka进行通信（默认就是该地址，多个可用，分隔）
+      #defaultZone: http://eureka-server:8761/eureka-server/eureka,http://eureka-server2:8762/eureka-server2/eureka

@@ -1,3 +1,6 @@
+server:
+    port: 8082  #自定义监听端口,默认8080
+
 # RocketMQ相关配置
 rocketmq:
     name-server: 192.168.31.82:9876
