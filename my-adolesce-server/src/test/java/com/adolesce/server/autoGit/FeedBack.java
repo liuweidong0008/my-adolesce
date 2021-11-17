@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class FeedBack {
 
     @Test
-    public void showNoCommit(){
+    public void showNoCommit() {
         BufferedReader in = null;
         try {
             File fileInAll = new File("D:/heima/学生项目代码/all.txt");
@@ -56,7 +56,7 @@ public class FeedBack {
             //方式一
             //allStudentName.removeAll(commitStudentName);
             //方式二
-            noCommitStudentName = allStudentName.stream().filter(t-> !commitStudentName.contains(t)).collect(Collectors.toSet());
+            noCommitStudentName = allStudentName.stream().filter(t -> !commitStudentName.contains(t)).collect(Collectors.toSet());
             noCommitStudentName.stream().forEach(System.out::println);
             //System.out.println(noCommitStudentName);
 
@@ -86,6 +86,6 @@ public class FeedBack {
     }
 
     @Test
-    public void  toolsTest(){
+    public void toolsTest() {
     }
 }

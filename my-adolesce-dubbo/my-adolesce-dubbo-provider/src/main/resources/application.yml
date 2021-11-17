@@ -1,0 +1,24 @@
+server:
+  port: 8003
+spring:
+  application:
+    name: dubbo-provider
+logging:
+  level:
+    cn.itcast: debug
+  pattern:
+    dateformat: HH:mm:ss:SSS
+#配置dubbo提供者
+#dubbo协议和访问端口
+dubbo:
+  protocol:
+    name: dubbo
+    port: 20881
+#注册中心的地址
+  registry:
+    address: nacos://127.0.0.1:8848
+#dubbo注解的包扫描
+  scan:
+    base-packages: com.adolesce.dubbo.provider.api
+
+

@@ -10,7 +10,7 @@ public class GitAutoOperation {
         BufferedReader in = null;
         BufferedWriter out = null;
         try {
-            File fileIn = new File("D:/heima/学生项目代码/51期git仓库地址.txt");
+            File fileIn = new File("D:/heima/学生项目代码/57期git仓库地址.txt");
             File fileOut = new File("D:/heima/学生项目代码/autogit.bat");
             in = new BufferedReader(new FileReader(fileIn));
             out = new BufferedWriter(new FileWriter(fileOut));
@@ -27,16 +27,16 @@ public class GitAutoOperation {
                 //组与组之间的空行
                 if (StringUtils.isEmpty(line)) {
                     writeContent(out, "cd ..\ncd ..");
-                //组信息
-                } else if (!StringUtils.contains(line, "|")) {
+                    //组信息
+                } else if (StringUtils.contains(line,"(")) {
                     isFirst = true;
                     writeContent(out, "mkdir " + line);
                     writeContent(out, "cd " + line);
-                //组员及git地址信息
-                } else {
+                    //组员及git地址信息
+                } else if(StringUtils.contains(line, "|")){
                     arr = line.split("\\|");
                     name = arr[0];
-                    gitAddress = arr[1];
+                    gitAddress = StringUtils.trim(arr[1]);
                     if (!isFirst) {
                         writeContent(out, "cd ..");
                     }

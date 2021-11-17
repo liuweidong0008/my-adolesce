@@ -14,11 +14,11 @@ public class Producer {
         producer.setNamesrvAddr(RocketConfig.NAMESRVADDR);
         producer.start();
         for (int i = 1; i <= 5; i++) {
-            Message msg = new Message("topic3",("非延时消息：hello rocketmq "+i).getBytes("UTF-8"));
+            Message msg = new Message("topic3", ("非延时消息：hello rocketmq " + i).getBytes("UTF-8"));
             //设置当前消息的延时效果
             msg.setDelayTimeLevel(2);
             SendResult result = producer.send(msg);
-            System.out.println("返回结果："+result);
+            System.out.println("返回结果：" + result);
         }
         producer.shutdown();
     }

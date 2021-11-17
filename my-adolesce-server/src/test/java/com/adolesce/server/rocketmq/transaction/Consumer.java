@@ -13,12 +13,12 @@ public class Consumer {
     public static void main(String[] args) throws Exception {
         DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(RocketConfig.GROUP1);
         consumer.setNamesrvAddr(RocketConfig.NAMESRVADDR);
-        consumer.subscribe("topic10","*");
+        consumer.subscribe("topic10", "*");
 
         consumer.registerMessageListener(new MessageListenerConcurrently() {
             public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> list, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
-                for(MessageExt msg : list){
-                    System.out.println("消息："+new String(msg.getBody()));
+                for (MessageExt msg : list) {
+                    System.out.println("消息：" + new String(msg.getBody()));
                 }
                 return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
             }

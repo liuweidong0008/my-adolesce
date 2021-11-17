@@ -1,0 +1,23 @@
+server:
+  port: 8007  #自定义监听端口,默认8080
+
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+  application:
+    name: cloud-dubbo-db
+dubbo:
+  protocol:
+    name: dubbo
+    port: 20884
+  registry:
+    address: spring-cloud://localhost  #使用springcloud中注册中心的地址
+  scan:
+    base-packages: com.adolesce.cloud.es
+
+# ES相关配置
+elasticsearch:
+  host: 127.0.0.1
+  port: 9200

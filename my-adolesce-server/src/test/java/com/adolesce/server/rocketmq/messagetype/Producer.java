@@ -33,7 +33,7 @@ public class Producer {
             },10000);*/
 
             //单向消息
-            Message msg = new Message("topic2",("单向消息：hello rocketmq "+i).getBytes("UTF-8"));
+            Message msg = new Message("topic2", ("单向消息：hello rocketmq " + i).getBytes("UTF-8"));
             producer.sendOneway(msg);
         }
         //添加一个休眠操作，确保异步消息返回后能够输出

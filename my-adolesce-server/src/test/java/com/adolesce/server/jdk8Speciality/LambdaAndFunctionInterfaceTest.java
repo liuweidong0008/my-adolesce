@@ -1,35 +1,36 @@
 package com.adolesce.server.jdk8Speciality;
 
 import cn.hutool.core.lang.copier.Copier;
-import com.adolesce.common.bo.MyUser;
+import com.adolesce.common.entity.User;
 import lombok.NoArgsConstructor;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.*;
 
 /**
  * @author Lwd
- *
+ * <p>
  * JDK1.8新特性
  *
- *
  * 一、函数式接口
- *      1、有且仅有一个抽象方法，但是可以有多个非抽象方法的接口。可以被隐式转换为 lambda 表达式。
- *      2、JDK 1.8 之前已有的函数式接口:
- *          1)、java.lang.Runnable
- *          2)、java.util.concurrent.Callable
- *          3)、java.security.PrivilegedAction
- *          4)、java.util.Comparator
- *          5)、java.io.FileFilter
- *          6)、java.nio.file.PathMatcher
- *          7)、java.lang.reflect.InvocationHandler
- *          8)、java.beans.PropertyChangeListener
- *          9)、java.awt.event.ActionListener
- *          10)、javax.swing.event.ChangeListener
+ * 1、有且仅有一个抽象方法，但是可以有多个非抽象方法的接口。可以被隐式转换为 lambda 表达式。
+ * 2、JDK 1.8 之前已有的函数式接口:
+ * 1)、java.lang.Runnable
+ * 2)、java.util.concurrent.Callable
+ * 3)、java.security.PrivilegedAction
+ * 4)、java.util.Comparator
+ * 5)、java.io.FileFilter
+ * 6)、java.nio.file.PathMatcher
+ * 7)、java.lang.reflect.InvocationHandler
+ * 8)、java.beans.PropertyChangeListener
+ * 9)、java.awt.event.ActionListener
+ * 10)、javax.swing.event.ChangeListener
  * 3、JDK 1.8 新增加的函数接口：
- *      java.util.function, 它包含了很多类，用来支持 Java的 函数式编程  详见(http://www.runoob.com/java/java8-functional-interfaces.html)
- *
+ * java.util.function, 它包含了很多类，用来支持 Java的 函数式编程  详见(http://www.runoob.com/java/java8-functional-interfaces.html)
  *
  * 二、Lambda 表达式
  *      1、Lambda 表达式，也可称为闭包，它是推动 Java 8 发布的最重要新特性。
@@ -37,13 +38,12 @@ import java.util.function.*;
  *      3、使用 Lambda 表达式可以使代码变的更加简洁紧凑。
  *      4、语法:
  *          lambda 表达式的语法格式如下：
- *              (parameters) -> expression 或 (parameters) ->{ statements; }
+ *              (parameters,params2) -> expression 或 (parameters) ->{ statements;sadf;sadfd; }
  *      5、重要特征
  *          1）、可选类型声明：不需要声明参数类型，编译器可以统一识别参数值。   (
  *          2）、可选的参数圆括号：一个参数无需定义圆括号，但多个参数需要定义圆括号。
  *          3）、可选的大括号：如果主体只包含了一个语句，就不需要使用大括号.
  *          4）、可选的返回关键字：如果主体只有一个表达式返回值则编译器会自动返回值，大括号需要指定明表达式返回了一个数值。
- *
  *
  * 三、方法引用
  *      1、方法引用通过方法的名字来指向一个方法。
@@ -54,7 +54,6 @@ import java.util.function.*;
  *          3)、特定类的任意对象的方法引用：它的语法是Class::method
  *          4)、特定对象实例的方法引用：它的语法是instance::method
  *
- *
  * 四、默认方法
  *      简单说，默认方法就是接口可以有实现方法，而且不需要实现类去实现其方法。
  *      我们只需在方法名前面加个default关键字即可实现默认方法。
@@ -62,6 +61,15 @@ import java.util.function.*;
 
 @NoArgsConstructor
 public class LambdaAndFunctionInterfaceTest {
+
+    private String userName;
+    private Integer age;
+
+    public LambdaAndFunctionInterfaceTest(String userName, Integer age) {
+        this.userName = userName;
+        this.age = age;
+    }
+
     //定义函数式接口，1.8新注解,主要用于编译级错误检查，加上该注解，当你写的接口不符合函数式接口定义的时候，编译器会报错。
     @FunctionalInterface
     interface MathOperation {
@@ -90,8 +98,8 @@ public class LambdaAndFunctionInterfaceTest {
     }
 
     /**
-     * @param a 参数a
-     * @param b 参数b
+     * @param a             参数a
+     * @param b             参数b
      * @param mathOperation 数学操作函数式接口
      * @return
      */
@@ -125,7 +133,7 @@ public class LambdaAndFunctionInterfaceTest {
 
         //带有大括号，带有返回语句的表达式
         MathOperation mul = (int a, int b) -> {
-            if(a > 0){
+            if (a > 0) {
                 System.out.println("aaa");
             }
             return a * b;
@@ -136,7 +144,7 @@ public class LambdaAndFunctionInterfaceTest {
 
         //没有类型声明的表达式
         //也可以写成： (info) -> System.out.println(info); 或(String info) ->System.out.println(info);
-        MyConsumer myConsumer = info -> System.out.println(info);
+        MyConsumer myConsumer = i -> System.out.println(i);
 
 
         //函数式接口/Lamdba表达式作为方法参数传递
@@ -150,10 +158,16 @@ public class LambdaAndFunctionInterfaceTest {
      * 测试方法引用
      */
     @Test
-    public void testMethodReference(){
+    public void testMethodReference() {
         //构造器引用
         Copier<LambdaAndFunctionInterfaceTest> aNew = LambdaAndFunctionInterfaceTest::new;
+        BiFunction<String, Integer, LambdaAndFunctionInterfaceTest> aNew2 = LambdaAndFunctionInterfaceTest::new;
+        LambdaAndFunctionInterfaceTest test1 = aNew2.apply("liuweidong", 30);
+
         LambdaAndFunctionInterfaceTest test = aNew.copy();
+
+        LambdaAndFunctionInterfaceTest a1 = new LambdaAndFunctionInterfaceTest();
+        LambdaAndFunctionInterfaceTest a2 = new LambdaAndFunctionInterfaceTest();
 
         //静态方法引用
         Consumer<String> consumer = LambdaAndFunctionInterfaceTest::print;
@@ -161,7 +175,7 @@ public class LambdaAndFunctionInterfaceTest {
 
         //特定类的任意对象的方法引用
         BiConsumer<LambdaAndFunctionInterfaceTest, String> printHello = LambdaAndFunctionInterfaceTest::printHello;
-        printHello.accept(test,"reboot");
+        printHello.accept(test, "reboot");
 
         //特定实例对象的方法引用
         MathOperation thisAdd = test::thisAdd;
@@ -170,7 +184,6 @@ public class LambdaAndFunctionInterfaceTest {
 
     /**
      * 测试打印
-     *
      */
     @Test
     public void testPrint() {
@@ -192,7 +205,7 @@ public class LambdaAndFunctionInterfaceTest {
      * 测试排序
      */
     @Test
-    public void testSort(){
+    public void testSort() {
         List<Integer> numbers = new ArrayList<Integer>();
         numbers.add(56);
         numbers.add(24);
@@ -211,7 +224,7 @@ public class LambdaAndFunctionInterfaceTest {
 
         numbers.forEach(System.out::println);
 
-        Integer[] numberAttr = {1, 5, 2,100,1,4,66};
+        Integer[] numberAttr = {1, 5, 2, 100, 1, 4, 66};
         Arrays.sort(numberAttr, Integer::compareTo);
         System.out.println(Arrays.asList(numberAttr));
     }
@@ -261,6 +274,19 @@ public class LambdaAndFunctionInterfaceTest {
         Supplier<String> supplier = () -> "aa";
 
         //UnaryOperator<T> 接受一个参数为类型T,返回值类型也为T。
-        UnaryOperator<MyUser> unaryOperator = a -> a;
+        UnaryOperator<User> unaryOperator = a -> a;
+    }
+
+    public static void main(String[] args) {
+        Runnable runable = new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("123123");
+            }
+        };
+        new Thread(runable).start();
+
+
+        new Thread(() -> System.out.println("123123")).start();
     }
 }

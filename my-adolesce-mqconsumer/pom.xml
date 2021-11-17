@@ -12,6 +12,11 @@
     <artifactId>my-adolesce-mqconsumer</artifactId>
 
     <dependencies>
+        <dependency>
+            <groupId>com.boot.adolesce</groupId>
+            <artifactId>my-adolesce-cloud-dubbo-interface</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
         <!--项目公共模块依赖-->
         <dependency>
             <groupId>com.boot.adolesce</groupId>
@@ -23,21 +28,16 @@
             <groupId>org.apache.rocketmq</groupId>
             <artifactId>rocketmq-spring-boot-starter</artifactId>
         </dependency>
-        <!--rocketmq客户端-->
+        <!--Rocketmq客户端-->
         <dependency>
             <groupId>org.apache.rocketmq</groupId>
             <artifactId>rocketmq-client</artifactId>
         </dependency>
-        <!-- mysql 连接驱动 com.mysql.jdbc.Driver-->
+
+        <!-- springboot整合 rabbitmq -->
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <!-- druid阿里巴巴数据库连接池 -->
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>druid</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
         </dependency>
     </dependencies>
 </project>

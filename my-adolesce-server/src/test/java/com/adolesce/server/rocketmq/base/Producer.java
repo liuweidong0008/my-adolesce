@@ -16,10 +16,10 @@ public class Producer {
         //3.1启动发送的服务
         producer.start();
         //4.创建要发送的消息对象,指定topic，指定内容body
-        Message msg = new Message("topic1","hello rocketmq~".getBytes("UTF-8"));
+        Message msg = new Message("topic1", "hello rocketmq123123~".getBytes("UTF-8"));
         //3.2发送消息
         SendResult result = producer.send(msg);
-        System.out.println("返回结果："+result);
+        System.out.println("返回结果：" + result);
         //5.关闭连接
         producer.shutdown();
     }

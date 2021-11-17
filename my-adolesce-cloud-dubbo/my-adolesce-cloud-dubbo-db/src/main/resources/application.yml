@@ -1,0 +1,75 @@
+server:
+  port: 8005  #自定义监听端口,默认8080
+spring:
+  #数据源配置
+  datasource:
+    #druid:
+    url: jdbc:mysql://localhost:3306/adolesce?serverTimezone=GMT%2b8&characterEncoding=utf8&useUnicode=true&useSSL=true
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    initial-size: 10
+    minIdle: 30
+    maxActive: 50
+    maxWait: 60000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 1 FROM DUAL
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxPoolPreparedStatementPerConnectionSize: 50
+  #spring data jpa配置
+  jpa:
+    properties:
+      hibernate:
+        hbm2ddl:
+          #create：每次加载 hibernate删除表，根据modal新生成表
+          #create-drop：每次加载 hibernate删除表，根据modal新生成表，但是sessionFactory 一关闭,表就自动删除
+          #update：常用，第一次加载 hibernate 时根据 model 类会自动建立起表的结构（前提是先建立好数据库），以后加载 hibernate 时根据 model 类自动更新表结构，即使表结构改变了但表中的行仍然存在不会删除以前的行
+          #validate ：每次加载 hibernate 时，验证创建数据库表结构，只会和数据库中的表进行比较，不会创建新表，但是会插入新值。
+          auto: update
+        #指定生成表名的存储引擎为 InnoDBD
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+    #是否打印出自动生成的 SQL，方便调试的时候查看
+    show-sql: true
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+  application:
+    name: cloud-dubbo-db
+
+dubbo:
+  protocol:
+    name: dubbo
+    port: 20883
+  registry:
+    address: spring-cloud://localhost  #使用springcloud中注册中心的地址
+  scan:
+    base-packages: com.adolesce.cloud.db.api
+
+mybatis-plus:
+  type-enums-package:
+    com.adolesce.cloud.dubbo.enums
+  global-config:
+    db-config:
+      # 表名前缀
+      table-prefix: my_
+      # id生成策略 数据库自增
+      id-type: auto
+  configuration:
+    # 日志
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  # mapper映射文件路径（要么不写【有默认的路径】，要么必须写对，否则报Invalid bound statement (not found)错误）
+  mapper-locations: classpath:mapper/*Mapper.xml
+  # 实体所在位置（可以不写，有默认路径）
+  type-aliases-package: com.adolesce.**.db
+
+#pagehelper分页插件
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql

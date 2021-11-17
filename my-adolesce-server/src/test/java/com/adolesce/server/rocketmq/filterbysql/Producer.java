@@ -13,10 +13,10 @@ public class Producer {
         producer.setSendMsgTimeout(10000);
         producer.start();
 
-        Message msg = new Message("topic7",("消息过滤按照sql：hello rocketmq").getBytes("UTF-8"));
+        Message msg = new Message("topic7", ("消息过滤按照sql：hello rocketmq").getBytes("UTF-8"));
         //为消息添加属性
-        msg.putUserProperty("vip","2");
-        msg.putUserProperty("age","16");
+        msg.putUserProperty("vip", "2");
+        msg.putUserProperty("age", "16");
 
         SendResult send = producer.send(msg);
         System.out.println(send);

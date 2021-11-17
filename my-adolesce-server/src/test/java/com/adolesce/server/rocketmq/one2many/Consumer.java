@@ -18,7 +18,7 @@ public class Consumer {
         //2.设定接收的命名服务器地址
         consumer.setNamesrvAddr(RocketConfig.NAMESRVADDR);
         //3.设置接收消息对应的topic,对应的sub标签为任意*
-        consumer.subscribe("topic1","*");
+        consumer.subscribe("topic1", "*");
 
         //设置当前消费者的消费模式（默认模式：负载均衡）
 //        consumer.setMessageModel(MessageModel.CLUSTERING);
@@ -30,9 +30,9 @@ public class Consumer {
         consumer.registerMessageListener(new MessageListenerConcurrently() {
             public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> list, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
                 //遍历消息
-                for(MessageExt msg : list){
+                for (MessageExt msg : list) {
 //                    System.out.println("收到消息："+msg);
-                    System.out.println("消息："+new String(msg.getBody()));
+                    System.out.println("消息：" + new String(msg.getBody()));
                 }
                 return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
             }

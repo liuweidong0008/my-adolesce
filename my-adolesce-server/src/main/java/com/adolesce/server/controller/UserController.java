@@ -13,7 +13,6 @@ import java.util.Map;
 @Controller
 @RequestMapping("user")
 public class UserController {
-
     @Autowired
     private UserService userService;
 
@@ -45,7 +44,7 @@ public class UserController {
      * @return
      */
     @PostMapping("login")
-    public Response login(@RequestBody Map<String,String> param){
+    public Response login(@RequestBody Map<String, String> param) {
         String phone = param.get("phone");
         String code = param.get("code");
         Response response;

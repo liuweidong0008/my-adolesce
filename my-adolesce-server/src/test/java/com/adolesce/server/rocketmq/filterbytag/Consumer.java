@@ -14,14 +14,14 @@ public class Consumer {
         DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(RocketConfig.GROUP1);
         consumer.setNamesrvAddr(RocketConfig.NAMESRVADDR);
         //接收消息的时候，除了制定topic，还可以指定接收的tag,*代表任意tag
-        consumer.subscribe("topic6","tag1 || tag2");
+        consumer.subscribe("topic6", "tag1 || tag2");
 
         consumer.registerMessageListener(new MessageListenerConcurrently() {
             public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> list, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
-            for(MessageExt msg : list){
-                System.out.println("消息："+new String(msg.getBody()));
-            }
-            return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+                for (MessageExt msg : list) {
+                    System.out.println("消息：" + new String(msg.getBody()));
+                }
+                return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
             }
         });
         consumer.start();

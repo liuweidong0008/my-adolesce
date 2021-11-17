@@ -1,84 +1,43 @@
 spring:
-  #数据源配置
-  datasource:
-    #druid:
-      url: jdbc:mysql://localhost:3306/adolesce?serverTimezone=UTC&characterEncoding=utf8&useUnicode=true&useSSL=true
-      username: root
-      password: root
-      driver-class-name: com.mysql.cj.jdbc.Driver
-      initial-size: 10
-      minIdle: 30
-      maxActive: 50
-      maxWait: 60000
-      timeBetweenEvictionRunsMillis: 60000
-      minEvictableIdleTimeMillis: 300000
-      validationQuery: SELECT 1 FROM DUAL
-      testWhileIdle: true
-      testOnBorrow: false
-      testOnReturn: false
-      poolPreparedStatements: true
-      maxPoolPreparedStatementPerConnectionSize: 50
-  #spring data jpa配置
-  jpa:
-    properties:
-      hibernate:
-        hbm2ddl:
-          #create：每次加载 hibernate删除表，根据modal新生成表
-          #create-drop：每次加载 hibernate删除表，根据modal新生成表，但是sessionFactory 一关闭,表就自动删除
-          #update：常用，第一次加载 hibernate 时根据 model 类会自动建立起表的结构（前提是先建立好数据库），以后加载 hibernate 时根据 model 类自动更新表结构，即使表结构改变了但表中的行仍然存在不会删除以前的行
-          #validate ：每次加载 hibernate 时，验证创建数据库表结构，只会和数据库中的表进行比较，不会创建新表，但是会插入新值。
-          auto: update
-        #指定生成表名的存储引擎为 InnoDBD
-        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
-    #是否打印出自动生成的 SQL，方便调试的时候查看
-    show-sql: true
-  #redis配置
-  redis:
-    database: 0             #数据库索引（默认为0）
-    host: 192.168.56.1  #服务器地址
-    port: 6379              #服务器连接端口(默认)
-    password: lwd               #服务器连接密码 (默认为空 没有不填)
-    timeout: 10s          #连接超时时间（秒）
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: lwd
+    password: lwd
+  redis:    #redis配置
+    database: 0      #数据库索引（默认为0）
+    host: 127.0.0.1  #服务器地址
+    port: 6379       #服务器连接端口(默认)
+    password: lwd    #服务器连接密码 (默认为空 没有不填)
+    timeout: 10s     #连接超时时间（秒）
     jedis:
       pool:
         max-active: 500       #连接池最大连接数（使用负值表示没有限制）默认 8
         max-wait: 10000ms        #连接池最大阻塞等待时间（使用负值表示没有限制）默认 -1
         max-idle: 100         #连接池中的最大空闲连接 默认 8
         min-idle: 0           #连接池中的最小空闲连接 默认 0
-  #MongoDB配置
-  data:
-    mongodb:
-      username: lwd
-      password: lwd
-      authentication-database: admin
-      database: adolesce
-      port: 27017
-      host: 127.0.0.1
-      #uri: mongodb://127.0.0.1:27017/adolesce   #无权限设置
   cloud:
-    consul:
-      host: localhost # consul 服务端的 ip
-      port: 8500 # consul 服务端的端口 默认8500
+    consul:    #consul注册中心配置
+      host: localhost #consul 服务端的 ip
+      port: 8500    #consul 服务端的端口 默认8500
       discovery:
         service-name: ${spring.application.name} # 当前应用注册到consul的名称
         prefer-ip-address: true # 是否以ip形式注册
-    nacos:
+    nacos:    #nacos注册中心配置
       discovery:
         server-addr: 127.0.0.1:8848 # 配置nacos 服务端地址
-
-# RocketMQ相关配置
-rocketmq:
-    name-server: 192.168.31.82:9876
-    producer:
-      group: adolesce-group
-      send-message-timeout: 50000  #消息发送超时时长
-
+dubbo:
+  registry:
+    address: spring-cloud://localhost  #使用springcloud中注册中心的地址
+  consumer:
+    check: false
+rocketmq:   # RocketMQ相关配置
+  name-server: 127.0.0.1:9876
+  producer:
+    group: adolesce-group
+    send-message-timeout: 50000  #消息发送超时时长
 jwt:
   secret: 76bd425b6f29f7fcc2e0bfc286043df1
-#是否开启数据缓存
-cache:
-  enable: true
-
 #eureka相关配置
 eureka:
   instance:
@@ -88,7 +47,62 @@ eureka:
       defaultZone: http://localhost:8761/eureka-server/eureka # eureka服务端地址，将来客户端使用该地址和eureka进行通信
       #defaultZone: http://eureka-server:8761/eureka-server/eureka,http://eureka-server2:8762/eureka-server2/eureka
 
-#通过配置的方式设置Ribbon的负载均衡策略
-EUREKA-PROVIDER:  #为哪个服务设置负载均衡策略（服务应用名称）
-  ribbon:
-    NFloadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule  #指定策略类
+sms:
+  huyi:
+    url: http://106.ihuyi.com/webservice/sms.php?method=Submit
+    account: C61078084
+    password: d9f159954e1f35921dd3abc483a493ae
+  yimei:
+    singleUrl: http://shmtn.b2m.cn/inter/sendSingleSMS
+    batchUrl: http://shmtn.b2m.cn/inter/sendBatchOnlySMS
+    appId: EUCP-EMY-SMS1-391UA
+    secretKey: 759B0349B84719D4
+    signName: 【美团】
+
+#    appId: EUCP-EMY-SMS1-1IOG0
+#    secretKey: 366FC3E3AC0F03CE
+#    signName: 【饿了么】
+
+
+#通过配置的方式设置Ribbon的负载均衡策略（为某个服务单独进行ribbon参数设置）
+#EUREKA-PROVIDER:  #为哪个服务设置负载均衡策略（服务应用名称）
+#  ribbon:
+#    NFloadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule  #指定策略类
+
+# 设置Feign 的超时时间
+ribbon: #全局ribbon的参数设置
+  ConnectTimeout: 1000 # 连接超时时间 默认1s
+  ReadTimeout: 3000 # 逻辑处理的超时时间,即通信超时时间 默认1s
+  MaxAutoRetries: 1 #同一台实例最大重试次数,不包括首次调用
+  MaxAutoRetriesNextServer: 2 #重试负载均衡其他的实例最大重试次数,不包括首次调用
+
+    # OkToRetryOnAllOperations: false  #是否所有操作都重试（如果是get还可以，如果是post,put等操作没有实现幂等的情况下是很危险的，所以设置为false）
+    #注意：
+    #1、ribbon默认重试次数为1次，一共调用服务2次，如果还未成功则抛出异常，如果开启了feign对hystrix（feign.hystrix.enabled = true）支持，
+    # 且未设置Hystrix超时时间则超时时间默认1秒，1秒后直接服务降级不进行重试，一共调用服务1次
+    #2、如果配置了MaxAutoRetries和MaxAutoRetriesNextServer属性，则次数为（MaxAutoRetries+1）*（MaxAutoRetriesNextServer+1）,
+  # 重试次数全部完成后抛Read timed out异常 等同(1 + MaxAutoRetries+MaxAutoRetriesNextServer+(MaxAutoRetries *MaxAutoRetriesNextServer)
+  #3、在上面基础上如果开启了feign对hystrix的支持，则重试过程中到达Hystrix超时时间直接进入服务降级，后台继续重试（没有意义了），重试次数全部跑完后抛出Read timed out异常
+  #4、Feign默认支持Ribbon；Ribbon的重试机制和Feign的重试机制有冲突，所以源码中默认关闭Feign的重试机制,使用Ribbon的重试机制
+  #5、默认情况下,GET方式请求无论是连接异常还是读取异常,都会进行重试，非GET方式请求,只有连接异常时,才会进行重试
+
+# 设置当前的日志级别为 debug，feign只支持记录debug级别的日志
+logging:
+  level:
+    com.adolesce: debug
+  pattern:
+    dateformat: HH:mm:ss:SSS
+
+# 开启feign对hystrix的支持（客户端服务降级/熔断等）
+feign:
+  hystrix:
+    enabled: true
+
+# 设置Hystrix超时时间（到达该时间服务提供方仍未响应，则走服务降级逻辑）【合理的时间应该设置为 重试次数*ribbon.ReadTimeout，以保证ribbon重试次数都能够执行完】
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 7000

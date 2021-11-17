@@ -13,17 +13,16 @@ import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.util.ObjectUtils;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 
 /**
  * 全局缓存响应体增强
  */
 @Slf4j
-@ControllerAdvice
+//@ControllerAdvice
 public class GlobalCacheResponseBodyAdvice implements ResponseBodyAdvice {
 
     @Value("${cache.enable}")
@@ -46,21 +45,21 @@ public class GlobalCacheResponseBodyAdvice implements ResponseBodyAdvice {
             return null;
         }
         try {
-            //构建redisValue
-            String redisValue;
+            //构建cacheData
+            String cacheData;
             if (body instanceof String) {
-                redisValue = (String) body;
+                cacheData = (String) body;
             } else {
-                redisValue = JSON.toJSONString(body);
+                cacheData = JSON.toJSONString(body);
             }
-            //构建redisKey
-            String redisKey = GlobalCacheInterceptor.createRedisKey(((ServletServerHttpRequest) request).getServletRequest());
+            //构建缓存Key
+            String cacheKey = GlobalCacheInterceptor.createCacheKey(((ServletServerHttpRequest) request).getServletRequest());
             //获取Cache注解
             Cache cache = returnType.getMethodAnnotation(Cache.class);
-            //存入redis，缓存的时间单位是秒
-            this.redisTemplate.opsForValue().set(redisKey, redisValue, Long.valueOf(cache.time()), TimeUnit.SECONDS);
+            //存入缓存，缓存的时间单位是秒
+            this.redisTemplate.opsForValue().set(cacheKey, cacheData, Duration.ofSeconds(Long.valueOf(cache.time())));
         } catch (Exception e) {
-            log.error("全局缓存拦截器异常：{}",e);
+            log.error("全局缓存拦截器异常：{}", e);
             e.printStackTrace();
         }
         return body;

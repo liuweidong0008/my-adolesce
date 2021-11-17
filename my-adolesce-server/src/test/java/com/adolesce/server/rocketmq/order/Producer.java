@@ -68,8 +68,8 @@ public class Producer {
         orderList.add(order33);
 
         //设置消息进入到指定的消息队列中
-        for(final Order order : orderList){
-            Message msg = new Message("orderTopic",order.toString().getBytes());
+        for (final Order order : orderList) {
+            Message msg = new Message("orderTopic", order.toString().getBytes());
             //发送时要指定对应的消息队列选择器
             SendResult result = producer.send(msg, new MessageQueueSelector() {
                 //设置当前消息发送时使用哪一个消息队列
@@ -85,5 +85,7 @@ public class Producer {
         }
 
         producer.shutdown();
+
+
     }
 }

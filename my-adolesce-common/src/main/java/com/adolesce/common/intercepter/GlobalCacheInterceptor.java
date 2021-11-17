@@ -36,19 +36,21 @@ public class GlobalCacheInterceptor implements HandlerInterceptor {
         if (!(handler instanceof HandlerMethod)) {
             return true;
         }
+        HandlerMethod method = (HandlerMethod) handler;
         //如果是非GET请求,放行
-        if (!((HandlerMethod) handler).hasMethodAnnotation(GetMapping.class)) {
+        if (!method.hasMethodAnnotation(GetMapping.class)) {
             return true;
         }
         //如果请求方法未被@Cache标注,放行
-        if (!((HandlerMethod) handler).hasMethodAnnotation(Cache.class)) {
+        if (!method.hasMethodAnnotation(Cache.class)) {
             return true;
         }
+        //构建缓存key
+        String cacheKey = createCacheKey(request);
         //缓存命中
-        String redisKey = createRedisKey(request);
-        String cacheData = this.redisTemplate.opsForValue().get(redisKey);
+        String cacheData = this.redisTemplate.opsForValue().get(cacheKey);
         //缓存未命中,放行
-        if(ObjectUtils.isEmpty(cacheData)){
+        if (ObjectUtils.isEmpty(cacheData)) {
             return true;
         }
         //缓存命中,返回数据，截断请求
@@ -59,12 +61,9 @@ public class GlobalCacheInterceptor implements HandlerInterceptor {
     }
 
     /**
-     * 生成redis中的key，规则：SERVER_CACHE_DATA_MD5(url + param + token)
-     *
-     * @param request
-     * @return
+     * 生成缓存中的key，规则：SERVER_CACHE_DATA_MD5(url + param + token)
      */
-    public static String createRedisKey(HttpServletRequest request) throws Exception {
+    public static String createCacheKey(HttpServletRequest request) throws Exception {
         //请求url
         String url = request.getRequestURI();
         //请求参数

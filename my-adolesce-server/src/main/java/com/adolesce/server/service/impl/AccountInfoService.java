@@ -1,12 +1,13 @@
 package com.adolesce.server.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
+import com.adolesce.cloud.dubbo.api.db.AccountInfoApi;
 import com.adolesce.common.config.RocketConfig;
-import com.adolesce.common.mapper.AccountInfoMapper;
 import com.adolesce.common.vo.AccountChangeEvent;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.LocalTransactionState;
 import org.apache.rocketmq.client.producer.TransactionListener;
@@ -14,24 +15,24 @@ import org.apache.rocketmq.client.producer.TransactionMQProducer;
 import org.apache.rocketmq.client.producer.TransactionSendResult;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.common.message.MessageExt;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 
 @Slf4j
 @Service
 public class AccountInfoService {
-    @Autowired
-    AccountInfoService accountInfoService;
-    @Autowired
-    private AccountInfoMapper accountInfoMapper;
+    @DubboReference
+    private AccountInfoApi accountInfoApi;
 
     //初始化生产者
     private static TransactionMQProducer producer;
-    static {
+
+    @PostConstruct
+    public void initProduct() {
         //事务消息使用的生产者是TransactionMQProducer
         producer = new TransactionMQProducer(RocketConfig.GROUP1);
         producer.setSendMsgTimeout(10000);
@@ -64,16 +65,17 @@ public class AccountInfoService {
                     JSONObject jsonObject = JSONObject.parseObject(jsonString);
                     AccountChangeEvent ace = JSONObject.parseObject(jsonObject.getString("accountChange"), AccountChangeEvent.class);
                     //扣除金额
-                    boolean isOperationDataBase = accountInfoService.doUpdateAccountBalance(ace);
-                    if(isOperationDataBase){
+                    boolean isOperationDataBase = doUpdateAccountBalance(ace);
+                    if (isOperationDataBase) {
+                        int i = 8 / 0;
                         return LocalTransactionState.COMMIT_MESSAGE;
-                    }else{
+                    } else {
                         return LocalTransactionState.ROLLBACK_MESSAGE;
                     }
                 } catch (Exception e) {
                     System.out.println("事务执行失败");
                     e.printStackTrace();
-                    return LocalTransactionState.ROLLBACK_MESSAGE;
+                    return LocalTransactionState.UNKNOW;
                 }
             }
 
@@ -81,22 +83,27 @@ public class AccountInfoService {
             @Override
             public LocalTransactionState checkLocalTransaction(MessageExt messageExt) {
                 LocalTransactionState state;
-                final JSONObject jsonObject = JSON.parseObject(new String(messageExt.getBody()));
-                AccountChangeEvent accountChangeEvent =
-                        JSONObject.parseObject(jsonObject.getString("accountChange"), AccountChangeEvent.class);
-                //事务id
-                String txNo = accountChangeEvent.getTxNo();
-                int isexistTx = accountInfoMapper.isExistTxA(txNo);
-                log.info("回查事务，事务号: {} 结果: {}", accountChangeEvent.getTxNo(), isexistTx);
-                if (isexistTx > 0) {
-                    state = LocalTransactionState.COMMIT_MESSAGE;
-                } else {
-                    state = LocalTransactionState.ROLLBACK_MESSAGE;
+                try {
+                    final JSONObject jsonObject = JSON.parseObject(new String(messageExt.getBody()));
+                    AccountChangeEvent accountChangeEvent =
+                            JSONObject.parseObject(jsonObject.getString("accountChange"), AccountChangeEvent.class);
+                    //事务id
+                    String txNo = accountChangeEvent.getTxNo();
+                    int isexistTx = accountInfoApi.isExistTxA(txNo);
+                    log.info("事务补偿，回查事务，事务号: {} 结果: {}", accountChangeEvent.getTxNo(), isexistTx);
+                    if (isexistTx > 0) {
+                        state = LocalTransactionState.COMMIT_MESSAGE;
+                    } else {
+                        state = LocalTransactionState.ROLLBACK_MESSAGE;
+                    }
+                } catch (Exception e) {
+                    System.out.println("事务补偿执行失败");
+                    e.printStackTrace();
+                    return LocalTransactionState.UNKNOW;
                 }
                 return state;
             }
         });
-
 
         Message msg = new Message("accountTxTopic", jsonObject.toJSONString().getBytes(StandardCharsets.UTF_8));
         TransactionSendResult sendResult = producer.sendMessageInTransaction(msg, null);
@@ -114,14 +121,14 @@ public class AccountInfoService {
     public boolean doUpdateAccountBalance(AccountChangeEvent ace) {
         System.out.println("开始更新本地事务，事务号：" + ace.getTxNo());
         //查询账户余额是否够
-        BigDecimal accountBalance = accountInfoMapper.queryAccountBalance(ace.getAccountNoA());
-        if(ObjectUtil.isEmpty(accountBalance)
-            || accountBalance.subtract(ace.getAmount()).compareTo(BigDecimal.ZERO) < 0){
+        BigDecimal accountBalance = accountInfoApi.queryAccountBalance(ace.getAccountNoA());
+        if (ObjectUtil.isEmpty(accountBalance)
+                || accountBalance.subtract(ace.getAmount()).compareTo(BigDecimal.ZERO) < 0) {
             return false;
         }
-        accountInfoMapper.subtractAccountBalance(ace.getAccountNoA(), ace.getAmount());
+        accountInfoApi.subtractAccountBalance(ace.getAccountNoA(), ace.getAmount());
         //为幂等性做准备
-        accountInfoMapper.addTxA(ace.getTxNo());
+        accountInfoApi.addTxA(ace.getTxNo());
         //测试
         if (ace.getAmount().compareTo(BigDecimal.ZERO) == 0) {
             throw new RuntimeException("bank1更新本地事务时抛出异常");

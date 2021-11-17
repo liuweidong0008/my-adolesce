@@ -12,7 +12,17 @@ public @interface Cache {
 
     /**
      * 缓存时间，默认为60秒
-     * @return
      */
     String time() default "60";
+
+    /**
+     * 组下自定义缓存key（支持EL表达式）
+     */
+    String key() default "";
+
+    /**
+     * 所属组（支持EL表达式）
+     */
+    String group() default "";
+
 }

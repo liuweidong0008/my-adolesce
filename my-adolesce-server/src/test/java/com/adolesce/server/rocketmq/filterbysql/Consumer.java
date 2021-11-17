@@ -18,10 +18,10 @@ public class Consumer {
         consumer.subscribe("topic7", MessageSelector.bySql("age >= 18 or vip = 2"));
         consumer.registerMessageListener(new MessageListenerConcurrently() {
             public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> list, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
-            for(MessageExt msg : list){
-                System.out.println("消息："+new String(msg.getBody()));
-            }
-            return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+                for (MessageExt msg : list) {
+                    System.out.println("消息：" + new String(msg.getBody()));
+                }
+                return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
             }
         });
         consumer.start();

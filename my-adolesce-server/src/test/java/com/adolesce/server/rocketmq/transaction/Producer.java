@@ -23,6 +23,7 @@ public class Producer {
                 //中间状态
                 return LocalTransactionState.UNKNOW;
             }
+
             //事务补偿过程
             public LocalTransactionState checkLocalTransaction(MessageExt messageExt) {
                 System.out.println("事务补偿过程执行");
@@ -31,9 +32,9 @@ public class Producer {
         });
         producer.start();
 
-        Message msg = new Message("topic10",("事务消息：hello rocketmq transactionId").getBytes("UTF-8"));
-        TransactionSendResult result = producer.sendMessageInTransaction(msg,null);
-        System.out.println("返回结果："+result);
+        Message msg = new Message("topic10", ("事务消息：hello rocketmq transactionId").getBytes("UTF-8"));
+        TransactionSendResult result = producer.sendMessageInTransaction(msg, null);
+        System.out.println("返回结果：" + result);
         //事务补偿过程必须保障服务器在运行过程中，否则将无法进行正常的事务补偿
         //producer.shutdown();
     }
@@ -50,6 +51,7 @@ public class Producer {
                 //事务提交状态
                 return LocalTransactionState.COMMIT_MESSAGE;
             }
+
             //事务补偿过程
             public LocalTransactionState checkLocalTransaction(MessageExt messageExt) {
                 return null;
@@ -57,9 +59,9 @@ public class Producer {
         });
         producer.start();
 
-        Message msg = new Message("topic8",("事务消息：hello rocketmq ").getBytes("UTF-8"));
-        TransactionSendResult result = producer.sendMessageInTransaction(msg,null);
-        System.out.println("返回结果："+result);
+        Message msg = new Message("topic8", ("事务消息：hello rocketmq ").getBytes("UTF-8"));
+        TransactionSendResult result = producer.sendMessageInTransaction(msg, null);
+        System.out.println("返回结果：" + result);
         producer.shutdown();
     }
 
@@ -75,6 +77,7 @@ public class Producer {
                 //事务回滚状态
                 return LocalTransactionState.COMMIT_MESSAGE;
             }
+
             //事务补偿过程
             public LocalTransactionState checkLocalTransaction(MessageExt messageExt) {
                 return null;
@@ -82,9 +85,9 @@ public class Producer {
         });
         producer.start();
 
-        Message msg = new Message("topic9",("事务消息：hello rocketmq ").getBytes("UTF-8"));
-        TransactionSendResult result = producer.sendMessageInTransaction(msg,null);
-        System.out.println("返回结果："+result);
+        Message msg = new Message("topic9", ("事务消息：hello rocketmq ").getBytes("UTF-8"));
+        TransactionSendResult result = producer.sendMessageInTransaction(msg, null);
+        System.out.println("返回结果：" + result);
         producer.shutdown();
     }
 }

@@ -1,0 +1,22 @@
+server:
+  port: 8084
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+  application:
+    name: cloud-dubbo-consumer
+#dubbo消费者
+dubbo:
+  registry:
+    address: spring-cloud://localhost
+  consumer:
+    check: false
+    retries: 0
+logging:
+  level:
+    cn.itcast: debug
+  pattern:
+    dateformat: HH:mm:ss:SSS
+

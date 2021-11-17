@@ -1,0 +1,24 @@
+server:
+  port: 8004
+
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+  application:
+    name: cloud-dubbo-provider
+dubbo:
+  protocol:
+    name: dubbo
+    port: 20882
+  registry:
+    address: spring-cloud://localhost  #使用springcloud中注册中心的地址
+  scan:
+    base-packages: com.adolesce.cloud.provider.service
+
+logging:
+  level:
+    cn.itcast: debug
+  pattern:
+    dateformat: HH:mm:ss:SSS

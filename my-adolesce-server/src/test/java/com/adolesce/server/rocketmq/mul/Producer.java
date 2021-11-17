@@ -18,9 +18,9 @@ public class Producer {
         //创建一个集合保存多个消息
         List<Message> msgList = new ArrayList<Message>();
 
-        Message msg1 = new Message("topic5",("批量消息：hello rocketmq "+1).getBytes("UTF-8"));
-        Message msg2 = new Message("topic5",("批量消息：hello rocketmq "+2).getBytes("UTF-8"));
-        Message msg3 = new Message("topic5",("批量消息：hello rocketmq "+3).getBytes("UTF-8"));
+        Message msg1 = new Message("topic5", ("批量消息：hello rocketmq " + 1).getBytes("UTF-8"));
+        Message msg2 = new Message("topic5", ("批量消息：hello rocketmq " + 2).getBytes("UTF-8"));
+        Message msg3 = new Message("topic5", ("批量消息：hello rocketmq " + 3).getBytes("UTF-8"));
 
         msgList.add(msg1);
         msgList.add(msg2);

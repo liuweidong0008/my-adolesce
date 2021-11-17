@@ -1,9 +1,9 @@
 package com.adolesce.server.service.impl;
 
-import com.adolesce.common.bo.MpUser;
-import com.adolesce.common.sms.SmsService;
+import com.adolesce.autoconfig.template.SmsTemplate;
+import com.adolesce.cloud.dubbo.api.db.MpUserApi;
+import com.adolesce.cloud.dubbo.domain.db.MpUser;
 import com.adolesce.common.vo.Response;
-import com.adolesce.server.service.IMpUserService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwsHeader;
@@ -12,6 +12,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +29,11 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class UserService {
     @Autowired
-    private SmsService smsService;
+    private SmsTemplate smsTemplate;
     @Autowired
-    private RedisTemplate<String,String> redisTemplate;
-    @Autowired
-    private IMpUserService mpUserService;
+    private RedisTemplate<String, String> redisTemplate;
+    @DubboReference
+    private MpUserApi mpUserApi;
     @Autowired
     private RocketMQTemplate rocketMQTemplate;
 
@@ -41,18 +42,19 @@ public class UserService {
 
     /**
      * 发送登录短信验证码
+     *
      * @param phone 手机号
      */
     public Response sendCode(String phone) {
         String redisKey = "CHECK_CODE_" + phone;
         //先判断该手机号发送的验证码是否还未失效
-        if(this.redisTemplate.hasKey(redisKey)){
+        if (this.redisTemplate.hasKey(redisKey)) {
             return Response.failure("上一次发送的验证码还未失效！");
         }
         //发送短信验证码
         //String code = this.smsService.sendCode(phone);
         String code = "123456";
-        if(StringUtils.isEmpty(code)){
+        if (StringUtils.isEmpty(code)) {
             return Response.failure("发送短信验证码失败！");
         }
 
@@ -63,8 +65,9 @@ public class UserService {
 
     /**
      * 用户登录
+     *
      * @param phone 手机号
-     * @param code 手机验证码
+     * @param code  手机验证码
      * @return
      */
     public Response login(String phone, String code) {
@@ -83,7 +86,7 @@ public class UserService {
         QueryWrapper<MpUser> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("phone", phone);
 
-        MpUser user = this.mpUserService.getOne(queryWrapper);
+        MpUser user = this.mpUserApi.getOne(queryWrapper);
 
         if (null == user) {
             //需要注册该用户
@@ -91,7 +94,7 @@ public class UserService {
             user.setPhone(phone);
             user.setPassword(DigestUtils.md5Hex("123456"));
             //注册新用户
-            this.mpUserService.save(user);
+            this.mpUserApi.save(user);
             isNew = true;
         }
 
@@ -109,14 +112,14 @@ public class UserService {
                 .setHeader(header)  //header，可省略
                 .setClaims(claims) //payload，存放数据的位置，不能放置敏感数据，如：密码等
                 .signWith(SignatureAlgorithm.HS256, secret) //设置加密方法和加密盐
-                .signWith(SignatureAlgorithm.RS256, secret)
+                //.signWith(SignatureAlgorithm.RS256, secret)
                 .setExpiration(new DateTime().plusHours(12).toDate()) //设置过期时间，12小时后过期
                 //.setExpiration(new cn.hutool.core.date.DateTime().offset(DateField.HOUR, 12)) //设置过期时间，12小时后过期
                 .compact();
 
-        Map<String,Object> resultMap = new HashMap<>();
-        resultMap.put("token",token);
-        resultMap.put("isNew",isNew);
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("token", token);
+        resultMap.put("isNew", isNew);
         return Response.success(resultMap);
     }
 
@@ -138,12 +141,12 @@ public class UserService {
             //如果用户修改了手机号，需要同步修改redis中的数据
 
             String redisKey = "USER_PHONE_" + user.getId();
-            if(this.redisTemplate.hasKey(redisKey)){
+            if (this.redisTemplate.hasKey(redisKey)) {
                 String phone = this.redisTemplate.opsForValue().get(redisKey);
                 user.setPhone(phone);
-            }else {
+            } else {
                 //查询数据库
-                MpUser u = this.mpUserService.getById(user.getId());
+                MpUser u = this.mpUserApi.getById(user.getId());
                 user.setPhone(u.getPhone());
 
                 //将手机号写入到redis中
@@ -157,15 +160,15 @@ public class UserService {
             log.info("token已经过期！ token = " + token);
         } catch (Exception e) {
             response = Response.failure("token不合法！");
-            log.error("token不合法！ token = "+ token, e);
+            log.error("token不合法！ token = " + token, e);
         }
         return response;
     }
 
     public Response sendMqMsg() {
-        Map<String,String> map = new HashMap<>();
+        Map<String, String> map = new HashMap<>();
         String msg = "Hello RocketMQ!";
-        map.put("mymsg",msg);
+        map.put("mymsg", msg);
         this.rocketMQTemplate.convertAndSend("adolesce-topic", map);
         return Response.success();
     }

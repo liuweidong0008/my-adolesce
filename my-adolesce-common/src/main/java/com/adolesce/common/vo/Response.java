@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 
 /**
@@ -15,7 +16,7 @@ import java.io.UnsupportedEncodingException;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Response {
+public class Response implements Serializable {
     /**
      * 是否成功
      */

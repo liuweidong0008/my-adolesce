@@ -14,7 +14,7 @@ public class Producer {
         producer.start();
 
         //创建消息的时候除了制定topic，还可以指定tag
-        Message msg = new Message("topic6","tag1",("消息过滤按照tag：hello rocketmq 1").getBytes("UTF-8"));
+        Message msg = new Message("topic6", "tag1", ("消息过滤按照tag：hello rocketmq 1").getBytes("UTF-8"));
 
         SendResult send = producer.send(msg);
         System.out.println(send);

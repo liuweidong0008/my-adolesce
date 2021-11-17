@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.adolesce.cloud.db.mapper.MpUserMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="MpUserResultMap" type="com.adolesce.cloud.dubbo.domain.db.MpUser">
+        <id column="id" property="id"/>
+        <result column="user_name" property="userName"/>
+        <result column="password" property="password"/>
+        <result column="name" property="name"/>
+        <result column="age" property="age"/>
+        <result column="phone" property="phone"/>
+        <result column="birthday" property="birthday"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="card_no" property="cardNo"/>
+        <collection property="addresses" column="id" select="selectAddresses"/>
+    </resultMap>
+
+    <select id="selectAddresses" parameterType="map" resultMap="MpAddressResultMap">
+        select a.id as aid, a.province, a.city, a.area
+        from my_mp_address a
+        where a.userid = #{id}
+    </select>
+
+    <resultMap id="MpAddressResultMap" type="com.adolesce.cloud.dubbo.domain.db.MpAddress">
+        <id column="aid" property="id"/>
+        <result column="province" property="province"/>
+        <result column="city" property="city"/>
+        <result column="area" property="area"/>
+        <association property="user" javaType="com.adolesce.cloud.dubbo.domain.db.MpUser" resultMap="MpUserResultMap"/>
+    </resultMap>
+
+    <select id="selectMpUserByParams" parameterType="map" resultMap="MpUserResultMap">
+        select * from my_mp_user u
+        <where>
+            <if test="id !=null and id != '' ">
+                and u.id = #{id}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectMpAddressByParams" parameterType="map" resultMap="MpAddressResultMap">
+        select u.*,a.id as aid,a.province,a.city,a.area
+        from my_mp_address a left join my_mp_user u
+        on a.userid = u.id
+        <where>
+            <if test="id != null and id !='' ">
+                and a.id = #{id}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryByNameCustom" resultMap="MpUserResultMap">
+        SELECT `user`.*, record.card_no
+        FROM my_mp_user `user`
+                 INNER JOIN my_member_record record ON `user`.`name` = record.`client_name`
+        WHERE `user`.name LIKE CONCAT('%', #{name}, '%')
+        ORDER BY `record`.card_no
+    </select>
+
+</mapper>

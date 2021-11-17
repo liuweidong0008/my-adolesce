@@ -21,7 +21,7 @@ public class Run {
             File fileIn = new File("D://tanhua-question.txt");
             in = new BufferedReader(new FileReader(fileIn));
             String line = null;
-            TanhuaQuestion child = new TanhuaQuestion();
+            TanhuaQuestion child;
             TanhuaQuestion parent = new TanhuaQuestion();
             Integer count = 0;
 
@@ -60,7 +60,7 @@ public class Run {
         System.out.println(help.toString());
         if (scanner.hasNext()) {
             String ipt = scanner.next();
-            if (com.baomidou.mybatisplus.core.toolkit.StringUtils.isNotBlank(ipt)) {
+            if (StringUtils.isNotBlank(ipt)) {
                 return ipt;
             }
         }
@@ -76,7 +76,7 @@ public class Run {
             //获取主问题编号
             Integer no = getInteger(parentMap);
             //主问题已经获取完毕
-            if(Objects.isNull(no)){
+            if (Objects.isNull(no)) {
                 System.err.println("所有题库已被读取完毕~你觉得项目一自己有没有毕业?");
                 break;
             }
@@ -85,7 +85,7 @@ public class Run {
             //打印主问题
             System.err.println(parent.getQuestion());
             System.err.println("--------------------------------------");
-            while (true){
+            while (true) {
                 String result = scanner("是否继续此话题的相关问题?(Y/N)");
                 if (StringUtils.equalsIgnoreCase("Y", result)) {
                     //获取该主问题的子问题集合
@@ -95,12 +95,12 @@ public class Run {
                     //获取子问题编号
                     no = getInteger(childMap);
                     //子问题已经获取完毕
-                    if(Objects.isNull(no)){
+                    if (Objects.isNull(no)) {
                         System.err.println("该话题题库已被读取完毕~为您选取另一个话题：");
                         break;
                     }
                     System.err.println(childMap.get(no).getQuestion());
-                } else {
+                } else if (StringUtils.equalsIgnoreCase("N", result)) {
                     break;
                 }
             }
@@ -110,6 +110,7 @@ public class Run {
 
     /**
      * 随机获取问题编号
+     *
      * @param questionMap
      * @return
      */
@@ -119,11 +120,11 @@ public class Run {
         //随机获取问题编号
         Integer no = questionNoList.get((int) (Math.random() * (questionNoList.size())));
         //该问题集合是否已经被读取完
-        if(questionNos.containsAll(questionNoList)){
+        if (questionNos.containsAll(questionNoList)) {
             return null;
         }
         //循环获取问题编号，直至不重复
-        while(questionNos.contains(no)){
+        while (questionNos.contains(no)) {
             no = (int) (Math.random() * (questionMap.size()));
             no = questionNoList.get(no);
         }

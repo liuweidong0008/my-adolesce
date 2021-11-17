@@ -14,9 +14,9 @@ public class Producer {
         producer.setSendMsgTimeout(10000);
         producer.start();
         for (int i = 1; i <= 10; i++) {
-            Message msg = new Message("topic1",("生产者2： hello rocketmq "+i).getBytes("UTF-8"));
-            SendResult result = producer.send(msg,10000);
-            System.out.println("返回结果："+result);
+            Message msg = new Message("topic1", ("生产者2： hello rocketmq " + i).getBytes("UTF-8"));
+            SendResult result = producer.send(msg, 10000);
+            System.out.println("返回结果：" + result);
         }
         producer.shutdown();
     }
