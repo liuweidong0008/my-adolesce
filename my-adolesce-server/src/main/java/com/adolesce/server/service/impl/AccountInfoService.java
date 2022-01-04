@@ -7,7 +7,6 @@ import com.adolesce.common.vo.AccountChangeEvent;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.LocalTransactionState;
 import org.apache.rocketmq.client.producer.TransactionListener;
@@ -25,7 +24,7 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 @Service
 public class AccountInfoService {
-    @DubboReference
+    //@DubboReference
     private AccountInfoApi accountInfoApi;
 
     //初始化生产者

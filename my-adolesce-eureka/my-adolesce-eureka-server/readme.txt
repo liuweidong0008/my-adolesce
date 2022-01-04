@@ -50,6 +50,9 @@ Eureka服务端(注册中心)
               defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka-server/eureka # eureka服务端地址，将来客户端使用该地址和eureka进行通信
             register-with-eureka: false # 是否将自己的路径 注册到eureka上。eureka server 不需要的，eureka provider client 需要
             fetch-registry: false # 是否需要从eureka中抓取路径。eureka server 不需要的，eureka consumer client 需要
+          server:
+            enable-self-preservation: true # 开启自我保护机制，默认true
+            eviction-interval-timer-in-ms: 60000 # 检查服务、清理的时间间隔（单位是毫秒，默认是60*1000）
 
     5）、启动
 

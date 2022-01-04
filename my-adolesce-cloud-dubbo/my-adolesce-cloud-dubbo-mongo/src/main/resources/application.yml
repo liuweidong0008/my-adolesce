@@ -17,11 +17,11 @@ spring:
       discovery:
         server-addr: localhost:8848
   application:
-    name: cloud-dubbo-db
+    name: cloud-dubbo-mongo
 dubbo:
   protocol:
     name: dubbo
-    port: 20884
+    port: 20882
   registry:
     address: spring-cloud://localhost  #使用springcloud中注册中心的地址
   scan:

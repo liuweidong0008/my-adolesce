@@ -10,14 +10,14 @@ public class GitAutoOperation {
         BufferedReader in = null;
         BufferedWriter out = null;
         try {
-            File fileIn = new File("D:/heima/学生项目代码/57期git仓库地址.txt");
+            File fileIn = new File("D:/heima/学生项目代码/58期git仓库地址.txt");
             File fileOut = new File("D:/heima/学生项目代码/autogit.bat");
             in = new BufferedReader(new FileReader(fileIn));
             out = new BufferedWriter(new FileWriter(fileOut));
-            String line = null;
-            String[] arr = null;
-            String name = null;
-            String gitAddress = null;
+            String line;
+            String[] arr;
+            String name;
+            String gitAddress;
 
             writeContent(out, "@echo off\nd:\ncd \\heima\\学生项目代码\n");
             boolean isFirst = true;

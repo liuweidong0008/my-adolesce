@@ -7,10 +7,7 @@ import org.junit.Test;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -65,6 +62,15 @@ public class CollectionTest {
             user.setSex(1);
             users.add(user);
         }
+
+        Map<String,String> map = new HashMap<>();
+        map.keySet();
+        map.values();
+        map.entrySet();
+
+        map.forEach((k,v) -> System.out.println(k +":" +v));
+
+
         return users;
     }
 

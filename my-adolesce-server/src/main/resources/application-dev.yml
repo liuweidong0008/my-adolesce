@@ -1,10 +1,14 @@
 spring:
+  #Rabbitmq配置
   rabbitmq:
     host: 127.0.0.1
     port: 5672
     username: lwd
     password: lwd
-  redis:    #redis配置
+    publisher-confirm-type: correlated  #开启生产者确认机制
+    publisher-returns: true
+  #Redis配置
+  redis:
     database: 0      #数据库索引（默认为0）
     host: 127.0.0.1  #服务器地址
     port: 6379       #服务器连接端口(默认)
@@ -17,74 +21,64 @@ spring:
         max-idle: 100         #连接池中的最大空闲连接 默认 8
         min-idle: 0           #连接池中的最小空闲连接 默认 0
   cloud:
-    consul:    #consul注册中心配置
+    #Consul注册中心配置
+    consul:
       host: localhost #consul 服务端的 ip
       port: 8500    #consul 服务端的端口 默认8500
       discovery:
         service-name: ${spring.application.name} # 当前应用注册到consul的名称
         prefer-ip-address: true # 是否以ip形式注册
-    nacos:    #nacos注册中心配置
+    #Nacos注册中心配置
+    nacos:
       discovery:
         server-addr: 127.0.0.1:8848 # 配置nacos 服务端地址
+        cluster-name: HZ # 集群名称（Nacos分级存储模型 服务->集群->实例，同级群优先，集群内随机，同级群都挂了再访问别的集群，但会报警告）
+#结合Nacos注册中心的Dubbo配置
 dubbo:
   registry:
     address: spring-cloud://localhost  #使用springcloud中注册中心的地址
   consumer:
     check: false
-rocketmq:   # RocketMQ相关配置
+#RocketMQ相关配置
+rocketmq:
   name-server: 127.0.0.1:9876
   producer:
     group: adolesce-group
     send-message-timeout: 50000  #消息发送超时时长
-jwt:
-  secret: 76bd425b6f29f7fcc2e0bfc286043df1
-#eureka相关配置
+#Eureka客户端相关配置
 eureka:
   instance:
     hostname: localhost # 主机名
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka-server/eureka # eureka服务端地址，将来客户端使用该地址和eureka进行通信
-      #defaultZone: http://eureka-server:8761/eureka-server/eureka,http://eureka-server2:8762/eureka-server2/eureka
-
-sms:
-  huyi:
-    url: http://106.ihuyi.com/webservice/sms.php?method=Submit
-    account: C61078084
-    password: d9f159954e1f35921dd3abc483a493ae
-  yimei:
-    singleUrl: http://shmtn.b2m.cn/inter/sendSingleSMS
-    batchUrl: http://shmtn.b2m.cn/inter/sendBatchOnlySMS
-    appId: EUCP-EMY-SMS1-391UA
-    secretKey: 759B0349B84719D4
-    signName: 【美团】
-
-#    appId: EUCP-EMY-SMS1-1IOG0
-#    secretKey: 366FC3E3AC0F03CE
-#    signName: 【饿了么】
-
+      #defaultZone: http://eureka-server:8761/eureka-server/eureka,http://eureka-server2:8762/eureka-server2/eureka  #eureka注册中心集群模式
 
 #通过配置的方式设置Ribbon的负载均衡策略（为某个服务单独进行ribbon参数设置）
 #EUREKA-PROVIDER:  #为哪个服务设置负载均衡策略（服务应用名称）
 #  ribbon:
-#    NFloadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule  #指定策略类
+#    NFloadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule  #指定负载均衡策略类
 
 # 设置Feign 的超时时间
 ribbon: #全局ribbon的参数设置
   ConnectTimeout: 1000 # 连接超时时间 默认1s
-  ReadTimeout: 3000 # 逻辑处理的超时时间,即通信超时时间 默认1s
+  ReadTimeout: 2000 # 逻辑处理的超时时间,即通信超时时间 默认1s
   MaxAutoRetries: 1 #同一台实例最大重试次数,不包括首次调用
   MaxAutoRetriesNextServer: 2 #重试负载均衡其他的实例最大重试次数,不包括首次调用
+  eager-load:  #为某个服务开启饥饿加载（在项目启动时就会初始化LoadBalancer，默认是懒加载，即第一次访问时才会去创建LoadBalanceClient，请求时间会很长）
+    enabled: true
+    clients:
+      - nacos-provider
 
-    # OkToRetryOnAllOperations: false  #是否所有操作都重试（如果是get还可以，如果是post,put等操作没有实现幂等的情况下是很危险的，所以设置为false）
-    #注意：
-    #1、ribbon默认重试次数为1次，一共调用服务2次，如果还未成功则抛出异常，如果开启了feign对hystrix（feign.hystrix.enabled = true）支持，
-    # 且未设置Hystrix超时时间则超时时间默认1秒，1秒后直接服务降级不进行重试，一共调用服务1次
-    #2、如果配置了MaxAutoRetries和MaxAutoRetriesNextServer属性，则次数为（MaxAutoRetries+1）*（MaxAutoRetriesNextServer+1）,
-  # 重试次数全部完成后抛Read timed out异常 等同(1 + MaxAutoRetries+MaxAutoRetriesNextServer+(MaxAutoRetries *MaxAutoRetriesNextServer)
-  #3、在上面基础上如果开启了feign对hystrix的支持，则重试过程中到达Hystrix超时时间直接进入服务降级，后台继续重试（没有意义了），重试次数全部跑完后抛出Read timed out异常
-  #4、Feign默认支持Ribbon；Ribbon的重试机制和Feign的重试机制有冲突，所以源码中默认关闭Feign的重试机制,使用Ribbon的重试机制
-  #5、默认情况下,GET方式请求无论是连接异常还是读取异常,都会进行重试，非GET方式请求,只有连接异常时,才会进行重试
+# OkToRetryOnAllOperations: false  #是否所有操作都重试（如果是get还可以，如果是post,put等操作没有实现幂等的情况下是很危险的，所以设置为false）
+#注意：
+#1、ribbon默认重试次数为1次，一共调用服务2次，如果还未成功则抛出异常，如果开启了feign对hystrix（feign.hystrix.enabled = true）支持，
+# 且未设置Hystrix超时时间则超时时间默认1秒，1秒后直接服务降级不进行重试，一共调用服务1次
+#2、如果配置了MaxAutoRetries和MaxAutoRetriesNextServer属性，则次数为（MaxAutoRetries+1）*（MaxAutoRetriesNextServer+1）,
+# 重试次数全部完成后抛Read timed out异常 等同(1 + MaxAutoRetries+MaxAutoRetriesNextServer+(MaxAutoRetries * MaxAutoRetriesNextServer)
+#3、在上面基础上如果开启了feign对hystrix的支持，则重试过程中到达Hystrix超时时间直接进入服务降级，后台继续重试（没有意义了），重试次数全部跑完后抛出Read timed out异常
+#4、Feign默认支持Ribbon；Ribbon的重试机制和Feign的重试机制有冲突，所以源码中默认关闭Feign的重试机制,使用Ribbon的重试机制
+#5、默认情况下,GET方式请求无论是连接异常还是读取异常,都会进行重试，非GET方式请求,只有连接异常时,才会进行重试
 
 # 设置当前的日志级别为 debug，feign只支持记录debug级别的日志
 logging:
@@ -97,6 +91,10 @@ logging:
 feign:
   hystrix:
     enabled: true
+  client:
+    config:
+      default: #这里用default就是全局配置，如果是写服务名称，则是针对某个微服务的配置
+        loggerLevel: Full #日志级别（第二种配置方式，第一种是通过代码配置）
 
 # 设置Hystrix超时时间（到达该时间服务提供方仍未响应，则走服务降级逻辑）【合理的时间应该设置为 重试次数*ribbon.ReadTimeout，以保证ribbon重试次数都能够执行完】
 hystrix:
@@ -106,3 +104,21 @@ hystrix:
         isolation:
           thread:
             timeoutInMilliseconds: 7000
+
+sms:
+  huyi:
+    url: http://106.ihuyi.com/webservice/sms.php?method=Submit
+    account: C61078084
+    password: d9f159954e1f35921dd3abc483a493ae
+  yimei:
+    singleUrl: http://shmtn.b2m.cn/inter/sendSingleSMS
+    batchUrl: http://shmtn.b2m.cn/inter/sendBatchOnlySMS
+    appId: EUCP-EMY-SMS1-391UA
+    secretKey: 759B0349B84719D4
+    signName: 【美团】
+#    appId: EUCP-EMY-SMS1-1IOG0
+#    secretKey: 366FC3E3AC0F03CE
+#    signName: 【饿了么】
+
+jwt:
+  secret: 76bd425b6f29f7fcc2e0bfc286043df1

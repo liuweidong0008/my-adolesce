@@ -32,9 +32,8 @@ Nacos 注册中心服务提供方
 
 
 Nacos（Dynamic Naming and Configuration Service） 是阿里巴巴2018年7月开源的项目。
-• 它专注于服务发现和配置管理领域 致力于帮助您发现、配置和管理微服务。Nacos 支持几乎所有主流类型的“服
-务”的发现、配置和管理。
-• 一句话概括就是**Nacos = Spring Cloud注册中心 + Spring Cloud配置中心。**
+• 它专注于服务发现和配置管理领域 致力于帮助您发现、配置和管理微服务。Nacos 支持几乎所有主流类型的“服务”的发现、配置和管理。
+• 一句话概括就是 Nacos = Spring Cloud注册中心 + Spring Cloud配置中心。
 • 官网：https://nacos.io/
 • 下载地址： https://github.com/alibaba/nacos/releases
 • 使用：下载、解压、启动（点击 startup.cmd  高版本启动命令：startup.cmd -m standalone）

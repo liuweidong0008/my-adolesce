@@ -12,9 +12,10 @@ import javax.servlet.http.HttpServletRequest;
  * 全局异常处理
  */
 @Slf4j
+//@RestControllerAdvice
 @ControllerAdvice
+@ResponseBody
 public class GlobalExceptionHandler {
-    @ResponseBody
     @ExceptionHandler(value = BusinessException.class)
     public Object errorHandler(BusinessException ex, HttpServletRequest request) {
         Object jsonMap = request.getAttribute("resultData");

@@ -20,7 +20,7 @@ import java.util.stream.Stream;
  * 7、Stream数据源 ：流的来源。可以是集合，数组，I/O channel，产生器generator等。
  * 8、特点：
  *      1). 不是数据结构，不会保存数据。
- *      2). 不会修改原来的数据源，它会将操作后的数据保存到另外一个对象中。（保留意见：毕竟peek方法可以修改流中元素）
+ *      2). 不会修改原来的数据源，它会将操作后的数据保存到另外一个对象中。
  *      3). 惰性求值，流在中间处理过程中，只是对操作进行了记录，并不会立即执行，需要等到执行终止操作的时候才会进行实际的计算。
  * 参考：https://www.runoob.com/java/java8-streams.html
  */
@@ -143,8 +143,9 @@ public class StreamAndOptionalTest {
         myUsers.stream().sorted((s1, s2) -> s2.getAge().compareTo(s1.getAge())).forEach(System.out::println);
         System.out.println("--------------------------------");
 
-        //7、peek 接受Consumer，改变值
+        //7、peek 接受Consumer，修改其中属性的值，返回新的集合
         myUsers.stream().peek(user -> user.setAge(50)).forEach(System.err::println);
+        //myUsers.forEach(System.err::println);
     }
 
     /**
@@ -270,6 +271,58 @@ public class StreamAndOptionalTest {
         //按是否符合条件（true|false）进行分组
         Map<Boolean, List<User>> kvb = users.stream().collect(Collectors.partitioningBy(user -> user.getAge() > 10));
         kvb.forEach((k, v) -> System.err.println(k + ":" + v));
+    }
+
+    /**
+     * 求集合交集、并集、差集
+     */
+    @Test
+    public void testCollection(){
+           /*一般有filter 操作时，不用并行流parallelStream ,如果用的话可能会导致线程安全问题
+　　     判断对象要重写hash*/
+
+        List<String> list1 = new ArrayList();
+        list1.add("1111");
+        list1.add("2222");
+        list1.add("3333");
+
+        List<String> list2 = new ArrayList();
+        list2.add("3333");
+        list2.add("4444");
+        list2.add("5555");
+
+
+        // 交集
+        List<String> intersection = list1.stream().filter(item -> list2.contains(item)).collect(Collectors.toList());
+        System.out.println("---得到交集 intersection---");
+        intersection.parallelStream().forEach(System.out::println);
+
+        // 差集 (list1 - list2)
+        List<String> reduce1 = list1.stream().filter(item -> !list2.contains(item)).collect(Collectors.toList());
+        System.out.println("---得到差集 reduce1 (list1 - list2)---");
+        reduce1.parallelStream().forEach(System.out::println);
+
+        // 差集 (list2 - list1)
+        List<String> reduce2 = list2.stream().filter(item -> !list1.contains(item)).collect(Collectors.toList());
+        System.out.println("---得到差集 reduce2 (list2 - list1)---");
+        reduce2.parallelStream().forEach(System.out::println);
+
+        // 并集
+        List<String> listAll = list1.parallelStream().collect(Collectors.toList());
+        List<String> listAll2 = list2.parallelStream().collect(Collectors.toList());
+        listAll.addAll(listAll2);
+        System.out.println("---得到并集 listAll---");
+        listAll.parallelStream().forEach(System.out::println);
+
+        // 去重并集
+        List<String> listAllDistinct = listAll.stream().distinct().collect(Collectors.toList());
+        System.out.println("---得到去重并集 listAllDistinct---");
+        listAllDistinct.parallelStream().forEach(System.out::println);
+
+        System.out.println("---原来的List1---");
+        list1.parallelStream().forEach(System.out::println);
+        System.out.println("---原来的List2---");
+        list2.parallelStream().forEach(System.out::println);
     }
 
     /**

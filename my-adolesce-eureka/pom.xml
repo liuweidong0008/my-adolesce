@@ -16,6 +16,7 @@
         <module>my-adolesce-eureka-server</module>
         <module>my-adolesce-eureka-server2</module>
         <module>my-adolesce-hystrix-monitor</module>
+        <module>my-adolesce-eureka-consumer</module>
     </modules>
 
     <properties>

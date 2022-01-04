@@ -13,6 +13,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>my-adolesce-nacos-provider</module>
+        <module>my-adolesce-nacos-consumer</module>
     </modules>
 
     <properties>

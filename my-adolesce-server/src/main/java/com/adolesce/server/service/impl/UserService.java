@@ -12,7 +12,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +31,7 @@ public class UserService {
     private SmsTemplate smsTemplate;
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
-    @DubboReference
+    //@DubboReference
     private MpUserApi mpUserApi;
     @Autowired
     private RocketMQTemplate rocketMQTemplate;

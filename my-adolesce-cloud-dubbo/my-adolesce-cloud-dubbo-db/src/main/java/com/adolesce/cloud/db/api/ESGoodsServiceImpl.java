@@ -1,9 +1,9 @@
 package com.adolesce.cloud.db.api;
 
 
-import com.adolesce.cloud.db.mapper.MyGoodsMapper;
-import com.adolesce.cloud.dubbo.api.db.MyGoodsApi;
-import com.adolesce.cloud.dubbo.domain.db.MyGoods;
+import com.adolesce.cloud.db.mapper.ESGoodsMapper;
+import com.adolesce.cloud.dubbo.api.db.ESGoodsApi;
+import com.adolesce.cloud.dubbo.domain.db.ESGoods;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +19,13 @@ import java.util.List;
  * @since 2021-05-18
  */
 @DubboService
-public class MyGoodsServiceImpl implements MyGoodsApi {
+public class ESGoodsServiceImpl implements ESGoodsApi {
     @Autowired
-    private MyGoodsMapper myGoodsMapper;
+    private ESGoodsMapper myGoodsMapper;
 
     @Override
-    public List<MyGoods> selectList(QueryWrapper queryWrapper) {
+    public List<ESGoods> selectList() {
+        QueryWrapper queryWrapper = new QueryWrapper();
         return myGoodsMapper.selectList(queryWrapper);
     }
 }

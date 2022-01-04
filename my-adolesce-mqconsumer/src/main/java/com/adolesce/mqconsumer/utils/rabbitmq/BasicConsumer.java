@@ -3,6 +3,8 @@ package com.adolesce.mqconsumer.utils.rabbitmq;
 import com.rabbitmq.client.*;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 基础消费端
@@ -21,8 +23,17 @@ public abstract class BasicConsumer extends MqConsumer {
 	public void receive(String queue, boolean isDurable,final boolean isAck, int prefetchCount) throws Exception {
 		Connection connection = cf.newConnection();
 		final Channel channel = connection.createChannel();
-		channel.queueDeclare(queue, isDurable, false, false, null);
-		//负载均衡参数：指定mq一次推给消费者多少条消息，如果不知道，将一次性平均分给所有消费者
+		//指定死信发送的Exchange
+		Map<String, Object> agruments = new HashMap<String, Object>();
+		agruments.put("x-dead-letter-exchange", "dlx.exchange");
+		channel.queueDeclare(queue, isDurable, false, false, agruments);
+
+		//要进行死信交换机和死信队列的声明
+		channel.exchangeDeclare("dlx.exchange", "topic", true, false, null);
+		channel.queueDeclare("dlx.queue", true, false, false, null);
+		channel.queueBind("dlx.queue", "dlx.exchange", "#");
+
+		//负载均衡参数：指定mq一次推给消费者多少条消息，如果不指定，将一次性平均分给所有消费者
 		channel.basicQos(prefetchCount);
 		Consumer consumer = new DefaultConsumer(channel) {
 			/*回调方法，当收到消息后，会自动执行该方法

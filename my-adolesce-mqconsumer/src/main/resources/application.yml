@@ -13,6 +13,16 @@ spring:
     port: 5672
     username: lwd
     password: lwd
+    listener:
+      direct:
+        acknowledge-mode: manual
+      simple:
+        prefetch: 1   #负载均衡参数，一次接收一条消息
+        acknowledge-mode: manual   # 消息开启手动确认
+        # 是否支持重试
+        retry:
+          enabled: true
+
   cloud:
     nacos: #nacos注册中心配置
       discovery:

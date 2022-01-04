@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
 
@@ -16,8 +17,8 @@ import java.util.Map;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("goods")
-public class MyGoods {
+@TableName("es_goods")
+public class ESGoods implements Serializable {
     private Integer id;
     private String title; //商品标题
     private double price; //商品价格

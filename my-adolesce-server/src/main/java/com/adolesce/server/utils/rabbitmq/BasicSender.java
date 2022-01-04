@@ -5,6 +5,8 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.MessageProperties;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -37,7 +39,16 @@ public class BasicSender extends MqSender {
 		4). autoDelete:是否自动删除。当没有Consumer时，自动删除掉
 		5). arguments：参数。
 		*/
-		channel.queueDeclare(queue, isDurable, false, false, null);
+		//指定死信发送的Exchange
+		Map<String, Object> agruments = new HashMap<String, Object>();
+		agruments.put("x-dead-letter-exchange", "dlx.exchange");
+		channel.queueDeclare(queue, isDurable, false, false, agruments);
+
+		//要进行死信交换机和死信队列的声明
+		channel.exchangeDeclare("dlx.exchange", "topic", true, false, null);
+		channel.queueDeclare("dlx.queue", true, false, false, null);
+		channel.queueBind("dlx.queue", "dlx.exchange", "#");
+
 
 		/*
 		发送消息

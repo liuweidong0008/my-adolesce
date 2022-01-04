@@ -46,6 +46,7 @@ public class GlobalCacheAopAround {
     public void doAspect() {
     }
 
+    //  @Around(value = "execution(* com.tanhua.server.service.*.*(..)) && @annotation(config)")
     //环绕通知
     @Around("doAspect() && @annotation(cache)")
     public Object around(ProceedingJoinPoint joinPoint, Cache cache) {

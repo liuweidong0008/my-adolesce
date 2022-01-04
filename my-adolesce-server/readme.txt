@@ -91,7 +91,6 @@ Nacos 注册中心服务提供方
          port: 8081  #自定义监听端口,默认8080
          servlet:
            context-path: /my_adolesce #配置项目名
-
        spring:
          cloud:
            nacos:

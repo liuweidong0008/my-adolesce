@@ -1,0 +1,43 @@
+server:
+  port: 8003  #自定义监听端口,默认8002
+  servlet:
+    context-path: /eureka-consumer #配置项目名
+
+spring:
+  application:
+    name: eureka-consumer # 设置当前应用的名称。将来会在eureka中Application显示。将来需要使用该名称来获取路径
+
+eureka:
+  instance:
+    hostname: localhost # 主机名
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka-server/eureka # eureka服务端地址，将来客户端使用该地址和eureka进行通信（默认就是该地址，多个可用，分隔）
+      #defaultZone: http://eureka-server:8761/eureka-server/eureka,http://eureka-server2:8762/eureka-server2/eureka  #eureka注册中心集群模式
+
+#EUREKA-PROVIDER: #为哪个服务设置负载均衡策略（服务应用名称）
+#  ribbon:
+#    NFloadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule  #指定负载均衡策略类
+
+ribbon:
+  #feign也有超时和重试机制，但是被禁用了，用的是ribbon的（默认1s，重试1次）
+  ConnectTimeout: 1000 # 连接超时时间 默认1s
+  ReadTimeout: 2000 # 逻辑处理的超时时间,即通信超时时间 默认1s
+  #为某些服务开启饥饿加载（在项目启动时就会初始化LoadBalancer，默认是懒加载，即第一次访问时才会去创建LoadBalanceClient，请求时间会很长）
+  eager-load:
+    enabled: true
+    clients:
+      - eureka-provider
+
+# 设置当前的日志级别为 debug，feign只支持记录debug级别的日志
+logging:
+  level:
+    com.adolesce: debug
+  pattern:
+    dateformat: HH:mm:ss:SSS
+
+#feign:
+#  client:
+#    config:
+#      default: # default是针对全局服务，也可配置针对某个微服务
+#        loggerLevel: FULL #  日志级别

@@ -44,7 +44,7 @@ spring:
 dubbo:
   protocol:
     name: dubbo
-    port: 20883
+    port: 20881
   registry:
     address: spring-cloud://localhost  #使用springcloud中注册中心的地址
   scan:
@@ -62,6 +62,7 @@ mybatis-plus:
   configuration:
     # 日志
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
   # mapper映射文件路径（要么不写【有默认的路径】，要么必须写对，否则报Invalid bound statement (not found)错误）
   mapper-locations: classpath:mapper/*Mapper.xml
   # 实体所在位置（可以不写，有默认路径）
@@ -73,3 +74,10 @@ pagehelper:
   reasonable: true
   supportMethodsArguments: true
   params: count=countSql
+
+#日志
+logging:
+  level:
+    cn.itcast: debug
+  pattern:
+    dateformat: HH:mm:ss:SSS

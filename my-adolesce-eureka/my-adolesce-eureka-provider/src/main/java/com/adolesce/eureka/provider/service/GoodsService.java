@@ -10,10 +10,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class GoodsService {
-
     @Autowired
     private GoodsDao goodsDao;
-
     /**
      * 根据id查询
      *

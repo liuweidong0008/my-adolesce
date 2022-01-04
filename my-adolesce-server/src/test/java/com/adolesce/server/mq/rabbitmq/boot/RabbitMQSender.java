@@ -1,8 +1,11 @@
 package com.adolesce.server.mq.rabbitmq.boot;
 
+import cn.hutool.core.lang.UUID;
 import com.adolesce.common.entity.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.amqp.core.MessageDeliveryMode;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,14 +35,23 @@ public class RabbitMQSender {
      * 工作模式：发送多条消息，消费者均匀平摊消费消息
      */
     @Test
-    public void sendObjectsToWorkQueue() {
+    public void sendObjectsToWorkQueue(){
         User user;
         for (int i = 1; i <= 10; i++) {
             user = new User();
-            user.setUserName("张三"+i);
+            String uuid = UUID.randomUUID().toString();
+            user.setSeriNo(uuid);
+            user.setUserName("张三" + i);
             user.setSex(1);
             user.setIsOld(false);
-            this.rabbitTemplate.convertAndSend("boot-work-queue", user);
+            //发送的消息中携带CorrelationData（消息唯一标识），如果发送消息确认失败，方便排查Bug
+            this.rabbitTemplate.convertAndSend("boot-work-queue", user, message -> {
+                //设置该条消息持久化
+                message.getMessageProperties().setDeliveryMode(MessageDeliveryMode.PERSISTENT);
+                return message;
+
+            }, new CorrelationData(uuid));
+
             System.err.println("Sender : " + user);
         }
     }
@@ -85,6 +97,8 @@ public class RabbitMQSender {
         user.setSex(1);
         user.setIsOld(false);
         System.err.println("Sender : " + user);
-        this.rabbitTemplate.convertAndSend("boot-log-topic-exchange2", "audit.b.c.d", user);
+        this.rabbitTemplate.convertAndSend("boot-log-topic-exchange2", "abc", user);
+        //this.rabbitTemplate.convertSendAndReceive("boot-log-topic-exchange2", "audit.b.c.d", user);
+        //convertSendAndReceive：使用此方法，只有确定消费者接收到消息，才会发送下一条信息，每条消息之间会有间隔时间
     }
 }

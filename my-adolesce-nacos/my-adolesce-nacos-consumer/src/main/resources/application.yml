@@ -1,0 +1,20 @@
+server:
+  port: 9001
+  servlet:
+    context-path: /nacos-consumer #配置项目名
+
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848 # 配置nacos 服务端地址
+        cluster-name: HZ # 集群名称（Nacos分级存储模型，同级群优先，集群内随机，同级群都挂了再访问别的集群，但会报警告）
+  application:
+    name: nacos-consumer # 服务名称
+
+#为某个服务开启饥饿加载（在项目启动时就会初始化LoadBalancer，默认是懒加载，即第一次访问时才会去创建LoadBalanceClient，请求时间会很长）
+ribbon:
+  eager-load:
+    enabled: true
+    clients:
+      - nacos-provider

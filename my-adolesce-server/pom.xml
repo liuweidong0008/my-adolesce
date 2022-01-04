@@ -29,6 +29,16 @@
             <groupId>com.boot.adolesce</groupId>
             <artifactId>my-adolesce-cloud-dubbo-interface</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <exclusions>
+                <!--<exclusion>
+                    <groupId>com.alibaba.cloud</groupId>
+                    <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+                </exclusion>-->
+                <exclusion>
+                    <groupId>com.alibaba.cloud</groupId>
+                    <artifactId>spring-cloud-starter-dubbo</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Spring Boot的核心启动器 ，包括自动配置支持、日志和YAML；如果引入了 spring-boot-starter-web web 模块可以去掉此配置，
@@ -81,7 +91,7 @@
         </dependency>-->
 
         <!--nacos客户端-->
-     <!--   <dependency>
+        <!--<dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
         </dependency>-->
@@ -92,7 +102,7 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
-        <!--feign-->
+        <!--feign 声明式远程调用-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>

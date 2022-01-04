@@ -7,15 +7,25 @@ spring:
       discovery:
         server-addr: localhost:8848
   application:
-    name: cloud-dubbo-db
+    name: cloud-dubbo-es
 dubbo:
   protocol:
     name: dubbo
-    port: 20884
+    port: 20883
   registry:
     address: spring-cloud://localhost  #使用springcloud中注册中心的地址
   scan:
-    base-packages: com.adolesce.cloud.es
+    base-packages: com.adolesce.cloud.es.api
+  consumer:
+    check: false
+    retries: 0
+
+#日志
+logging:
+  level:
+    cn.itcast: debug
+  pattern:
+    dateformat: HH:mm:ss:SSS
 
 # ES相关配置
 elasticsearch:

@@ -20,8 +20,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User implements Serializable {
-    //@Id
     private Long id;
+    private String seriNo;
     private String userName; //用戶名
     private Integer age; //年龄
     private Address address; //地址

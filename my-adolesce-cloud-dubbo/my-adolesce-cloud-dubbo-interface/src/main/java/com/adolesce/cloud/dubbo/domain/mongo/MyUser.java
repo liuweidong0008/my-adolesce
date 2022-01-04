@@ -15,7 +15,7 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "my_user" /*+ "_{num}"*/)
+@Document(collection = "my_user"/* + "_{num}"*/)
 public class MyUser implements java.io.Serializable {
     private static final long serialVersionUID = -291788258125767614L;
     @Id

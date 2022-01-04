@@ -26,7 +26,6 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -79,18 +78,19 @@ public class MongoDBTest {
      */
     @Test
     public void testSaveMyUser() {
-       /* MyUser myUser = new MyUser();
+        MyUser myUser = new MyUser();
         myUser.setId(ObjectId.get());
         myUser.setUserId(ObjectId.get());
-        myUser.setUserName("关羽");
+        myUser.setUserName("关羽666");
         myUser.setSex(1);
-        myUser.setAge(20);
+        myUser.setAge(30);
         myUser.setAddress(new Address("长沙市", "天心区"));
-        this.mongoTemplate.save(myUser);*/
+        myUser.setCreateDate(new Date());
+        this.mongoTemplate.save(myUser);
         //动态指定集合名称（MyUser类上注解中注释的代码@Document要放开）
         //this.mongoTemplate.save(myUser,"my_user_" + 1);
 
-        MyUser myUser;
+/*        MyUser myUser;
         List<MyUser> userList = new ArrayList<>();
         for (int i = 0; i < 1; i++) {
             myUser = new MyUser();
@@ -102,9 +102,8 @@ public class MongoDBTest {
             myUser.setAddress(new Address("长沙市", "天心区"));
             userList.add(myUser);
         }
-        this.mongoTemplate.insert(userList, MyUser.class);
+        this.mongoTemplate.insert(userList, MyUser.class);*/
         //this.mongoTemplate.insertAll(userList);
-        //this.mongoTemplate.insertAll();
     }
 
     /**
@@ -136,7 +135,7 @@ public class MongoDBTest {
     @Test
     public void testUpdateMyUser() {
 
-        ////update table set age = 41，sex = 2, isOld = true where user_name = '刘威东'
+        //update table set age = 41，sex = 2, isOld = true where user_name = '刘威东'
         Query query = Query.query(Criteria.where("address.city").is("武汉市"));
         Update update = Update.update("age", 12).set("sex", 1)
                 .inc("funCount", 1)
@@ -224,10 +223,10 @@ public class MongoDBTest {
      */
     @Test
     public void testQueryMyUsersByName() throws ParseException {
-        Query query = Query.query(Criteria.where("userName").is("刘威东")
-                .and("age").is(88)
+        Query query = Query.query(Criteria.where("userName").is("关羽666"));
+               /* .and("age").is(88)
                 .and("userId").is(new ObjectId("6117b8dee1243116385b54a6")))
-                .with(Sort.by(Sort.Order.desc("age"))).limit(1);
+                .with(Sort.by(Sort.Order.desc("age"))).limit(1);*/
 
         List<MyUser> users = this.mongoTemplate.find(query, MyUser.class);
         System.err.println(users);

@@ -45,5 +45,6 @@ public class Child extends Parent {
 
     public static void main(String[] args) {
         Child test = new Child();
+        Child test1 = new Child();
     }
 }

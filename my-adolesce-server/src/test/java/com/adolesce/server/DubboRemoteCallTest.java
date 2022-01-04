@@ -2,7 +2,7 @@ package com.adolesce.server;
 
 import com.adolesce.cloud.dubbo.api.db.MpUserApi;
 import com.adolesce.cloud.dubbo.domain.db.MpUser;
-import org.apache.dubbo.config.annotation.DubboReference;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,14 +13,13 @@ import java.util.List;
 /**
  * @author Administrator
  * @version 1.0
- * @description: TODO
- * @date 2021/9/6 0:13
- */
+ * @description: Dubbo远程调用测试
+ * @date 2021/9/6 */
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class DBTest {
-    @DubboReference
+public class DubboRemoteCallTest {
+    //@DubboReference
     private MpUserApi mpUserApi;
 
     @Test
@@ -29,6 +28,9 @@ public class DBTest {
         MpUser user = mpUserApi.getById(1L);
         System.err.println(users);
         System.err.println(user);
+
+        QueryWrapper queryWrapper = new QueryWrapper();
+        mpUserApi.list(queryWrapper);
     }
 
 }

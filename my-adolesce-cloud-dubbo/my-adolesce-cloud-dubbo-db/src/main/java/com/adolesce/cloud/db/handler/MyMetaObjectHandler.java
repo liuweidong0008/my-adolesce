@@ -17,6 +17,7 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
         Object created = getFieldValByName("createTime", metaObject);
         if (null == created) {
             //字段为空，可以进行填充
+            //metaObject.setValue("createTime",LocalDateTime.now());
             setFieldValByName("createTime", LocalDateTime.now(), metaObject);
         }
 

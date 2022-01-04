@@ -47,7 +47,7 @@ public class RequestStyleController {
      *       @RequestParam(value = "userName", required = false, defaultValue = "World")
      */
     @RequestMapping("test2")
-    public String requestTest2(@RequestParam String userName,
+        public String requestTest2(@RequestParam String userName,
                                @RequestParam(value = "age", required = false) Integer age1,
                                String age) {
         System.out.println("userName:" + userName + ",age1:" + age1 + "age" + age);
@@ -109,7 +109,6 @@ public class RequestStyleController {
         System.out.println(JSON.toJSONString(user));
         return JSON.toJSONString(user);
     }
-
 
     /**
      * 接参方式7：将参数放在请求体以JSON格式进行传参，使用Map进行接参并标注@RequestBody注解

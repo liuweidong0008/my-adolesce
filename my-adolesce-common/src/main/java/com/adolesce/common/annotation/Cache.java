@@ -24,5 +24,4 @@ public @interface Cache {
      * 所属组（支持EL表达式）
      */
     String group() default "";
-
 }

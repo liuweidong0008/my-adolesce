@@ -18,14 +18,14 @@ import java.util.Collections;
  */
 @Configuration
 public class RestTemplateConfig {
-    public static RestTemplate TEMPLATE = null;
+    public static RestTemplate TEMPLATE;
 
     static {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         //单位为ms
-        factory.setReadTimeout(15000);
+        factory.setReadTimeout(5000);
         //单位为ms
-        factory.setConnectTimeout(15000);
+        factory.setConnectTimeout(5000);
         //创建RestTemplate对象
         TEMPLATE = new RestTemplate(factory);
         // 支持中文编码
@@ -40,7 +40,6 @@ public class RestTemplateConfig {
                 return execution.execute(request, body);
             }
         }));
-
     }
 
     @Bean

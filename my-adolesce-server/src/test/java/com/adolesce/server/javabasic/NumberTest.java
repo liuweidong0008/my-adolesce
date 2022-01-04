@@ -101,4 +101,12 @@ public class NumberTest {
     public void testRandomUtil() {
         System.out.println(RandomStringUtils.randomNumeric(6));
     }
+
+
+    @Test
+    public void test1(){
+        Object a = new Integer(3);
+        Long b = Long.valueOf(a.toString());
+        System.out.println(b);
+    }
 }

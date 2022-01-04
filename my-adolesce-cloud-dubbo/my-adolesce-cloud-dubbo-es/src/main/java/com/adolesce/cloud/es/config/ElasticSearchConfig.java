@@ -21,8 +21,10 @@ public class ElasticSearchConfig {
                 new HttpHost(
                         host,
                         port,
-                        "http"
+                        "http"  //协议
                 )
+                //HttpHost.create("http://127.0.0.1:9200")
         ));
     }
+
 }
