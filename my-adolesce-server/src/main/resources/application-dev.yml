@@ -122,19 +122,6 @@ sms:
 #    secretKey: 366FC3E3AC0F03CE
 #    signName: 【饿了么】
 
-content-security:
-  green:
-    enable: true
-    accessKeyID: LTAI5tA2k96KpofAhLVCeNj9
-    accessKeySecret: 9qJsqByWUwpJ3sp6zIqvLibLFDWnnK
-    scenes: porn,terrorism #色情，暴力
-  vision:
-    enable: true
-    accessKeyId: LTAI5tA2k96KpofAhLVCeNj9
-    accessKeySecret: 9qJsqByWUwpJ3sp6zIqvLibLFDWnnK
-    endpoint: imageaudit.cn-shanghai.aliyuncs.com
-    txtLabels: spam,politics,abuse,terrorism,porn,flood,contraband,ad
-    imgScenes: porn,terrorism,ad,live,logo
 
 adolesce:
   jwt:  # jwt秘钥
