@@ -16,7 +16,7 @@ Dubbo进行RPC远程服务调用【nacos注册中心】
 
     2）、服务提供方 配置文件增加配置 application.yml
        server:
-         port: 8003
+         port: 5000
        spring:
          application:
            name: dubbo-provider
@@ -26,7 +26,7 @@ Dubbo进行RPC远程服务调用【nacos注册中心】
          pattern:
            dateformat: HH:mm:ss:SSS
        #配置dubbo提供者
-       #dubbo协议和访问端口
+       #指定dubbo协议和访问端口（Tomcat中会起一个Netty服务，端口为20881）
        dubbo:
          protocol:
            name: dubbo
@@ -83,7 +83,7 @@ Dubbo进行RPC远程服务调用【nacos注册中心】
             超时:当Dubbo服务提供方响应时间超过 超时时间则会抛出timeout的异常，可进行配置
             重试:当Dubbo服务方抛出异常后，客户端还可以进行重试，重试次数可进行配置
             1）、消费方注解
-                @DubboReference(timeout = 30000,retries=4)
+                @DubboReference(timeout = 30000,retries = 4)
             2）、消费方配置文件
                       dubbo:
                         registry:
@@ -92,7 +92,7 @@ Dubbo进行RPC远程服务调用【nacos注册中心】
                           timeout: 3000
                           retries: 0
             3）、服务端注解
-                @DubboService(timeout = 20000,retries=4)
+                @DubboService(timeout = 20000,retries = 4)
             4）、服务提供方配置文件
                       dubbo:
                         protocol:
@@ -113,9 +113,9 @@ Dubbo进行RPC远程服务调用【nacos注册中心】
     3）、负载均衡
             Dubbo提供了4种负载均衡策略，帮助消费者找到**最优**提供者并调用
             * random ：按权重随机，默认值。按权重设置随机概率。
-            * roundRobin ：按权重进行轮询调用。
-            * leastActive：最少活跃调用数，Dubbo认为活跃度最小的性能会更高，而相同活跃数进行随机调用。
-            * consistentHash：一致性 Hash，相同参数的请求总是发到同一提供者。
+            * roundrobin ：按权重进行轮询调用。
+            * leastactive：最少活跃调用数，Dubbo认为活跃度最小的性能会更高，而相同活跃数进行随机调用。
+            * consistenthash：一致性 Hash，相同参数的请求总是发到同一提供者。
 
             配置方式：
                 1)、可通过在消费者注解上指定：

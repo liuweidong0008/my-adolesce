@@ -1,5 +1,5 @@
 server:
-  port: 8001  #自定义监听端口,默认8080
+  port: 6000  #自定义监听端口,默认8080
   servlet:
     context-path: /eureka-provider #配置项目名
 
@@ -24,6 +24,6 @@ eureka:
 #    lease-expiration-duration-in-seconds: 90 # 默认如果90秒内eureka client没有向eureka server发心跳包，服务器呀，你把我干掉吧~（又称服务剔除时间）
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka-server/eureka # eureka服务端地址，将来客户端使用该地址和eureka进行通信（默认就是该地址，多个可用，分隔）
-      #defaultZone: http://eureka-server:8761/eureka-server/eureka,http://eureka-server2:8762/eureka-server2/eureka  #eureka注册中心集群模式
+      defaultZone: http://localhost:6761/eureka-server/eureka # eureka服务端地址，将来客户端使用该地址和eureka进行通信（默认就是该地址，多个可用，分隔）
+      #defaultZone: http://eureka-server:6761/eureka-server/eureka,http://eureka-server2:6762/eureka-server2/eureka  #eureka注册中心集群模式
    #registry-fetch-interval-seconds: 30  #定时更新从eureka注册中心拉取到本地的注册表（ip:port 等信息）默认30

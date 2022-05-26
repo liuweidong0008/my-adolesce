@@ -1,7 +1,7 @@
 spring:
   application.name: hystrix-monitor
 server:
-  port: 8769
+  port: 6868
 turbine:
   combine-host-port: true
   # 配置需要被监控的服务名称列表

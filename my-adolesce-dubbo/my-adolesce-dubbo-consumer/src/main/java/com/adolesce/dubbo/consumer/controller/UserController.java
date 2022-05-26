@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/user")
 public class UserController {
 
-    @DubboReference(version = "2.0.0",retries = 0,loadbalance = "random",timeout = 2000)
+    @DubboReference(version = "1.0.0",retries = 3,loadbalance = "random",timeout = 2000)
     private UserDemoApi userDemoApi;
 
     /**

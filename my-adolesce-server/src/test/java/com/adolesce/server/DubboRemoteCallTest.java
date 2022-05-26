@@ -3,6 +3,7 @@ package com.adolesce.server;
 import com.adolesce.cloud.dubbo.api.db.MpUserApi;
 import com.adolesce.cloud.dubbo.domain.db.MpUser;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,7 +20,7 @@ import java.util.List;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class DubboRemoteCallTest {
-    //@DubboReference
+    @DubboReference
     private MpUserApi mpUserApi;
 
     @Test
@@ -32,5 +33,4 @@ public class DubboRemoteCallTest {
         QueryWrapper queryWrapper = new QueryWrapper();
         mpUserApi.list(queryWrapper);
     }
-
 }

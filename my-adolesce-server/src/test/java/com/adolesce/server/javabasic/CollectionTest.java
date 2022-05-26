@@ -69,8 +69,6 @@ public class CollectionTest {
         map.entrySet();
 
         map.forEach((k,v) -> System.out.println(k +":" +v));
-
-
         return users;
     }
 

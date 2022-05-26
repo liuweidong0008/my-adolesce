@@ -15,7 +15,7 @@ public class WorkQueueConsumer extends BasicConsumer {
      */
 	@Override
 	public void doWork(String message) {
-		System.out.println(" 消费者1: [x] Received '" + message + "'");
+		System.out.println(" 消费者: [x] Received '" + message + "'");
 		doWorkStart(message);
 		//int i = 1/0;
         System.out.println(" [x] Done");
@@ -46,7 +46,7 @@ public class WorkQueueConsumer extends BasicConsumer {
 		try {
 			//2个workqueue队列消费者
 			wc.receive("work-queue", true, true, 1);
-			wc.receive("work-queue", true, true, 1);
+			//wc.receive("work-queue", true, true, 1);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

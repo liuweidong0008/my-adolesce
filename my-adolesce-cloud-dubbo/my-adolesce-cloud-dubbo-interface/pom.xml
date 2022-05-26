@@ -17,6 +17,12 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>com.boot.adolesce</groupId>
+            <artifactId>my-adolesce-common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
         <!--MybatisPlus起步依赖-->
         <dependency>
             <groupId>com.baomidou</groupId>

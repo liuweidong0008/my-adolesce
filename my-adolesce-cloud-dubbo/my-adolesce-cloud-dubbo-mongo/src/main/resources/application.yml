@@ -1,5 +1,5 @@
 server:
-  port: 8006  #自定义监听端口,默认8080
+  port: 3003  #自定义监听端口,默认8080
 
 spring:
   #MongoDB配置
@@ -21,7 +21,7 @@ spring:
 dubbo:
   protocol:
     name: dubbo
-    port: 20882
+    port: 20883
   registry:
     address: spring-cloud://localhost  #使用springcloud中注册中心的地址
   scan:

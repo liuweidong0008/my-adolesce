@@ -2,6 +2,9 @@ package com.adolesce.common.enums;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 响应结果码
  */
@@ -23,12 +26,24 @@ public enum ResultCode {
     public String key;
     public String value;
 
-    private ResultCode(String key, String value) {
+    ResultCode(String key, String value) {
         this.key = key;
         this.value = value;
     }
 
+    private static final Map<String,ResultCode> RESULT_CODE_MAP = new HashMap<>();
+    static {
+        ResultCode[] values = ResultCode.values();
+        for (ResultCode resultCode : values) {
+            RESULT_CODE_MAP.put(resultCode.key,resultCode);
+        }
+    }
+
     public static ResultCode getByKey(String key) {
+        return RESULT_CODE_MAP.get(key);
+    }
+
+    /*public static ResultCode getByKey(String key) {
         ResultCode[] values = ResultCode.values();
         for (ResultCode object : values) {
             if (object.key.equals(key)) {
@@ -36,7 +51,7 @@ public enum ResultCode {
             }
         }
         return null;
-    }
+    }*/
 
     public boolean eq(String key) {
         if (StringUtils.isBlank(key)) {

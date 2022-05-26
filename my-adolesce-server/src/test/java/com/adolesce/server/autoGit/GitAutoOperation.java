@@ -10,7 +10,7 @@ public class GitAutoOperation {
         BufferedReader in = null;
         BufferedWriter out = null;
         try {
-            File fileIn = new File("D:/heima/学生项目代码/58期git仓库地址.txt");
+            File fileIn = new File("D:/heima/学生项目代码/62期git仓库地址.txt");
             File fileOut = new File("D:/heima/学生项目代码/autogit.bat");
             in = new BufferedReader(new FileReader(fileIn));
             out = new BufferedWriter(new FileWriter(fileOut));

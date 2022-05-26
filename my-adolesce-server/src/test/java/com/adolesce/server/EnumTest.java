@@ -14,6 +14,7 @@ public class EnumTest {
 
         System.out.println(ResultCode.AUTH_LIMIT.toString());
         System.out.println(ResultCode.AUTH_LIMIT.name());
+        System.out.println(ResultCode.AUTH_LIMIT.ordinal());
     }
 
     @Test

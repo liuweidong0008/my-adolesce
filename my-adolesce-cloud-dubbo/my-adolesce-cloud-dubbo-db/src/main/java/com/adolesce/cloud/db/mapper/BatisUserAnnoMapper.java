@@ -5,6 +5,7 @@ import com.adolesce.cloud.dubbo.domain.db.BatisUser;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
+import java.util.Map;
 
 public interface BatisUserAnnoMapper {
     @Select({"SELECT * FROM my_batis_user order by birthday"})
@@ -38,5 +39,11 @@ public interface BatisUserAnnoMapper {
     List<BatisUser> queryPageByName(String name);
 
     @Delete({" DELETE FROM my_batis_user WHERE FIND_IN_SET(id, #{ids}) AND password = #{password}"})
-    void deleteByIdsStr(String ids,String password);
+    void deleteByIdsStr1(String ids,String password);
+
+    @Delete({" DELETE FROM my_batis_user WHERE FIND_IN_SET(id, #{ids}) AND password = #{password}"})
+    void deleteByIdsStr2(Map<String, Object> params);
+
+    @Delete({" DELETE FROM my_batis_user WHERE FIND_IN_SET(id, #{ids}) AND password = #{password}"})
+    void deleteByIdsStr3(BatisUser batisUser);
 }

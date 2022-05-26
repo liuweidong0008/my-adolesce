@@ -19,6 +19,7 @@
         <module>my-adolesce-eureka</module>
         <module>my-adolesce-nacos</module>
         <module>my-adolesce-autoconfig</module>
+        <module>my-adolesce-gateway</module>
     </modules>
 
     <groupId>com.boot.adolesce</groupId>
@@ -38,9 +39,11 @@
         <lombok.version>1.18.8</lombok.version>
         <pagehelper.version>1.2.10</pagehelper.version>
         <poi.version>3.17</poi.version>
+        <jxls.version>1.0.6</jxls.version>
+        <jaxen.version>1.2.0</jaxen.version>
         <velocity.version>1.7</velocity.version>
         <freemarker.version>2.3.30</freemarker.version>
-        <fastjson.version>1.2.61</fastjson.version>
+        <fastjson.version>1.2.71</fastjson.version>
         <hutool.version>5.5.2</hutool.version>
         <joda-time.version>2.9.9</joda-time.version>
         <jwt.version>0.9.1</jwt.version>
@@ -52,12 +55,17 @@
         <javax.persistence-api.version>2.2</javax.persistence-api.version>
         <commons-httpclient.version>3.1</commons-httpclient.version>
         <junit.version>4.12</junit.version>
-        <spring-cloud.version>Hoxton.SR10</spring-cloud.version>
+        <!--原本版本号为SR10，但是开启Feign对Sentinel支持后会报Spring IOC循环依赖异常，降低版本至8，问题得到解决-->
+        <spring-cloud.version>Hoxton.SR8</spring-cloud.version>
         <spring-cloud-alibaba.version>2.2.5.RELEASE</spring-cloud-alibaba.version>
         <!--这个版本号一定要指定，需要与所用es版本强一致，且该版本标签名必须为elasticsearch.version-->
         <elasticsearch.version>7.14.0</elasticsearch.version>
         <dubbo.boot.version>2.7.8</dubbo.boot.version>
-        <swagger.version>2.7.0</swagger.version>
+        <!--<swagger.version>2.9.2</swagger.version>--> <!--2.7.0-->
+        <knife4j.version>3.0.2</knife4j.version> <!--3.0.2-->
+        <swagger.springfox.version>3.0.0</swagger.springfox.version> <!--3.0.2-->
+        <kaptcha.version>2.3.2</kaptcha.version>
+        <easyexcel.version>2.2.11</easyexcel.version>
     </properties>
 
     <!--通用依赖-->
@@ -193,13 +201,13 @@
             <dependency>
                 <groupId>jaxen</groupId>
                 <artifactId>jaxen</artifactId>
-                <version>1.2.0</version>
+                <version>${jaxen.version}</version>
             </dependency>
             <!-- excel导出 表达式支持 https://mvnrepository.com/artifact/net.sf.jxls/jxls-core -->
             <dependency>
                 <groupId>net.sf.jxls</groupId>
                 <artifactId>jxls-core</artifactId>
-                <version>1.0.6</version>
+                <version>${jxls.version}</version>
             </dependency>
             <!-- commons-io -->
             <dependency>
@@ -265,7 +273,7 @@
                 <artifactId>rocketmq-spring-boot-starter</artifactId>
                 <version>${rocketmq-boot.version}</version>
             </dependency>
-            <!--rocketmq客户端-->
+            <!--Rocketmq客户端-->
             <dependency>
                 <groupId>org.apache.rocketmq</groupId>
                 <artifactId>rocketmq-client</artifactId>
@@ -308,7 +316,7 @@
             </dependency>
 
             <!--swagger2-->
-            <dependency>
+            <!--<dependency>
                 <groupId>io.springfox</groupId>
                 <artifactId>springfox-swagger2</artifactId>
                 <version>${swagger.version}</version>
@@ -317,16 +325,43 @@
                 <groupId>io.springfox</groupId>
                 <artifactId>springfox-swagger-ui</artifactId>
                 <version>${swagger.version}</version>
+            </dependency>-->
+
+            <!--swagger knife4j 依赖-->
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-spring-boot-starter</artifactId>
+                <version>${knife4j.version}</version>
+            </dependency>
+            <!--整合swagger knife4j 情况下启用swagger依赖-->
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-boot-starter</artifactId>
+                <version>${swagger.springfox.version}</version>
+            </dependency>
+
+            <!--图形验证码 -->
+            <dependency>
+                <groupId>com.github.penggle</groupId>
+                <artifactId>kaptcha</artifactId>
+                <version>${kaptcha.version}</version>
+            </dependency>
+
+            <!--alibaba easyexcel-->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>easyexcel</artifactId>
+                <version>${easyexcel.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
 
     <build>
         <plugins>
-            <plugin>
+            <!--<plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
+            </plugin>-->
             <!-- java编译插件 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

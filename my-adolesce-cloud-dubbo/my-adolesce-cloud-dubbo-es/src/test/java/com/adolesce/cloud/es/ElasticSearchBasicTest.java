@@ -81,7 +81,6 @@ import static com.adolesce.cloud.es.constants.IndexMappingConstants.*;
 public class ElasticSearchBasicTest {
     @Autowired
     private RestHighLevelClient client;
-
     @DubboReference
     private ESGoodsApi esGoodsApi;
     @DubboReference
@@ -199,13 +198,13 @@ public class ElasticSearchBasicTest {
         System.out.println(isExists ? "存在" : "不存在");
     }
 
-    @Test
-    public void testExistIndex2() throws IOException {
+    public boolean testExistIndex2() throws IOException {
         // 1.准备Request
         GetIndexRequest request = new GetIndexRequest("hotel");
         // 3.发送请求
         boolean isExists = client.indices().exists(request, RequestOptions.DEFAULT);
         System.out.println(isExists ? "存在" : "不存在");
+        return isExists;
     }
 
 
@@ -492,6 +491,10 @@ public class ElasticSearchBasicTest {
      */
     @Test
     public void testImportHotelDataByBulk() throws IOException {
+        if(!testExistIndex2()){
+            testCreateIndexAndMapping2();
+        }
+
         // 查询所有的酒店数据
         List<EsHotel> list = hotelApi.list();
 

@@ -7,7 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
@@ -30,9 +33,13 @@ public class RequestStyleController {
      * 备注：参数可不传
      */
     @RequestMapping("test1")
-    public String requestTest1(String userName, Integer age) {
+    public String requestTest1(String userName, Integer age,
+                               HttpServletRequest request,
+                               HttpServletResponse response) throws ServletException, IOException {
         //userName = new String(userName.getBytes("ISO-8859-1"),"utf-8");
         System.out.println("userName:" + userName + ",age:" + age);
+        request.getRequestDispatcher("").forward(request,response);  //  请求转发
+        response.sendRedirect("/");  //重定向
         return userName;
     }
 

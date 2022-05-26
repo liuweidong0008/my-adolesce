@@ -17,11 +17,10 @@
     </properties>
 
     <dependencies>
-        <!--nacos-->
+        <!-- nacos客户端依赖包 -->
         <dependency>
-            <groupId>org.springframework.cloud</groupId>
+            <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
-            <version>0.2.2.RELEASE</version>
         </dependency>
 
         <dependency>

@@ -14,6 +14,7 @@
     <modules>
         <module>my-adolesce-nacos-provider</module>
         <module>my-adolesce-nacos-consumer</module>
+        <module>my-adolesce-nacos-feign-api</module>
     </modules>
 
     <properties>

@@ -1,0 +1,7 @@
+server:
+  port: 8083
+logging:
+  level:
+    cn.itcast: debug
+  pattern:
+    dateformat: MM-dd HH:mm:ss:SSS

@@ -20,8 +20,13 @@ public class GoodsController {
     private int port;
 
     @GetMapping("/findOne/{id}")
-    public Goods findOne(@PathVariable("id") int id) {
-
+    public Goods findOne(@PathVariable("id") int id) throws InterruptedException {
+        if (id == 1) {
+            // 休眠，触发熔断
+            Thread.sleep(3000);
+        } else if (id == 2) {
+            throw new RuntimeException("故意出错，触发熔断");
+        }
         Goods goods = goodsService.findOne(id);
         goods.setTitle(goods.getTitle() + ":" + port);
         return goods;

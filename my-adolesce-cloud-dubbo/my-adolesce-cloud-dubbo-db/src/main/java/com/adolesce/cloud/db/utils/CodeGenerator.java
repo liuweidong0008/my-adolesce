@@ -60,9 +60,9 @@ public class CodeGenerator {
 
         // 数据源配置
         DataSourceConfig dsc = new DataSourceConfig();
-        dsc.setUrl("jdbc:mysql:///tanhua");
+        dsc.setUrl("jdbc:mysql:///leadnews_article");
         // dsc.setSchemaName("public");
-        dsc.setDriverName("com.mysql.jdbc.Driver");
+        dsc.setDriverName("com.mysql.cj.jdbc.Driver");
         dsc.setUsername("root");
         dsc.setPassword("root");
         mpg.setDataSource(dsc);
@@ -70,7 +70,7 @@ public class CodeGenerator {
         // 包配置
         PackageConfig pc = new PackageConfig();
         pc.setModuleName(scanner("模块名"));
-        pc.setParent("com.tanhua");
+        pc.setParent("com.ap");
         mpg.setPackageInfo(pc);
 
         // 自定义配置

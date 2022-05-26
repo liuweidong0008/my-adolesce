@@ -1,9 +1,9 @@
 server:
-  port: 8000
+  port: 4000
 
 #consul 服务提供方设置context-path属性后，消费方整合rabbion进行调用会报错(待解决)
-  servlet:
-    context-path: /consul-provider #配置项目名
+#  servlet:
+#    context-path: /consul-provider #配置项目名
 spring:
   cloud:
     consul:

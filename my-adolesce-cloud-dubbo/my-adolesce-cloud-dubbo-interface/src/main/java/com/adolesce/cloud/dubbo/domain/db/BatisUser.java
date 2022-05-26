@@ -3,6 +3,8 @@ package com.adolesce.cloud.dubbo.domain.db;
 import cn.hutool.core.util.ObjectUtil;
 import lombok.Data;
 
+import javax.persistence.Column;
+import javax.persistence.Id;
 import javax.persistence.Transient;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -24,11 +26,13 @@ public class BatisUser extends BasePojo {
     /**
      * 主键ID
      */
+    @Id
     private Long id;
 
     /**
      * 用户名
      */
+    @Column
     private String userName;
 
     /**
@@ -58,7 +62,6 @@ public class BatisUser extends BasePojo {
 
     private List<BatisAddress> addresses;
 
-
     @Transient
     private String birthdayStr;
 
@@ -76,4 +79,6 @@ public class BatisUser extends BasePojo {
     private String endTime;
     @Transient
     private String cardNo;
+    @Transient
+    private String ids;
 }

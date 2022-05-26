@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<excelExportConfigs>
+    <config name="studentMsgRecord">
+        <sheets>
+            <sheet name="sheet1">
+                <headers>
+                    <header name="姓名" key="name"/>
+                    <header name="年龄" key="age"/>
+                    <header name="手机号" key="phone"/>
+                    <header name="学历" key="education"/>
+                    <header name="毕业学校" key="school"/>
+                    <header name="毕业时间" key="graduateTime"/>
+                    <header name="城市" key="address.city"/>
+                    <header name="地址描述" key="address.location.address"/>
+                </headers>
+            </sheet>
+            <sheet name="sheet2">
+                <headers>
+                    <header name="姓名" key="name"/>
+                    <header name="薪资" key="salary"/>
+                    <header name="工作信息" key="workMsg"/>
+                    <header name="入职日期" key="ruzhiTime"/>
+                    <header name="备注" key="remark"/>
+                    <header name="创建时间" key="createTime"/>
+                </headers>
+            </sheet>
+        </sheets>
+    </config>
+</excelExportConfigs>

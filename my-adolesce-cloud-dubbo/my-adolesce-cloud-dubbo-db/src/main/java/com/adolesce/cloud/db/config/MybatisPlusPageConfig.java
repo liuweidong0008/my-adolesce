@@ -2,6 +2,7 @@ package com.adolesce.cloud.db.config;
 
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,7 +12,6 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class MybatisPlusPageConfig {
-
     /**
      * 3.4.0之前的版本用这个
      * @return
@@ -31,5 +31,16 @@ public class MybatisPlusPageConfig {
         MybatisPlusInterceptor mybatisPlusInterceptor = new MybatisPlusInterceptor();
         mybatisPlusInterceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
         return mybatisPlusInterceptor;
+    }
+
+    /**
+     * 乐观锁支持
+     * @return
+     */
+    @Bean
+    public MybatisPlusInterceptor optimisticLockerInterceptor() {
+        MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+        interceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());
+        return interceptor;
     }
 }

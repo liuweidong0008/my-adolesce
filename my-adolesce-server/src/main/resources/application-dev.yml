@@ -5,8 +5,10 @@ spring:
     port: 5672
     username: lwd
     password: lwd
-    publisher-confirm-type: correlated  #开启生产者确认机制
-    publisher-returns: true
+    publisher-confirm-type: correlated  #开启confirm机制：消息投递到交换机回调(- `simple`：同步等待confirm结果，直到超时 - `correlated`：异步回调，定义ConfirmCallback，MQ返回结果时会回调这个ConfirmCallback)
+    publisher-returns: true #开启returns 机制：消息从交换机路由到队列回调（同样是基于callback机制，不过是定义ReturnCallback）
+    template:
+      mandatory: true # 定义消息路由失败时的策略。true，则调用ReturnCallback；false：则直接丢弃消息
   #Redis配置
   redis:
     database: 0      #数据库索引（默认为0）
@@ -62,7 +64,7 @@ eureka:
 # 设置Feign 的超时时间
 ribbon: #全局ribbon的参数设置
   ConnectTimeout: 1000 # 连接超时时间 默认1s
-  ReadTimeout: 2000 # 逻辑处理的超时时间,即通信超时时间 默认1s
+  ReadTimeout: 1000 # 逻辑处理的超时时间,即通信超时时间 默认1s
   MaxAutoRetries: 1 #同一台实例最大重试次数,不包括首次调用
   MaxAutoRetriesNextServer: 2 #重试负载均衡其他的实例最大重试次数,不包括首次调用
   eager-load:  #为某个服务开启饥饿加载（在项目启动时就会初始化LoadBalancer，默认是懒加载，即第一次访问时才会去创建LoadBalanceClient，请求时间会很长）
@@ -91,10 +93,10 @@ logging:
 feign:
   hystrix:
     enabled: true
-  client:
-    config:
-      default: #这里用default就是全局配置，如果是写服务名称，则是针对某个微服务的配置
-        loggerLevel: Full #日志级别（第二种配置方式，第一种是通过代码配置）
+#  client:    #坑：开启全局配置会使ribbon超时配置失效
+#    config:
+#      default: #这里用default就是全局配置，如果是写服务名称，则是针对某个微服务的配置
+#        loggerLevel: Full #日志级别（第二种配置方式，第一种是通过代码配置）
 
 # 设置Hystrix超时时间（到达该时间服务提供方仍未响应，则走服务降级逻辑）【合理的时间应该设置为 重试次数*ribbon.ReadTimeout，以保证ribbon重试次数都能够执行完】
 hystrix:
@@ -120,5 +122,27 @@ sms:
 #    secretKey: 366FC3E3AC0F03CE
 #    signName: 【饿了么】
 
-jwt:
-  secret: 76bd425b6f29f7fcc2e0bfc286043df1
+content-security:
+  green:
+    enable: true
+    accessKeyID: LTAI5tA2k96KpofAhLVCeNj9
+    accessKeySecret: 9qJsqByWUwpJ3sp6zIqvLibLFDWnnK
+    scenes: porn,terrorism #色情，暴力
+  vision:
+    enable: true
+    accessKeyId: LTAI5tA2k96KpofAhLVCeNj9
+    accessKeySecret: 9qJsqByWUwpJ3sp6zIqvLibLFDWnnK
+    endpoint: imageaudit.cn-shanghai.aliyuncs.com
+    txtLabels: spam,politics,abuse,terrorism,porn,flood,contraband,ad
+    imgScenes: porn,terrorism,ad,live,logo
+
+adolesce:
+  jwt:  # jwt秘钥
+    secret: 76bd425b6f29f7fcc2e0bfc286043df1
+  captcha: #图形验证码
+    type: penggle.math
+
+#demo:
+#  one: dev-yml-1
+#  two: dev-yml-2
+#  three: dev-yml-3

@@ -2,6 +2,12 @@ server:
   port: 8081  #自定义监听端口,默认8080
   servlet:
     context-path: /my_adolesce #配置项目名
+knife4j:
+  basic:
+    enable: true
+    username: lwd
+    password: lwd
+  enable: true
 spring:
   application:
     name: my-adolesce
@@ -17,13 +23,21 @@ spring:
       location: D://filetest/ # 上传文件的临时目录
       max-request-size: 150MB
       max-file-size: 15MB
-  profiles:  #指定使用哪个环境的配置文件
-    active:  #可永于指定用哪个配置文件  application-{active}.yml or application-{active}.properties
+  profiles: #指定使用哪个环境的配置文件
+    active: #可永于指定用哪个配置文件  application-{active}.yml or application-{active}.properties
       - dev
+#context:
+#  initializer:
+#    classes: com.adolesce.common.init.MyApplicationContextInitializer
+
 cache:
   enable: true #是否开启自定义的全局缓存
   pack: redis #指定全局缓存的底层组件
 
+#demo:
+#  one: yml-1
+#  two: yml-2
+#  three: yml-3
 ---
 # 测试环境配置
 spring:

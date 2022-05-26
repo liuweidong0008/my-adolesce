@@ -14,15 +14,14 @@ spring:
     username: lwd
     password: lwd
     listener:
-      direct:
-        acknowledge-mode: manual
       simple:
         prefetch: 1   #负载均衡参数，一次接收一条消息
-        acknowledge-mode: manual   # 消息开启手动确认
-        # 是否支持重试
+        acknowledge-mode: auto   # 消息开启手动确认
         retry:
-          enabled: true
-
+          enabled: true # 开启消费者失败重试
+          initial-interval: 1000 # 初识的失败等待时长为1秒
+          multiplier: 3 # 失败的等待时长倍数，下次等待时长 = multiplier * last-interval
+          max-attempts: 4 # 最大重试次数
   cloud:
     nacos: #nacos注册中心配置
       discovery:
@@ -32,5 +31,6 @@ dubbo:
     address: spring-cloud://localhost  #使用springcloud中注册中心的地址
   consumer:
     check: false
-
-
+  protocol:
+    port: 20885
+    name: dubbo

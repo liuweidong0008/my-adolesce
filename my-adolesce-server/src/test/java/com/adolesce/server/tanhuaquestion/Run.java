@@ -18,7 +18,7 @@ public class Run {
         BufferedReader in = null;
         try {
             tanhuaQuestionList = new ArrayList<>();
-            File fileIn = new File("D://tanhua-question.txt");
+            File fileIn = new File("D://meet-question.txt");
             in = new BufferedReader(new FileReader(fileIn));
             String line = null;
             TanhuaQuestion child;

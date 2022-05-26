@@ -1,20 +1,11 @@
 package com.adolesce.mqconsumer.rocketmq;
 
-import com.adolesce.common.config.RocketConfig;
-import com.adolesce.common.vo.AccountChangeEvent;
 import com.adolesce.mqconsumer.service.AccountInfoService;
-import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
-import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
-import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
-import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
-import org.apache.rocketmq.common.message.MessageExt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.List;
 
 @Slf4j
 @Component
@@ -24,7 +15,7 @@ public class AccountTxMsgConsumer {
 
     @PostConstruct
     public void consumerTxMsg() throws Exception {
-        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(RocketConfig.GROUP1);
+        /*DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(RocketConfig.GROUP1);
         consumer.setNamesrvAddr(RocketConfig.NAMESRVADDR);
         consumer.subscribe("accountTxTopic", "*");
 
@@ -49,6 +40,6 @@ public class AccountTxMsgConsumer {
             }
         });
         consumer.start();
-        System.out.println("接收消息服务已开启运行");
+        System.out.println("接收消息服务已开启运行");*/
     }
 }

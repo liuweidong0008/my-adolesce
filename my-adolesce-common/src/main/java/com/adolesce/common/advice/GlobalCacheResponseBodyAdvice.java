@@ -31,6 +31,13 @@ public class GlobalCacheResponseBodyAdvice implements ResponseBodyAdvice {
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
+    /**
+     * 判断是否需要增强支持
+     *
+     * @param returnType
+     * @param converterType
+     * @return 是否需要增强
+     */
     @Override
     public boolean supports(MethodParameter returnType, Class converterType) {
         // 全局缓存开关处于开启状态&是get请求&包含了@Cache注解
@@ -38,12 +45,21 @@ public class GlobalCacheResponseBodyAdvice implements ResponseBodyAdvice {
                 && returnType.hasMethodAnnotation(Cache.class);
     }
 
+    /**
+     * 响应体增强方法
+     *
+     * @param body
+     * @param returnType
+     * @param selectedContentType
+     * @param selectedConverterType
+     * @param request
+     * @param response
+     * @return
+     */
     @Override
     public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType, Class selectedConverterType,
                                   ServerHttpRequest request, ServerHttpResponse response) {
-        if (ObjectUtils.isEmpty(body)) {
-            return null;
-        }
+        if (ObjectUtils.isEmpty(body)) { return null; }
         try {
             //构建cacheData
             String cacheData;

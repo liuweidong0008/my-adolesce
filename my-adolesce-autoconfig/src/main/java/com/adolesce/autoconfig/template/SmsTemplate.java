@@ -1,7 +1,7 @@
 package com.adolesce.autoconfig.template;
 
-import com.adolesce.autoconfig.config.HuyiSMSConfig;
-import com.adolesce.autoconfig.config.YiMeiSMSConfig;
+import com.adolesce.autoconfig.config.HuyiSMSProperties;
+import com.adolesce.autoconfig.config.YiMeiSMSProperties;
 import com.adolesce.autoconfig.utils.yimei.YMSmsSenderUtil;
 import com.adolesce.autoconfig.utils.yimei.bean.YiMeiSendSmsParams;
 import lombok.extern.slf4j.Slf4j;
@@ -17,13 +17,12 @@ import java.util.Arrays;
 
 @Slf4j
 public class SmsTemplate {
+    private YiMeiSMSProperties yiMeiSMSProperties;
+    private HuyiSMSProperties huyiSMSProperties;
 
-    private YiMeiSMSConfig yiMeiSMSConfig;
-    private HuyiSMSConfig huyiSMSConfig;
-
-    public SmsTemplate(YiMeiSMSConfig yiMeiSMSConfig, HuyiSMSConfig huyiSMSConfig) {
-        this.yiMeiSMSConfig = yiMeiSMSConfig;
-        this.huyiSMSConfig = huyiSMSConfig;
+    public SmsTemplate(YiMeiSMSProperties yiMeiSMSProperties, HuyiSMSProperties huyiSMSProperties) {
+        this.yiMeiSMSProperties = yiMeiSMSProperties;
+        this.huyiSMSProperties = huyiSMSProperties;
     }
 
     /**
@@ -35,18 +34,18 @@ public class SmsTemplate {
     public Boolean sendSmsByYimei(String mobile, String content) {
         YiMeiSendSmsParams params = new YiMeiSendSmsParams();
         params.setContent(content);
-        params.setSignName(this.yiMeiSMSConfig.getSignName());
-        params.setAppId(this.yiMeiSMSConfig.getAppId());
-        params.setSecretKey(this.yiMeiSMSConfig.getSecretKey());
+        params.setSignName(this.yiMeiSMSProperties.getSignName());
+        params.setAppId(this.yiMeiSMSProperties.getAppId());
+        params.setSecretKey(this.yiMeiSMSProperties.getSecretKey());
         //批量发送
         String[] mobiles = mobile.split(",");
         if (mobiles.length > 1) {
-            params.setUrl(this.yiMeiSMSConfig.getBatchUrl());
+            params.setUrl(this.yiMeiSMSProperties.getBatchUrl());
             params.setMobiles(Arrays.asList(mobiles));
             return YMSmsSenderUtil.textBatchSend(params);
             //单个发送
         } else {
-            params.setUrl(this.yiMeiSMSConfig.getSingleUrl());
+            params.setUrl(this.yiMeiSMSProperties.getSingleUrl());
             params.setMobile(mobile);
             return YMSmsSenderUtil.textSingleSend(params);
         }
@@ -74,17 +73,17 @@ public class SmsTemplate {
      * @param content 发送内容
      * @return
      */
-    private Boolean sendSmsByHuyi(String mobile, String content) {
+    public Boolean sendSmsByHuyi(String mobile, String content) {
         Boolean isSuccess = false;
         HttpClient client = new HttpClient();
-        PostMethod method = new PostMethod(this.huyiSMSConfig.getUrl());
+        PostMethod method = new PostMethod(this.huyiSMSProperties.getUrl());
 
         client.getParams().setContentCharset("GBK");
         method.setRequestHeader("ContentType", "application/x-www-form-urlencoded;charset=GBK");
 
         NameValuePair[] data = {//提交短信
-                new NameValuePair("account", this.huyiSMSConfig.getAccount()), //查看用户名 登录用户中心->验证码通知短信>产品总览->API接口信息->APIID
-                new NameValuePair("password", this.huyiSMSConfig.getPassword()), //查看密码 登录用户中心->验证码通知短信>产品总览->API接口信息->APIKEY
+                new NameValuePair("account", this.huyiSMSProperties.getAccount()), //查看用户名 登录用户中心->验证码通知短信>产品总览->API接口信息->APIID
+                new NameValuePair("password", this.huyiSMSProperties.getPassword()), //查看密码 登录用户中心->验证码通知短信>产品总览->API接口信息->APIKEY
                 //new NameValuePair("password", util.StringUtil.MD5Encode("密码")),
                 new NameValuePair("mobile", mobile),
                 new NameValuePair("content", content),

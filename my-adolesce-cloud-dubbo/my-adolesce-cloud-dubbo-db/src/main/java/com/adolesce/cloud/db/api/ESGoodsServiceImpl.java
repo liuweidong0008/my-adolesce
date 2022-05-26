@@ -5,6 +5,7 @@ import com.adolesce.cloud.db.mapper.ESGoodsMapper;
 import com.adolesce.cloud.dubbo.api.db.ESGoodsApi;
 import com.adolesce.cloud.dubbo.domain.db.ESGoods;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,7 +20,7 @@ import java.util.List;
  * @since 2021-05-18
  */
 @DubboService
-public class ESGoodsServiceImpl implements ESGoodsApi {
+public class ESGoodsServiceImpl extends ServiceImpl<ESGoodsMapper, ESGoods> implements ESGoodsApi {
     @Autowired
     private ESGoodsMapper myGoodsMapper;
 

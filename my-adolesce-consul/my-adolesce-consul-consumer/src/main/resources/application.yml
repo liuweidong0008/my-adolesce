@@ -1,17 +1,6 @@
 server:
-  port: 9000
+  port: 4001
 
 #consul 服务提供方设置context-path属性后，消费方整合rabbion进行调用会报错(待解决)
   servlet:
     context-path: /consul-consumer #配置项目名
-spring:
-  cloud:
-    consul:
-      host: localhost # consul 服务端的 ip
-      port: 8500 # consul 服务端的端口 默认8500
-      discovery:
-        service-name: ${spring.application.name} # 当前应用注册到consul的名称
-        prefer-ip-address: true # 是否以ip形式注册
-        ip-address: 127.0.0.1 # 设置当前实例的ip
-  application:
-    name: consul-consumer # 应用名称

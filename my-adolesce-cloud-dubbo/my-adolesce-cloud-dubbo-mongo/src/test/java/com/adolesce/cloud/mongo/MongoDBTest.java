@@ -26,6 +26,7 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -624,6 +625,7 @@ public class MongoDBTest {
         System.out.println("3333");
         System.out.println("4444");
         System.out.println("5555");
+
         MyUser myUser = new MyUser();
         myUser.setId(ObjectId.get());
         myUser.setUserId(ObjectId.get());
@@ -639,19 +641,30 @@ public class MongoDBTest {
         myUser.setAge(24);
         this.testDebug3(100);
         myUser.setAddress(new Address("长沙市", "天心区"));
+
         Long id = idWorker.getNextId("test");
         System.err.println(id);
     }
 
     private void testDebug3(int count) {
         System.err.println(count);
-        for (int i = 0; i < count; i++) {
-            System.out.println("我是80");
-            if(i == 80){
-                System.err.println("我循环到数值："+ i +"了");
-            }
+        List<MyUser> myUserList = this.testDebug4(100);
+        for(MyUser user: myUserList){
+            System.out.println(user.getUserId());
+            System.out.println(user.getAge());
         }
     }
 
-
+    private List<MyUser> testDebug4(int count) {
+        List<MyUser> myUsers = new ArrayList<>(count);
+        MyUser user;
+        for (int i = 0; i < count; i++) {
+            user = new MyUser();
+            user.setUserName("user" + i);
+            user.setSex(1);
+            user.setAge(20+i);
+            myUsers.add(user);
+        }
+        return myUsers;
+    }
 }

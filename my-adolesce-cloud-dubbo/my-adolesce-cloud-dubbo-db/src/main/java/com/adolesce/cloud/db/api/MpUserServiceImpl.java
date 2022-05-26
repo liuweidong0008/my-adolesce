@@ -5,11 +5,13 @@ import com.adolesce.cloud.db.mapper.MpUserMapper;
 import com.adolesce.cloud.dubbo.api.db.MpUserApi;
 import com.adolesce.cloud.dubbo.domain.db.MpAddress;
 import com.adolesce.cloud.dubbo.domain.db.MpUser;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,12 +30,16 @@ public class MpUserServiceImpl extends ServiceImpl<MpUserMapper, MpUser> impleme
 
     @Override
     public List<MpUser> queryByNameCustom(String name) {
-        return mpUserMapper.queryByNameCustom(name);
+        Map<String,Object> params = new HashMap<>();
+        params.put("name",name);
+        return mpUserMapper.queryByNameCustom(params);
     }
 
     @Override
     public IPage<MpUser> queryPageByNameCustom(IPage page, String name) {
-        return mpUserMapper.queryByNameCustom(page, name);
+        Map<String,Object> params = new HashMap<>();
+        params.put("name",name);
+        return mpUserMapper.queryByNameCustom(page, params);
     }
 
     @Override
@@ -44,5 +50,12 @@ public class MpUserServiceImpl extends ServiceImpl<MpUserMapper, MpUser> impleme
     @Override
     public List<MpAddress> selectMpAddressByParams(Map<String, Object> params) {
         return mpUserMapper.selectMpAddressByParams(params);
+    }
+
+    @Override
+    public MpUser queryUserByPhone(String phone) {
+        QueryWrapper<MpUser> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("phone", phone);
+        return getOne(queryWrapper);
     }
 }

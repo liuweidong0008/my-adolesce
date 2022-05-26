@@ -1,19 +1,24 @@
 server:
-  port: 8003  #自定义监听端口,默认8002
+  port: 6001  #自定义监听端口
   servlet:
     context-path: /eureka-consumer #配置项目名
 
 spring:
   application:
     name: eureka-consumer # 设置当前应用的名称。将来会在eureka中Application显示。将来需要使用该名称来获取路径
+  cloud:
+    sentinel:
+      transport:
+        dashboard: localhost:8080 # sentinel控制台地址
 
 eureka:
   instance:
     hostname: localhost # 主机名
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka-server/eureka # eureka服务端地址，将来客户端使用该地址和eureka进行通信（默认就是该地址，多个可用，分隔）
-      #defaultZone: http://eureka-server:8761/eureka-server/eureka,http://eureka-server2:8762/eureka-server2/eureka  #eureka注册中心集群模式
+      defaultZone: http://localhost:6761/eureka-server/eureka # eureka服务端地址，将来客户端使用该地址和eureka进行通信（默认就是该地址，多个可用，分隔）
+      #defaultZone: http://eureka-server:6761/eureka-server/eureka,http://eureka-server2:6762/eureka-server2/eureka  #eureka注册中心集群模式
+    #registry-fetch-interval-seconds: 30  #定时更新从eureka注册中心拉取到本地的注册表（ip:port 等信息）默认30
 
 #EUREKA-PROVIDER: #为哪个服务设置负载均衡策略（服务应用名称）
 #  ribbon:
@@ -22,7 +27,7 @@ eureka:
 ribbon:
   #feign也有超时和重试机制，但是被禁用了，用的是ribbon的（默认1s，重试1次）
   ConnectTimeout: 1000 # 连接超时时间 默认1s
-  ReadTimeout: 2000 # 逻辑处理的超时时间,即通信超时时间 默认1s
+  ReadTimeout: 1000 # 逻辑处理的超时时间,即通信超时时间 默认1s
   #为某些服务开启饥饿加载（在项目启动时就会初始化LoadBalancer，默认是懒加载，即第一次访问时才会去创建LoadBalanceClient，请求时间会很长）
   eager-load:
     enabled: true
@@ -36,8 +41,26 @@ logging:
   pattern:
     dateformat: HH:mm:ss:SSS
 
-#feign:
-#  client:
-#    config:
+feign:
+  # 开启feign对hystrix的支持（客户端服务降级/熔断等）
+  hystrix:
+    enabled: true
+  # 配置feign调用日志级别
+  client:
+    config:
+      httpclient:
+        enabled: true # 开启feign对HttpClient的支持
+        max-connections: 200 # 最大的连接数
+        max-connections-per-route: 50 # 每个路径的最大连接数
 #      default: # default是针对全局服务，也可配置针对某个微服务
 #        loggerLevel: FULL #  日志级别
+
+
+# 设置Hystrix超时时间（到达该时间服务提供方仍未响应，则走服务降级逻辑）【合理的时间应该设置为 重试次数*ribbon.ReadTimeout，以保证ribbon重试次数都能够执行完】
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 1000

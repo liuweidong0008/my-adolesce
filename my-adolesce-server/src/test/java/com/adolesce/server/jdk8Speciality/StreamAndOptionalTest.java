@@ -19,9 +19,9 @@ import java.util.stream.Stream;
  * 6、元素：是特定类型的对象，形成一个队列。Java中的Stream并不会存储元素，而是按需计算。
  * 7、Stream数据源 ：流的来源。可以是集合，数组，I/O channel，产生器generator等。
  * 8、特点：
- *      1). 不是数据结构，不会保存数据。
- *      2). 不会修改原来的数据源，它会将操作后的数据保存到另外一个对象中。
- *      3). 惰性求值，流在中间处理过程中，只是对操作进行了记录，并不会立即执行，需要等到执行终止操作的时候才会进行实际的计算。
+ * 1). 不是数据结构，不会保存数据。
+ * 2). 不会修改原来的数据源，它会将操作后的数据保存到另外一个对象中。
+ * 3). 惰性求值，流在中间处理过程中，只是对操作进行了记录，并不会立即执行，需要等到执行终止操作的时候才会进行实际的计算。
  * 参考：https://www.runoob.com/java/java8-streams.html
  */
 public class StreamAndOptionalTest {
@@ -67,7 +67,7 @@ public class StreamAndOptionalTest {
         List<String> filteredStrs = strs.stream().filter(str -> !str.isEmpty()).collect(Collectors.toList());
         System.out.println("非空筛选后的列表: " + filteredStrs);
 
-        String mergedStrs = strs.stream().filter(string -> !string.isEmpty()).collect(Collectors.joining(", "));
+        String mergedStrs = strs.stream().collect(Collectors.joining(", "));
         System.out.println("非空字符串逗号拼接: " + mergedStrs);
 
         //2、distinct 筛选元素，通过Stream元素中的hasCode和equals方法来去除重复元素
@@ -89,7 +89,7 @@ public class StreamAndOptionalTest {
         //6、sorted 返回一个新流，流中的元素按照自然排序进行排序 sorted(Comparator comp) 返回一个新流，并且Comparator指定的排序方式进行排序
         List<String> sortedStrs = strs.stream().sorted().collect(Collectors.toList());
         System.out.println("自然排序后的列表：" + sortedStrs);
-        sortedStrs = strs.stream().sorted((s1, s2) -> s1.length()> s2.length() ?1:-1).collect(Collectors.toList());
+        sortedStrs = strs.stream().sorted((s1, s2) -> s1.length() > s2.length() ? 1 : -1).collect(Collectors.toList());
         System.out.println("比较器排序后的列表：" + sortedStrs);
 
         //7、peek 接受Consumer，改变值
@@ -150,7 +150,7 @@ public class StreamAndOptionalTest {
 
     /**
      * Stream流其他使用场景一：是否匹配断言判定
-     *
+     * <p>
      * allMatch(Predicate p) 传入一个断言型函数，对流中所有的元素进行判断，如果都满足返回true，否则返回false
      * anyMatch(Predicate p) 传入一个断言型函数，对流中所有的元素进行判断，只要有一个满足条件就返回true，都不满足返回false
      * noneMatch(Predicate p) 所有条件都不满足，返回true，否则返回false。
@@ -277,7 +277,7 @@ public class StreamAndOptionalTest {
      * 求集合交集、并集、差集
      */
     @Test
-    public void testCollection(){
+    public void testCollection() {
            /*一般有filter 操作时，不用并行流parallelStream ,如果用的话可能会导致线程安全问题
 　　     判断对象要重写hash*/
 
@@ -398,24 +398,25 @@ public class StreamAndOptionalTest {
 
     private List<User> getUsers() {
         List<User> userList = new ArrayList<>();
-        for (int i = 6; i <= 10; i++) {
-            getUsers(userList, i);
+        for (int i = 1; i <= 10; i++) {
+            getUsers(userList, i,"zhangsan");
         }
-        for (int i = 6; i <= 10; i++) {
+        /*for (int i = 6; i <= 10; i++) {
             getUsers(userList, i);
-        }
+        }*/
         for (int i = 1; i <= 5; i++) {
-            getUsers(userList, i);
+            getUsers(userList, i,"lisi");
         }
-        for (int i = 11; i <= 15; i++) {
+       /* for (int i = 11; i <= 15; i++) {
             getUsers(userList, i);
-        }
+        }*/
         return userList;
     }
 
-    private void getUsers(List<User> userList, int i) {
+    private void getUsers(List<User> userList, int i,String name) {
         User users = new User();
-        users.setUserName("lwd" + i);
+        users.setId(Long.valueOf(i));
+        users.setUserName(name + i);
         users.setAge(i);
         users.setSex(i % 2 + 1);
         userList.add(users);
@@ -643,7 +644,9 @@ public class StreamAndOptionalTest {
     }
 
 
-    *//**
+    */
+
+    /**
      * 按某个字段分组后再按某个字段排序，每个组内取最大的放入最终集合
      *//*
     @Test
@@ -678,4 +681,11 @@ public class StreamAndOptionalTest {
         //style 2 使用JDK8新特性
         Map<Integer, Employee> employeeMap = employees.stream().collect(Collectors.toMap(e -> e.getAge(), Function.identity()));
     }*/
+    @Test
+    public void mytest() {
+        List<User> list1 = getUsers();
+        Map<Long, User> list1Map = list1.stream().collect(Collectors.toMap(u -> u.getId(), Function.identity(),(u1,u2) -> u2));
+        list1Map.forEach((k,v) -> System.out.println(k + ":" +v));
+
+    }
 }

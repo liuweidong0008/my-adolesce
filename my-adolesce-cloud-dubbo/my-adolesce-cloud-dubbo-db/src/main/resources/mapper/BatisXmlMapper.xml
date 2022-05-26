@@ -39,7 +39,7 @@
             <result column="update_time" property="updateTime"/>
         </association>-->
         <!--或-->
-        <association property="user" javaType="com.adolesce.cloud.dubbo.domain.db.BatisUser" resultMap="BatisUserMap"/>
+        <association property="user" column="id" javaType="com.adolesce.cloud.dubbo.domain.db.BatisUser" resultMap="BatisUserMap"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -66,7 +66,19 @@
         WHERE id = #{id}
     </delete>
 
-    <delete id="deleteByIds" parameterType="map">
+    <delete id="deleteByIdsWithList" parameterType="List">
+        DELETE FROM
+        my_batis_user
+        <if test="list.size >0">
+            WHERE
+            id IN
+            <foreach collection="list" item="id" open="(" close=")" separator=",">
+                #{id}
+            </foreach>
+        </if>
+    </delete>
+
+    <delete id="deleteByIdsWithMap" parameterType="map">
         DELETE FROM
         my_batis_user
         <if test="ids.size >0">
@@ -78,10 +90,22 @@
         </if>
     </delete>
 
-    <delete id="deleteByIdsStr" parameterType="String">
+    <delete id="deleteByIdsStr1" parameterType="String">
         DELETE
         FROM my_batis_user
-        WHERE FIND_IN_SET(id, #{ids})
+        WHERE FIND_IN_SET(id, #{ids}) and password = #{password}      <!-- #find_in_set(213, ancestors)-->
+    </delete>
+
+    <delete id="deleteByIdsStr2" parameterType="map">
+        DELETE
+        FROM my_batis_user
+        WHERE FIND_IN_SET(id, #{ids}) and password = #{password}
+    </delete>
+
+    <delete id="deleteByIdsStr3" parameterType="com.adolesce.cloud.dubbo.domain.db.BatisUser">
+        DELETE
+        FROM my_batis_user
+        WHERE FIND_IN_SET(id, #{ids}) and password = #{password}
     </delete>
 
     <update id="update" parameterType="com.adolesce.cloud.dubbo.domain.db.BatisUser">
@@ -129,9 +153,11 @@
                 AND pass_word = #{password}
             </if>
             <if test="startTime != null and startTime !=''">
+               <!-- <![CDATA[>=]]> -->
                 AND DATE_FORMAT(create_time,'%Y-%m-%d %H:%i:%s') &gt;= #{startTime}
             </if>
             <if test="endTime != null and endTime !=''">
+                <!-- <![CDATA[<=]]> -->
                 AND DATE_FORMAT(create_time,'%Y-%m-%d %H:%i:%s') &lt;= #{endTime}
             </if>
             <choose>
@@ -173,5 +199,9 @@
                 and a.id = #{id}
             </if>
         </where>
+    </select>
+
+    <select id="queryResltWithMap" resultType="java.util.Map">
+        SELECT SUM(age) AS agecount,COUNT(1) AS idcount FROM `my_batis_user`
     </select>
 </mapper>

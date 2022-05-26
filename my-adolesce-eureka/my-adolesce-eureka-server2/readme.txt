@@ -28,7 +28,7 @@ Eureka服务端集群(注册中心)
 
     4）、配置文件增加配置 application.yml
         server:
-          port: 8762  #自定义监听端口,默认8080
+          port: 6762  #自定义监听端口,默认8080
           servlet:
             context-path: /eureka-server2 #配置项目名
 
@@ -41,7 +41,7 @@ Eureka服务端集群(注册中心)
             hostname: eureka-server2
           client:
             service-url:
-              defaultZone: http://eureka-server:8761/eureka-server/eureka #集群模式 相互注册,配置其他注册中心节点地址
+              defaultZone: http://eureka-server:6761/eureka-server/eureka #集群模式 相互注册,配置其他注册中心节点地址
             register-with-eureka: false # 是否将自己的路径 注册到eureka上，默认为true。eureka server 不需要的，eureka provider client 需要
             fetch-registry: false # 是否需要从eureka中抓取路径，默认为true。eureka server 不需要的，eureka consumer client 需要
 
@@ -49,8 +49,8 @@ Eureka服务端集群(注册中心)
 
     6）、改造另外的注册中心结点
          改造 defaultZone 属性的指向（互相指向）
-         defaultZone: http://eureka-server2:8762/eureka-server2/eureka
+         defaultZone: http://eureka-server2:6762/eureka-server2/eureka
 
     7）、改造eureka客户端（服务提供方和消费方）
          改造 defaultZone 属性的指向（指向所有的注册中心地址，逗号分割）
-         defaultZone: http://eureka-server:8761/eureka-server/eureka,http://eureka-server2:8762/eureka-server2/eureka
+         defaultZone: http://eureka-server:6761/eureka-server/eureka,http://eureka-server2:6762/eureka-server2/eureka

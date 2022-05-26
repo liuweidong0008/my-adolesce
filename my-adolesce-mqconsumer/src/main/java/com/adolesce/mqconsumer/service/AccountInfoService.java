@@ -3,13 +3,14 @@ package com.adolesce.mqconsumer.service;
 import com.adolesce.cloud.dubbo.api.db.AccountInfoApi;
 import com.adolesce.common.vo.AccountChangeEvent;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
 public class AccountInfoService {
-    //@DubboReference
+    @DubboReference
     private AccountInfoApi accountInfoApi;
 
     /**

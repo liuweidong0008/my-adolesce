@@ -1,6 +1,6 @@
 Eureka客户端（服务消费方）
 
-1、整合Eureka步骤，作为客户端（服务提供方）
+1、整合Eureka步骤，作为客户端（服务消费方）
     1)、引入Eureka客户端依赖
         <!-- eureka-client -->
         <dependency>
@@ -13,7 +13,7 @@ Eureka客户端（服务消费方）
 
     3）、配置文件增加配置 application.yml
        server:
-         port: 8002  #自定义监听端口,默认8080
+         port: 6001  #自定义监听端口,默认8080
          servlet:
            context-path: /eureka-consumer #配置项目名
 
@@ -31,8 +31,8 @@ Eureka客户端（服务消费方）
            lease-expiration-duration-in-seconds: 90 # 默认如果90秒内eureka client没有向eureka server发心跳包，服务器呀，你把我干掉吧~（又称服务剔除时间）
          client:
            service-url:
-             defaultZone: http://localhost:8761/eureka-server/eureka # eureka服务端地址，将来客户端使用该地址和eureka进行通信（默认就是该地址，多个可用，分隔）
-             #defaultZone: http://eureka-server:8761/eureka-server/eureka,http://eureka-server2:8762/eureka-server2/eureka
+             defaultZone: http://localhost:6761/eureka-server/eureka # eureka服务端地址，将来客户端使用该地址和eureka进行通信（默认就是该地址，多个可用，分隔）
+             #defaultZone: http://eureka-server:6761/eureka-server/eureka,http://eureka-server2:6762/eureka-server2/eureka
 
     4)、启动
 
@@ -62,7 +62,7 @@ Eureka客户端（服务消费方）
                   ribbon:
                     NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule # 负载均衡规则
 
-    6）、Feign集成
+    6）、Feign集成(基于客户端的声明式调用负载均衡器)
         1、添加依赖
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
@@ -119,3 +119,42 @@ Eureka客户端（服务消费方）
               eager-load:
                 enabled: true
                 clients: userservice
+
+    9）、客户端整合hystrix，实现服务熔断降级
+        1、配置开启feign对hystrix的支持
+            feign:
+              hystrix:
+                enabled: true
+        2、定义feign 调用接口实现类，复写方法，即 降级方法
+        3、在 @FeignClient 注解中使用 fallback 属性设置降级处理类。
+        4、可在客户端配置hystrix降级超时时间
+            hystrix:
+              command:
+                default:
+                  execution:
+                    isolation:
+                      thread:
+                        timeoutInMilliseconds: 2000
+        5、客户端什么时候出现降级?
+            0）、在客户端进行降级处理，Hystrix的超时时间一般要 > ribbon重试次数 * ribbon超时时间，保证能重试完，如果重试完还是不行再抛出超时异常触发Hystrix降级
+            1）. 客户端出现异常（比如重试次数用完抛出超时异常）
+            2）. 客户端处理超时（Hystrix的超时时间，默认超时1s）
+
+    10）、客户端超时重试测试（服务端开启hystrix降级，且降级超时时间默认为1S情况下测试）
+            服务端休眠	消费端Hystrix降级超时时间  消费端Ribbon-ReadTimeout时间       服务端现象					    消费端现象			浏览器现象
+            1s			1s					        1s							   调用1次						    正常降级			    客户端降级页面
+            1s			2s					        1s							   调用2次						    抛1次超时异常		客户端降级页面
+            2s			2s					        2s							   调用1次、抛1次sleep打断错误        正常				服务端降级页面
+            2s			2s					        1s							   调用2次、抛2次sleep打断错误        抛1次超时异常		客户端降级页面
+            2s 			3s					        1s							   调用2次、抛2次sleep打断错误        抛1次超时异常		客户端降级页面
+            2s			1s					        1s							   调用1次、抛1次sleep打断错误        正常降级	 		    客户端降级页面
+
+            2s			1s					        2s							   调用1次、抛1次sleep打断错误        正常降级	 		    客户端降级页面
+            3s			1s					        2s							   调用1次、抛1次sleep打断错误        正常降级	 		    客户端降级页面
+
+            1s			1s					        2s							   调用1次  					        正常降级			    客户端降级页面
+            1s			2s					        2s							   调用1次、抛1次sleep打断错误        正常				服务端降级页面
+
+            2s			1s					        3s							   调用1次、抛1次sleep打断错误        正常降级			    客户端降级页面
+            2s			2s					        3s							   调用1次、抛1次sleep打断错误        正常				服务端降级页面
+            2s			3s					        3s							   调用1次、抛1次sleep打断错误        正常				服务端降级页面

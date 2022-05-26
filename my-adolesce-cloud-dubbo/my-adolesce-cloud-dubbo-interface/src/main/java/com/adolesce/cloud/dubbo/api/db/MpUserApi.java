@@ -26,4 +26,6 @@ public interface MpUserApi extends IService<MpUser> {
     List<MpUser> selectMpUserByParams(Map<String,Object> params);
 
     List<MpAddress> selectMpAddressByParams(Map<String,Object> params);
+
+    MpUser queryUserByPhone(String phone);
 }

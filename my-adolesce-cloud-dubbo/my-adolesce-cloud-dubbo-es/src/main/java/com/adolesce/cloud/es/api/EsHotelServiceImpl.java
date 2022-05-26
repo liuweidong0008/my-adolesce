@@ -9,14 +9,15 @@ import com.adolesce.cloud.es.config.EsSearchCommonService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.annotation.DubboService;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.geo.GeoPoint;
 import org.elasticsearch.common.unit.DistanceUnit;
 import org.elasticsearch.index.query.AbstractQueryBuilder;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder;
 import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.GeoDistanceSortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
@@ -30,19 +31,17 @@ import java.util.Map;
 @DubboService
 public class EsHotelServiceImpl implements EsSearchHotelApi {
     @Autowired
-    private RestHighLevelClient restHighLevelClient;
-    @Autowired
     private EsSearchCommonService esSearchCommonService;
 
     @Override
-    public EsPageResult search(EsRequestParams params) {
+    public EsPageResult search(EsRequestParams params) throws Exception {
         try {
             // 1.准备请求参数
-            // 1.1.query
-            AbstractQueryBuilder queryBuilder = buildBasicQuery(params);
-            // 1.2.分页
+            // 1.1、构建查询条件
+            QueryBuilder queryBuilder = buildBasicQuery(params);
+            // 1.2、构建分页参数
             Page page = new Page(params.getPage(),params.getSize());
-            // 1.3.距离排序
+            // 1.3、构建以某个点为中心排序 Builder
             String location = params.getLocation();
             GeoDistanceSortBuilder distanceSortBuilder = null;
             if (StringUtils.isNotBlank(location)) {
@@ -51,7 +50,14 @@ public class EsHotelServiceImpl implements EsSearchHotelApi {
                         .order(SortOrder.ASC)
                         .unit(DistanceUnit.KILOMETERS);
             }
-            Map<String, Object> resultMap = esSearchCommonService.excuteQuery("hotel", HotelDoc.class, queryBuilder, page, null, distanceSortBuilder);
+            //1.4、构建高亮 Builder
+            HighlightBuilder highlightBuilder = new HighlightBuilder()
+                        .field("name").requireFieldMatch(false)
+                        .field("address").requireFieldMatch(false)   //不会参与高亮，因为该字段映射中未参与搜索
+                        .field("business").requireFieldMatch(false); //会参与高亮，但是由于该字段是keyword类型，因此必须跟分词后的某个词条完全匹配才会高亮
+
+            //2、执行查询，解析结果
+            Map<String, Object> resultMap = esSearchCommonService.excuteQuery("hotel", HotelDoc.class, queryBuilder, page, highlightBuilder, distanceSortBuilder);
             List<HotelDoc> results = (List<HotelDoc>) resultMap.get("result");
             Long total = (Long) resultMap.get("total");
             return new EsPageResult(total, results);

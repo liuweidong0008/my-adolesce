@@ -3,7 +3,6 @@ package com.adolesce.server.config;
 import com.netflix.loadbalancer.IRule;
 import com.netflix.loadbalancer.RandomRule;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * @author Administrator
@@ -15,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
  * 2、如果启动类没有通过@RibbonClient注解配置负载均衡策略（默认相当于打了没有指定属性的注解），会将当前config类注册到spring容器，会将该策略应用至所有服务
  * @date 2021/7/13 13:28
  */
-@Configuration
+//@Configuration
 public class RibbonRuleConfig {
     @Bean
     public IRule rule() {

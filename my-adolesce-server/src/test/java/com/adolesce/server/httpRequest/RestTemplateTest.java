@@ -247,9 +247,9 @@ public class RestTemplateTest {
      * 测试POST请求：post请求体方式放置请求数据，文件上传
      */
     @Test
-    public void testPost9(MultipartFile mulFile) {
-
+    public void testPost9() {
         try {
+            MultipartFile mulFile = null;
             File file = new File(mulFile.getOriginalFilename());
             FileUtils.copyInputStreamToFile(mulFile.getInputStream(), file);
 

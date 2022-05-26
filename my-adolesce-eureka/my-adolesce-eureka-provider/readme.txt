@@ -13,7 +13,7 @@ Eureka客户端(服务提供方)
 
     3）、配置文件增加配置 application.yml
        server:
-         port: 8003  #自定义监听端口,默认8080
+         port: 6000  #自定义监听端口,默认8080
          servlet:
            context-path: /eureka-provider #配置项目名
 
@@ -31,7 +31,59 @@ Eureka客户端(服务提供方)
            lease-expiration-duration-in-seconds: 90 # 默认如果90秒内eureka client没有向eureka server发心跳包，服务器呀，你把我干掉吧~（又称服务剔除时间）
          client:
            service-url:
-             defaultZone: http://localhost:8761/eureka-server/eureka # eureka服务端地址，将来客户端使用该地址和eureka进行通信（默认就是该地址，多个可用，分隔）
-             #defaultZone: http://eureka-server:8761/eureka-server/eureka,http://eureka-server2:8762/eureka-server2/eureka
+             defaultZone: http://localhost:6761/eureka-server/eureka # eureka服务端地址，将来客户端使用该地址和eureka进行通信（默认就是该地址，多个可用，分隔）
+             #defaultZone: http://eureka-server:6761/eureka-server/eureka,http://eureka-server2:6762/eureka-server2/eureka
 
     4)、启动
+
+    5)、服务端Hystrix服务降级
+        1、引入依赖
+            <!-- hystrix -->
+             <dependency>
+                 <groupId>org.springframework.cloud</groupId>
+                 <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
+             </dependency>
+        2、启动类上打上注解开启Hystrix功能：@EnableCircuitBreaker
+        3、服务端定义降级方法
+        4、在服务端提供的服务上使用 @HystrixCommand 注解来配置降级方法
+        5、服务端什么时候出现降级?
+             1）. 服务端出现异常
+             2）. 服务端处理超时（Hystrix的超时时间，默认超时1s）
+             3) . 触发熔断
+
+    6)、Hystrix-熔断（无需任何配置，默认就已打开）
+     * 服务熔断：
+        1、Hystrix 熔断机制，用于监控微服务调用情况，当失败的情况达到预定的阈值（5秒内失败20次或者5秒内失败几率一半以上了），会打开断路器，拒绝所有请求，直到服务恢复正常为止。
+        2、断路器三种状态：打开、半开、关闭
+        3、每隔5秒会将断路器变为半开状态，去调用一次服务，如果成功则关闭熔断器，如果还是失败则重新打开熔断器
+        4、修改服务提供方的方法（GoodsController），配置熔断参数
+          • circuitBreaker.sleepWindowInMilliseconds：监控时间
+          • circuitBreaker.requestVolumeThreshold：失败次数
+          • circuitBreaker.errorThresholdPercentage：失败率
+
+     7）、服务端超时重试测试（关闭客户端hystrix降级情况下测试）
+         服务端休眠	服务端Hystrix降级超时时间    消费端Ribbon-ReadTimeout时间    服务端现象				  	    消费端现象			浏览器现象
+         1s			1s					        1s							   调用2次					  	抛2次超时异常		错误页面
+         1s			2s					        1s							   调用2次					  	抛2次超时异常		错误页面
+         2s			2s					        2s							   调用2次					  	抛2次超时异常		错误页面
+         2s			2s					        1s							   调用2次					  	抛2次超时异常		错误页面
+         2s 		3s					        1s							   调用2次					  	抛2次超时异常		错误页面
+         2s			1s					        1s							   调用2次、抛2次sleep打断错误	抛2次超时异常		错误页面
+
+         2s			1s					        2s							   调用1次、抛1次sleep打断错误	正常				降级页面
+         3s			1s					        2s							   调用1次、抛1次sleep打断错误	正常				降级页面
+
+         1s			1s					        2s							   调用1次					  	正常				降级页面
+         1s			2s					        2s							   调用1次						正常				正常页面
+
+         2s			1s					        3s							   调用1次、抛1次sleep打断错误	正常				降级页面
+         2s			2s					        3s							   调用1次					  	正常				降级页面|正常页面
+         2s			3s					        3s							   调用1次					  	正常				正常页面
+
+         Ribbon-ReadTimeout <= 服务端休眠时间
+            服务端降级超时时间  >= Ribbon-ReadTimeout 优先触发重试，不会服务降级
+            服务端降级超时时间 < Ribbon-ReadTimeout 优先服务降级，不会触发重试
+
+         Ribbon-ReadTimeout > 服务端休眠时间 ：不会触发重试
+            服务端降级超时时间 <= 服务端休眠时间  返回服务降级结果
+            服务端降级超时时间 > 服务端休眠时间  返回正常结果

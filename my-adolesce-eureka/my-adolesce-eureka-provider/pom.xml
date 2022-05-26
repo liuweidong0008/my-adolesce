@@ -28,13 +28,13 @@
         </dependency>
 
         <!-- hystrix 服务降级、熔断-->
-        <!--<dependency>
+        <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
         </dependency>
 
-        &lt;!&ndash;turbine 熔断监控&ndash;&gt;
-        <dependency>
+        <!--turbine 熔断监控-->
+        <!--<dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>

@@ -1,13 +1,12 @@
 server:
-  port: 8002
+  port: 7000
   servlet:
     context-path: /nacos-provider #配置项目名
 
 spring:
-  cloud:
-    nacos:
-      discovery:
-        server-addr: 127.0.0.1:8848 # 配置nacos 地址
-        cluster-name: HZ # 集群名称（Nacos分级存储模型 服务->集群->实例，同级群优先，集群内随机，同级群都挂了再访问别的集群，但会报警告）
   application:
     name: nacos-provider # 服务名称
+  cloud:
+    nacos:
+      server-addr: 127.0.0.1:8848 # 配置nacos 地址
+      cluster-name: HZ # 集群名称（Nacos分级存储模型 服务->集群->实例，同级群优先，集群内随机，同级群都挂了再访问别的集群，但会报警告）

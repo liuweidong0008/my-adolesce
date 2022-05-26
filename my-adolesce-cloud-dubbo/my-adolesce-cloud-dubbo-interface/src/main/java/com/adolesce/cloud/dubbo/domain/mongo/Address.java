@@ -12,4 +12,11 @@ public class Address {
     private String city;
     //街道
     private String street;
+
+    private Location location;
+
+    public Address(String city, String street) {
+        this.city = city;
+        this.street = street;
+    }
 }

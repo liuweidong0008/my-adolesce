@@ -33,14 +33,14 @@ public class YMSmsSenderUtil {
         params.setUrl("http://shmtn.b2m.cn/inter/sendSingleSMS");
 
         //602423
-        params.setAppId("EUCP-EMY-SMS1-1IOG0");
-        params.setSecretKey("366FC3E3AC0F03CE");
+        //params.setAppId("EUCP-EMY-SMS1-1IOG0");
+        //params.setSecretKey("366FC3E3AC0F03CE");
 
         //649142
-        //params.setAppId("EUCP-EMY-SMS1-391UA");
-        //params.setSecretKey("759B0349B84719D4");
+        params.setAppId("EUCP-EMY-SMS1-391UA");
+        params.setSecretKey("759B0349B84719D4");
         params.setSignName("【饿了么】");
-        params.setMobile("18670747332"); //18390952800  18569412474
+        params.setMobile("18573985801"); //18390952800  18569412474
         params.setContent("有商家希望和您的童趣手工制作小店进行合作，有意向请联系010-82903982。");
 
         // 发送单条短信
@@ -70,14 +70,14 @@ public class YMSmsSenderUtil {
         ResultModel result = requestText(params.getAppId(), params.getSecretKey(),
                 algorithm, requestParams, params.getUrl(), params.isGzip(), encode);
         log.info("yimei sms single send result code:" + result.getCode());
-        System.out.println("yimei sms single send result code:" + result.getCode());
+        System.err.println("yimei sms single send result code:" + result.getCode());
 
         if ("SUCCESS".equals(result.getCode())) {
             isSuccess = true;
             SmsResponse response = JSON.parseObject(result.getResult(), SmsResponse.class);
             //JsonHelper.fromJson(SmsResponse.class, result.getResult());
             if (response != null) {
-                System.out.println("data : " + response.getMobile() + "," + response.getSmsId() + "," + response.getCustomSmsId());
+                System.err.println("data : " + response.getMobile() + "," + response.getSmsId() + "," + response.getCustomSmsId());
             }
         }
         log.info("yimei sms single send end");
@@ -99,7 +99,7 @@ public class YMSmsSenderUtil {
         requestParams.setRequestValidPeriod(60);
         ResultModel result = requestText(params.getAppId(), params.getSecretKey(),
                 algorithm, requestParams, params.getUrl(), params.isGzip(), encode);
-        System.out.println("yimei sms batch send result code:" + result.getCode());
+        System.err.println("yimei sms batch send result code:" + result.getCode());
         log.info("yimei sms batch send result code:" + result.getCode());
         if ("SUCCESS".equals(result.getCode())) {
             isSuccess = true;
@@ -107,7 +107,7 @@ public class YMSmsSenderUtil {
             //JsonHelper.fromJson(SmsResponse[].class, result.getResult());
             if (response != null) {
                 for (SmsResponse d : response) {
-                    System.out.println("data:" + d.getMobile() + "," + d.getSmsId() + "," + d.getCustomSmsId());
+                    System.err.println("data:" + d.getMobile() + "," + d.getSmsId() + "," + d.getCustomSmsId());
                 }
             }
         }
@@ -201,10 +201,10 @@ public class YMSmsSenderUtil {
             ResponseData<SmsResponse> data = JSON.parseObject(json, ResponseData.class);
             //JsonHelper.fromJson(new TypeToken<ResponseData<SmsResponse>>() {}, json);
             String code = data.getCode();
-            System.out.println("yimei sms voice send result code:" + code);
+            System.err.println("yimei sms voice send result code:" + code);
             log.info("yimei sms voice send result code:" + code);
             if ("SUCCESS".equals(code)) {
-                System.out.println("data:" + data.getData().getMobile() + "," + data.getData().getSmsId() + "," + data.getData().getCustomSmsId());
+                System.err.println("data:" + data.getData().getMobile() + "," + data.getData().getSmsId() + "," + data.getData().getCustomSmsId());
             }
         }
         log.info("yimei sms voice send end");
@@ -234,7 +234,7 @@ public class YMSmsSenderUtil {
                 if (res.getHttpCode() == 200) {
                     json = res.getResultString();
                 } else {
-                    System.out.println("请求接口异常,请求码:" + res.getHttpCode());
+                    System.err.println("请求接口异常,请求码:" + res.getHttpCode());
                 }
             } else {
                 //System.out.println("请求接口网络异常:" + res.getResultCode().getCode());

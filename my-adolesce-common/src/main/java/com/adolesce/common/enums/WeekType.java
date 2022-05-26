@@ -31,7 +31,7 @@ public enum WeekType implements StrEnum {
     }
 
     public String getCodeName() {
-        return codeName;
+        return this.codeName;
     }
 
     @Override

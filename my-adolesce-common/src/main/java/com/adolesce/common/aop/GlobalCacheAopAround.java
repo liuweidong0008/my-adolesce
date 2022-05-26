@@ -46,7 +46,8 @@ public class GlobalCacheAopAround {
     public void doAspect() {
     }
 
-    //  @Around(value = "execution(* com.tanhua.server.service.*.*(..)) && @annotation(config)")
+    // 切入点为：com.adolesce.server.service.impl 包下的任何类上的任何方法，参数不限，另外将目标方法上的@Cache注解注入到参数中
+    // @Around(value = "execution(* com.adolesce.server.service.impl.*.*(..)) && @annotation(cache)")
     //环绕通知
     @Around("doAspect() && @annotation(cache)")
     public Object around(ProceedingJoinPoint joinPoint, Cache cache) {
@@ -126,6 +127,7 @@ public class GlobalCacheAopAround {
         String age = parse(expressionArr[2], signature.getParameterNames(), joinPoint.getArgs());
         String ageIsLt = parse(expressionArr[4], signature.getParameterNames(), joinPoint.getArgs());
         String nameIsEquals = parse(expressionArr[5], signature.getParameterNames(), joinPoint.getArgs());*/
+
         //如果没有指定缓存的组和key，就自动生成缓存key
         if (StringUtils.isEmpty(cache.group()) &&
                 StringUtils.isEmpty(cache.key())) {
@@ -144,7 +146,7 @@ public class GlobalCacheAopAround {
         if(StringUtils.isNotEmpty(cache.key())){
             //如果指定了缓存key
             if(isHaveGroup){
-                cacheKeyBuffer.append(":");
+                cacheKeyBuffer.append("::");
             }
             //解析SpringEL获取动态参数
             MethodSignature signature = (MethodSignature) joinPoint.getSignature();

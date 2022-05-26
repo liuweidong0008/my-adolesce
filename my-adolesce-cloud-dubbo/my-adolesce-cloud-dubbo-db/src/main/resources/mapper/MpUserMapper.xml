@@ -51,11 +51,20 @@
         </where>
     </select>
 
-    <select id="queryByNameCustom" resultMap="MpUserResultMap">
+    <select id="queryByNameCustom"  parameterType="map" resultMap="MpUserResultMap">
         SELECT `user`.*, record.card_no
         FROM my_mp_user `user`
                  INNER JOIN my_member_record record ON `user`.`name` = record.`client_name`
-        WHERE `user`.name LIKE CONCAT('%', #{name}, '%')
+        <where>
+            <!-- 在不传入分页对象时，参数条件直接用即可-->
+            <!-- <if test="name != null and name !=''">
+                 AND `user`.name like CONCAT('%' ,#{name}, '%')
+             </if>-->
+            <!--在传入分页对象时，参数条件要用变量.属性的方式取值-->
+            <if test="params.name != null and params.name !=''">
+                AND `user`.name like CONCAT('%' ,#{params.name}, '%')
+            </if>
+        </where>
         ORDER BY `record`.card_no
     </select>
 

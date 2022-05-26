@@ -28,7 +28,7 @@ public class User implements Serializable {
     private Integer sex; //性别
     private Boolean isOld = false; //是否老用户
     private Long created; //创建时间
-
+    private String mobile;
     public static String getMsg(){
         return "msg";
     }

@@ -7,8 +7,10 @@ import com.adolesce.cloud.dubbo.enums.SexEnum;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.pagehelper.PageHelper;
 import org.junit.Test;
@@ -117,7 +119,7 @@ public class MybatisPlusTest {
 
         //4. 根据Wrapper构造条件，删除
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.isNull("name");
+        queryWrapper.isNull("password");
         queryWrapper.or();
         queryWrapper.eq("password","123");
 
@@ -158,6 +160,7 @@ public class MybatisPlusTest {
         MpUser user2 = new MpUser();
         user2.setId(5L);
         user2.setPassword("456");
+
         myUsers.add(user1);
         myUsers.add(user2);
         //boolean result = mpUserApi.updateBatchById(myUsers);
@@ -169,12 +172,38 @@ public class MybatisPlusTest {
 
         //4、根据Entity和Wrapper进行更新（通过Entity指定要设置的字段）
         QueryWrapper qwrapper = new QueryWrapper<>();
-        qwrapper.eq("user_name","itcast");
+        qwrapper.eq("name","赵云3");
         user = new MpUser();
         user.setPassword("22");
         user.setAge(22);
         user.setBirthday(null);
         boolean result = this.mpUserApi.update(user, qwrapper);
+        System.err.println(result);
+    }
+
+    /**
+     * 测试允许将字段更新为null
+     */
+    @Test
+    public void testUpdateAllowNull() {
+        //方式一：全局设置【慎用】 （ global-config:db-config:update-strategy: IGNORED）
+        //方式二：在允许修改为null的字段上添加注解  @TableField(updateStrategy = FieldStrategy.IGNORED)
+        /*QueryWrapper qwrapper = new QueryWrapper<>();
+        qwrapper.eq("name","赵云5");
+
+        MpUser user = new MpUser();
+        user.setPassword("22");
+        user.setAge(null);
+        boolean result = this.mpUserApi.update(user, qwrapper);*/
+
+        //方式三、通过UpdateWrapper
+       LambdaUpdateWrapper<MpUser> updateWrapper =
+                Wrappers.<MpUser>lambdaUpdate()
+                    .set(MpUser::getAge,null)
+                    .set(MpUser::getPassword,"888")
+                    .eq(MpUser::getName,"赵云5");
+
+        boolean result = this.mpUserApi.update(updateWrapper);
         System.err.println(result);
     }
 
@@ -230,6 +259,9 @@ public class MybatisPlusTest {
                 .in("name", "李四", "王五");
         //select * from my_mp_user where user_name = ? and age < ? and name in (?,?)
         this.list(wrapper);
+
+        LambdaQueryWrapper lambdaQueryWrapper = new LambdaQueryWrapper();
+        lambdaQueryWrapper.clear();
     }
 
     @Test
@@ -261,6 +293,7 @@ public class MybatisPlusTest {
 
         wrapper.like("user_name", "zhang");
         //select * from my_mp_user where user_name like '%zhang%'
+
         this.list(wrapper);
     }
 
@@ -297,7 +330,7 @@ public class MybatisPlusTest {
                 .in("name", "李四", "王五")
                 //.orderBy(true,true,"age")
                 .orderByDesc("age")
-                .select("count(distinct user_id) as u_count");
+                .select("count(distinct user_name) as u_count");
 
         //SELECT id,user_name,password,name,sex,birthday FROM my_mp_user WHERE (user_name = ? OR age < ? AND name IN (?,?)) ORDER BY age DESC
         this.list(wrapper);
@@ -581,7 +614,7 @@ public class MybatisPlusTest {
      */
     @Test
     public void oneToMany(){
-        PageHelper.startPage(1,10,"u.birthday desc");
+        PageHelper.startPage(1,5,"u.birthday desc");
         Map<String,Object> params = new HashMap<>();
         params.put("id",2L);
         List<MpUser> users = this.mpUserApi.selectMpUserByParams(null);
@@ -592,7 +625,7 @@ public class MybatisPlusTest {
      * 通过address级联查询出所属user
      */
     @Test
-    public void oneToOne(){
+    public void manyToOne(){
         Map<String,Object> params = new HashMap<>();
         params.put("id",1L);
         List<MpAddress> addresses = this.mpUserApi.selectMpAddressByParams(null);

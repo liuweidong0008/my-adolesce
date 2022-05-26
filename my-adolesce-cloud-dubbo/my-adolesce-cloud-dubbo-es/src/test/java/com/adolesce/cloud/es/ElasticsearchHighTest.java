@@ -5,6 +5,7 @@ import cn.hutool.db.sql.Direction;
 import cn.hutool.db.sql.Order;
 import com.adolesce.cloud.dubbo.domain.db.ESGoods;
 import com.adolesce.cloud.dubbo.domain.es.HotelDoc;
+import com.adolesce.cloud.dubbo.domain.es.MyGoods;
 import com.adolesce.cloud.es.config.EsSearchCommonService;
 import com.alibaba.fastjson.JSON;
 import org.elasticsearch.action.search.SearchRequest;
@@ -33,9 +34,7 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -76,9 +75,9 @@ class ElasticsearchHighTest {
     @Autowired
     private RestHighLevelClient client;
     @Autowired
-    private ElasticsearchRestTemplate esTemplate;
-    @Autowired
     private EsSearchCommonService esSearchCommonService;
+//    @Autowired
+//    private ElasticsearchRestTemplate esTemplate;
 
     /**
      * 查询所有：matchAll
@@ -93,15 +92,16 @@ class ElasticsearchHighTest {
      *      }
      */
     @Test
-    public void testMatchAll1() throws IOException {
+    public void testMatchAll1() throws Exception {
         //查询所有商品文档
         QueryBuilder query = QueryBuilders.matchAllQuery();
 
         //执行查询
         excuteGoodsQuery(query, null,null,null);
     }
+
     @Test
-    public void testMatchAll2() throws IOException {
+    public void testMatchAll2() throws Exception {
         //查询所有酒店文档
         QueryBuilder query = QueryBuilders.matchAllQuery();
         //执行查询
@@ -123,7 +123,7 @@ class ElasticsearchHighTest {
      * }
      */
     @Test
-    public void testMatchQuery() throws IOException {
+    public void testMatchQuery() throws Exception {
         //对华为手机进行分词，然后匹配titile字段，求并集
         MatchQueryBuilder query = QueryBuilders.matchQuery("title", "华为手机");
         query.operator(Operator.AND);//默认求并集，可以指定求交集
@@ -161,7 +161,7 @@ class ElasticsearchHighTest {
      *      {
      *        "query": {
      *          "match": {
-     *            "all": "如家"                           //高亮一定要使用全文检索查询
+     *            "all": "外滩如家"                           //高亮一定要使用全文检索查询
      *          }
      *        },
      *        "highlight": {
@@ -176,7 +176,7 @@ class ElasticsearchHighTest {
      *      }
      */
     @Test
-    public void testMutiMatchQuery() throws IOException {
+    public void testMutiMatchQuery() throws Exception {
         MultiMatchQueryBuilder multiQueryBuilder = QueryBuilders.multiMatchQuery("外滩如家", "name", "brand", "business");
         //MatchQueryBuilder matchQueryBuilder = QueryBuilders.matchQuery("all", "外滩如家");
 
@@ -200,7 +200,7 @@ class ElasticsearchHighTest {
      * 2. 将高亮了的字段数据，替换原有数据
      */
     @Test
-    public void testHighLightQuery() throws IOException {
+    public void testHighLightQuery() throws Exception {
         MatchQueryBuilder query = QueryBuilders.matchQuery("title", "手机");
 
         HighlightBuilder highlighter = new HighlightBuilder();
@@ -234,12 +234,12 @@ class ElasticsearchHighTest {
      *      }
      */
     @Test
-    public void testTermQuery1() throws IOException {
+    public void testTermQuery1() throws Exception {
         QueryBuilder query = QueryBuilders.termQuery("title", "华为");//term词条查询
         excuteGoodsQuery(query, null,null,null);
     }
     @Test
-    public void testTermQuery2() throws IOException {
+    public void testTermQuery2() throws Exception {
         QueryBuilder query = QueryBuilders.termQuery("city", "上海");//term词条查询
         //执行查询
         excuteHotelQuery(query, null,null,null);
@@ -262,7 +262,7 @@ class ElasticsearchHighTest {
      *      }
      */
     @Test
-    public void testRangeQuery1() throws IOException {
+    public void testRangeQuery1() throws Exception {
         //范围查询
         RangeQueryBuilder query = QueryBuilders.rangeQuery("price").gte(2000).lte(3000);
         //指定分页(默认20条)
@@ -272,7 +272,7 @@ class ElasticsearchHighTest {
     }
 
     @Test
-    public void testRangeQuery2() throws IOException {
+    public void testRangeQuery2() throws Exception {
         //范围查询
         RangeQueryBuilder query = QueryBuilders.rangeQuery("price").gte(1000).lte(3000);
         //指定分页(默认20条)
@@ -291,7 +291,7 @@ class ElasticsearchHighTest {
      *  "*华"或"?华" 注意：这两个会引发全表（全索引）扫描 注意效率问题
      */
     @Test
-    public void testWildcardQuery() throws IOException {
+    public void testWildcardQuery() throws Exception {
         WildcardQueryBuilder query = QueryBuilders.wildcardQuery("title", "华*");
         //执行查询
         excuteGoodsQuery(query, null,null,null);
@@ -301,7 +301,7 @@ class ElasticsearchHighTest {
      * 模糊查询 - regexpQuery:正则匹配查询（用得比较少）
      */
     @Test
-    public void testRegexpQuery() throws IOException {
+    public void testRegexpQuery() throws Exception {
         //以单个字符开头的
         RegexpQueryBuilder query = QueryBuilders.regexpQuery("title", "\\w+(.)*");
         //执行查询
@@ -312,7 +312,7 @@ class ElasticsearchHighTest {
      * 模糊查询 - perfixQuery：前缀匹配查询，对keyword类型字段支持的比较好
      */
     @Test
-    public void testPrefixQuery() throws IOException {
+    public void testPrefixQuery() throws Exception {
         PrefixQueryBuilder query = QueryBuilders.prefixQuery("brandName", "三");
         //执行查询
         excuteGoodsQuery(query, null,null,null);
@@ -327,7 +327,7 @@ class ElasticsearchHighTest {
      * 5、可识别query中的连接符（or 、and）
      */
     @Test
-    public void testQueryStringQuery() throws IOException {
+    public void testQueryStringQuery() throws Exception {
         //对查询条件进行分词，形成"华为","荣耀"。
         //三个字段中任一字段包含华为或荣耀即可，求并集
         //QueryStringQueryBuilder query = QueryBuilders.queryStringQuery("华为荣耀").field("title").field("categoryName").field("brandName").defaultOperator(Operator.OR);
@@ -375,7 +375,7 @@ class ElasticsearchHighTest {
      *     }
      */
     @Test
-    public void testGeoQuery1() throws IOException {
+    public void testGeoQuery1() throws Exception {
         //范围查询
         GeoBoundingBoxQueryBuilder query = QueryBuilders.geoBoundingBoxQuery("location")
                 .setCorners(new GeoPoint(31.1,121.5),new GeoPoint(30.9,121.7));
@@ -416,7 +416,7 @@ class ElasticsearchHighTest {
      *      - 根据距离排序
      */
     @Test
-    public void testGeoQuery2() throws IOException {
+    public void testGeoQuery2() throws Exception {
         //范围查询
         GeoDistanceQueryBuilder query = QueryBuilders.geoDistanceQuery("location")
                 .point(new GeoPoint("31.21,121.5"))
@@ -473,7 +473,7 @@ class ElasticsearchHighTest {
      *     }
      */
     @Test
-    public void testFunctionScoreQuery() throws IOException {
+    public void testFunctionScoreQuery() throws Exception {
         MatchQueryBuilder matchQueryBuilder = QueryBuilders.matchQuery("all", "外滩");
         //相关性算分查询
         FunctionScoreQueryBuilder functionScoreQuery = QueryBuilders.functionScoreQuery(
@@ -529,7 +529,7 @@ class ElasticsearchHighTest {
      *       }
      */
     @Test
-    public void testBoolQuery1() throws IOException {
+    public void testBoolQuery1() throws Exception {
         //1.构建boolQuery
         BoolQueryBuilder query = QueryBuilders.boolQuery();
 
@@ -580,7 +580,7 @@ class ElasticsearchHighTest {
      *      }
      */
     @Test
-    public void testBoolQuery2() throws IOException {
+    public void testBoolQuery2() throws Exception {
         //1.构建boolQuery
         BoolQueryBuilder query = QueryBuilders.boolQuery();
 
@@ -669,7 +669,7 @@ class ElasticsearchHighTest {
      *    }
      */
     @Test
-    public void testAllQuery() throws IOException {
+    public void testAllQuery() throws Exception {
         //1.构建boolQuery
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 
@@ -711,7 +711,7 @@ class ElasticsearchHighTest {
         ).boostMode(CombineFunction.SUM);
 
         //指定分页
-        Page page = new Page(1,30,new Order("price",Direction.DESC));
+        Page page = new Page(1,30,new Order("price",Direction.ASC));
 
         HighlightBuilder highlighter = new HighlightBuilder();
         //设置title字段中匹配的词条高亮
@@ -720,7 +720,8 @@ class ElasticsearchHighTest {
         highlighter.postTags("</font>");
         highlighter.requireFieldMatch(false);
 
-        GeoDistanceSortBuilder geoDistanceSortBuilder = SortBuilders.geoDistanceSort("location", new GeoPoint("31.21,121.5"))
+
+        GeoDistanceSortBuilder geoDistanceSortBuilder = SortBuilders.geoDistanceSort(geoQuery.fieldName(), geoQuery.point())
                 .order(SortOrder.ASC)
                 .unit(DistanceUnit.KILOMETERS);
 
@@ -735,7 +736,7 @@ class ElasticsearchHighTest {
      * 2. 查询价格最高的
      */
     @Test
-    public void testAggQuery1() throws IOException {
+    public void testAggQuery1() throws Exception {
         //查询条件：根据手机匹配titile字段
         MatchQueryBuilder query = QueryBuilders.matchQuery("title", "手机");
         //创建统计Builder对象，查询price最大值，起个别名叫：max_price
@@ -754,9 +755,9 @@ class ElasticsearchHighTest {
      * @param query 查询条件对象
      * @param aggs 聚合参数列表
      * @return
-     * @throws IOException
+     * @throws Exception
      */
-    private Map<String, Aggregation> getAggregationMap(String indexName,QueryBuilder query,AggregationBuilder ... aggs) throws IOException {
+    private Map<String, Aggregation> getAggregationMap(String indexName,QueryBuilder query,AggregationBuilder ... aggs) throws Exception {
         SearchRequest searchRequest = new SearchRequest(indexName);
         SearchSourceBuilder sourceBulider = new SearchSourceBuilder();
 
@@ -799,7 +800,7 @@ class ElasticsearchHighTest {
      * 2. 查询品牌列表
      */
     @Test
-    public void testAggQuery2() throws IOException {
+    public void testAggQuery2() throws Exception {
         //查询条件：根据手机匹配titile字段
         MatchQueryBuilder query = QueryBuilders.matchQuery("title", "手机");
         //创建统计Builder对象，根据brandName分组，查询brandName列表，起个别名叫：goods_brands
@@ -825,15 +826,35 @@ class ElasticsearchHighTest {
         System.err.println( maxPrice);
     }
 
-    private void excuteGoodsQuery(QueryBuilder query, Page page, HighlightBuilder hlBuilder,GeoDistanceSortBuilder distanceSortBuilder) throws IOException {
+    private void excuteGoodsQuery(QueryBuilder query, Page page, HighlightBuilder hlBuilder,GeoDistanceSortBuilder distanceSortBuilder) throws Exception {
         List<ESGoods> goods = (List<ESGoods>)esSearchCommonService.excuteQuery("goods", ESGoods.class,
                 query, page, hlBuilder,distanceSortBuilder).get("result");
         goods.forEach(System.err::println);
     }
 
-    private void excuteHotelQuery(QueryBuilder query, Page page, HighlightBuilder hlBuilder,GeoDistanceSortBuilder distanceSortBuilder) throws IOException {
+    private void excuteHotelQuery(QueryBuilder query, Page page, HighlightBuilder hlBuilder,GeoDistanceSortBuilder distanceSortBuilder) throws Exception {
         List<HotelDoc> hotels = (List<HotelDoc>)esSearchCommonService.excuteQuery("hotel", HotelDoc.class,
                 query, page, hlBuilder,distanceSortBuilder).get("result");
         hotels.forEach(System.err::println);
     }
+
+    @Test
+    public void testMygoodsQuery() throws Exception {
+        QueryBuilder matchQuer = QueryBuilders.matchQuery("all", "冰箱");
+
+        //指定分页
+        Page page = new Page(1,30);
+
+        HighlightBuilder highlighter = new HighlightBuilder();
+        //设置title字段中匹配的词条高亮
+        highlighter.field("title").field("desc").field("categoryName");
+        highlighter.preTags("<font>");
+        highlighter.postTags("</font>");
+        highlighter.requireFieldMatch(false);
+
+        List<MyGoods> myGoods = (List<MyGoods>)esSearchCommonService.excuteQuery("mygoods", MyGoods.class,
+                matchQuer, page, highlighter,null).get("result");
+        myGoods.forEach(System.err::println);
+    }
+
 }

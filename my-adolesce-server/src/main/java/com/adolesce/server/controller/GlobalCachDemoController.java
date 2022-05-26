@@ -29,7 +29,6 @@ import java.util.Map;
  */
 @Slf4j
 @RestController
-
 /*所有的@Cacheable（）里面都有一个value＝“xxx”的属性，如果方法多了，写起来也是挺累的，如果可以一次性声明完 那就省事了，
     所以，有了@CacheConfig这个配置，一个类中可能会有多个缓存操作，而这些缓存操作可能是重复的。这个时候可以使用@CacheConfig。*/
 //@CacheConfig(cacheNames = "cache-demo")
@@ -100,7 +99,7 @@ public class GlobalCachDemoController {
      */
     @RequestMapping("action6")
     //@CacheEvict(value="action6",allEntries=true)// 清空action7 组下所有缓存
-    @CacheEvict(value="action6",key = "#user.getUserName()") // 清空action7组下某个用户的缓存
+    @CacheEvict(value="action6",key = "#user.getUserName()") // 清空action6组下某个用户的缓存
     public Response action6(MpUser user) {
         System.out.println(user);
         Map<String, Object> result = this.globalCachDemoService.action1();
@@ -110,13 +109,13 @@ public class GlobalCachDemoController {
     /**
      * //@Cacheable将在执行方法之前（此时通过condition 的#result还拿不到返回值）判断condition，如果返回true，则查缓存；
      *      @Cacheable(value = "user", key = "#id", condition = "#id lt 10")
-     *      public User conditionFindById(final Lon
+     *      public User conditionFindById(final Long id)
      * //@CachePut将在执行完方法后（#result就能拿到返回值了）判断condition，如果返回true，则放入缓存；
      *      @CachePut(value = "user", key = "#id", condition = "#result.username ne 'zhang'")
-     *      public User conditionSave(final User
+     *      public User conditionSave(final User user)
      * //@CachePut将在执行完方法后（#result就能拿到返回值了）判断unless，如果返回false，则放入缓存；（即跟condition相反）
      *      @CachePut(value = "user", key = "#user.id", unless = "#result.username eq 'zhang'")
-     *      public User conditionSave2(final User
+     *      public User conditionSave2(final User user)
      * //@CacheEvict 在方法执行之后调用（#result能拿到返回值了）；且判断condition，如果返回true，则移除缓存；
      *      @CacheEvict(value = "user", key = "#user.id", beforeInvocation = false, condition = "#result.username ne 'zhang'")
      *      public User conditionDelete(final User user)
@@ -136,14 +135,13 @@ public class GlobalCachDemoController {
      * Spring Cache提供了一些供我们使用的SpEL上下文数据，下表直接摘自Spring官方文档：
      *    名称	          位置	        描述	                                                                                示例
      *    methodName      root对象	    当前被调用的方法名	                                                                 #root.methodName
-     *    method	      root对象	    当前被调用的方法	                                                                     #root.method.name
-     *    target	      root对象	    当前被调用的目标对象	                                                                 #root.target
-     *    targetClass	  root对象	    当前被调用的目标对象类	                                                             #root.targetClass
-     *    args	          root对象	    当前被调用的方法的参数列表	                                                             #root.args[0]
-     *    caches	      root对象	    当前方法调用使用的缓存列表（如@Cacheable(value={“cache1”, “cache2”})），则有两个cache	 #root.caches[0].name
-     *    argument name   执行上下文     当前被调用的方法的参数，如findById(User user)，我们可以通过#id拿到参数	                 #user.id
-     *    result	      执行上下文	    方法执行后的返回值（仅当方法执行之后的判断有效                                            #result
-     *
+     *    method	      root对象	    当前被调用的方法	                                                                 #root.method.name
+     *    target	      root对象	    当前被调用的目标对象	                                                             #root.target
+     *    targetClass	  root对象	    当前被调用的目标对象类	                                                         #root.targetClass
+     *    args	          root对象	    当前被调用的方法的参数列表	                                                         #root.args[0] (类似：#p0)
+     *    caches	      root对象	    当前方法调用使用的缓存列表（如@Cacheable(value={“cache1”, “cache2”})），则有两个cache #root.caches[0].name
+     *    argument name   执行上下文      当前被调用的方法的参数，如findById(User user)，我们可以通过#id拿到参数	              #user.id
+     *    result	      执行上下文	    方法执行后的返回值（仅当方法执行之后的判断有效）                                      #result
+     *    T               静态类         项目静态类                                                                        T(静态类类路径).methodName()
      */
-
 }

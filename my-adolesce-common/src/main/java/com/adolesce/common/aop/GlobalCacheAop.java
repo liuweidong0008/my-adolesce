@@ -27,6 +27,9 @@ import java.util.concurrent.TimeUnit;
 //@Aspect
 @Slf4j
 public class GlobalCacheAop {
+    public GlobalCacheAop() {
+    }
+
     @Value("${cache.enable}")
     private Boolean enable;
 

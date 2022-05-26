@@ -8,7 +8,7 @@ Eureka服务端(注册中心)
                    <dependency>
                        <groupId>org.springframework.cloud</groupId>
                        <artifactId>spring-cloud-dependencies</artifactId>
-                       <version>Greenwich.RELEASE</version>
+                       <version>Hoxton.SR8</version>
                        <type>pom</type>
                        <scope>import</scope>
                    </dependency>
@@ -28,7 +28,7 @@ Eureka服务端(注册中心)
 
     4）、配置文件增加配置 application.yml
         server:
-          port: 8761
+          port: 6761
           servlet:
             context-path: /eureka-server #配置项目名
         spring:
@@ -57,7 +57,7 @@ Eureka服务端(注册中心)
     5）、启动
 
     6）、eureka控制台默认路径:项目根路径
-        如：localhost:9876
+        如：http://localhost:6761/eureka-server
 
         控制台显示信息介绍：
             System status:系统状态信息

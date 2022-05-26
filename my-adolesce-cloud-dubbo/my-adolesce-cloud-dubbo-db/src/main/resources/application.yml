@@ -1,5 +1,5 @@
 server:
-  port: 8005  #自定义监听端口,默认8080
+  port: 3002  #自定义监听端口,默认8080
 spring:
   #数据源配置
   datasource:
@@ -51,14 +51,14 @@ dubbo:
     base-packages: com.adolesce.cloud.db.api
 
 mybatis-plus:
-  type-enums-package:
-    com.adolesce.cloud.dubbo.enums
+  type-enums-package: com.adolesce.cloud.dubbo.enums
   global-config:
     db-config:
       # 表名前缀
       table-prefix: my_
       # id生成策略 数据库自增
       id-type: auto
+      #update-strategy: IGNORED
   configuration:
     # 日志
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

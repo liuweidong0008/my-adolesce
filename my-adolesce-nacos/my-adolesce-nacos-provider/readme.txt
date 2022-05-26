@@ -16,17 +16,17 @@ Nacos 注册中心服务提供方
 
     2）、配置文件增加配置 application.yml
        server:
-         port: 8002
+         port: 7000
          servlet:
            context-path: /nacos-provider #配置项目名
 
        spring:
+         application:
+           name: nacos-provider # 服务名称
          cloud:
            nacos:
              discovery:
                server-addr:  127.0.0.1:8848 # 配置nacos 服务端地址
-         application:
-           name: nacos-provider # 服务名称
 
     4)、启动
 

@@ -17,7 +17,6 @@ public class Memcache implements CachePack {
         System.err.println("向memcache中添加缓存数据");
 
     }
-
     @Override
     public String getCacheData(String redisKey) {
         System.err.println("从memcache中获取缓存数据");

@@ -1,12 +1,13 @@
 package com.adolesce.server.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
-import com.adolesce.cloud.dubbo.api.db.AccountInfoApi;
 import com.adolesce.common.config.RocketConfig;
 import com.adolesce.common.vo.AccountChangeEvent;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.DubboReference;
+import com.adolesce.cloud.dubbo.api.db.AccountInfoApi;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.LocalTransactionState;
 import org.apache.rocketmq.client.producer.TransactionListener;
@@ -24,7 +25,7 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 @Service
 public class AccountInfoService {
-    //@DubboReference
+    @DubboReference
     private AccountInfoApi accountInfoApi;
 
     //初始化生产者
@@ -60,7 +61,7 @@ public class AccountInfoService {
             public LocalTransactionState executeLocalTransaction(Message message, Object o) {
                 try {
                     //解析消息内容
-                    String jsonString = new String((byte[]) message.getBody());
+                    String jsonString = new String(message.getBody());
                     JSONObject jsonObject = JSONObject.parseObject(jsonString);
                     AccountChangeEvent ace = JSONObject.parseObject(jsonObject.getString("accountChange"), AccountChangeEvent.class);
                     //扣除金额

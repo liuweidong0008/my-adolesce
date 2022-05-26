@@ -8,11 +8,15 @@ import io.swagger.annotations.*;
 import org.springframework.web.bind.annotation.*;
 
 /**
+ * https://www.cnblogs.com/smallfa/p/15098992.html
  * @author Administrator
  * @version 1.0
  * @description: Swagger演示控制类
  *
- * swagger访问地址：http://localhost:8081/my_adolesce/swagger-ui.html
+ * 原生swagger访问地址：http://localhost:8081/my_adolesce/swagger-ui.html
+ *
+ * knife4j访问地址：http://localhost:8081/my_adolesce/doc.html
+ * 整合knife4j swagger访问地址：http://localhost:8081/my_adolesce/swagger-ui/index.html
  */
 @RestController
 @RequestMapping("/swagger/demo")

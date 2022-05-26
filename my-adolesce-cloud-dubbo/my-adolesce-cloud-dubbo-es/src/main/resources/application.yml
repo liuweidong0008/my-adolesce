@@ -1,5 +1,5 @@
 server:
-  port: 8007  #自定义监听端口,默认8080
+  port: 3004  #自定义监听端口,默认8080
 
 spring:
   cloud:
@@ -11,7 +11,7 @@ spring:
 dubbo:
   protocol:
     name: dubbo
-    port: 20883
+    port: 20882
   registry:
     address: spring-cloud://localhost  #使用springcloud中注册中心的地址
   scan:

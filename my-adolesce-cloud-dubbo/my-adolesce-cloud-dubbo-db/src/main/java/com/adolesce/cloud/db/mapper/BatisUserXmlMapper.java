@@ -14,9 +14,15 @@ public interface BatisUserXmlMapper {
 
     void deleteById(Long paramLong);
 
-    void deleteByIds(Map<String, Object> ids);
+    void deleteByIdsWithList(List<Long> ids);
 
-    void deleteByIdsStr(String ids);
+    void deleteByIdsWithMap(Map<String, Object> ids);
+
+    void deleteByIdsStr1(String ids, String password);
+
+    void deleteByIdsStr2(Map<String, Object> params);
+
+    void deleteByIdsStr3(BatisUser batisUser);
 
     void update(BatisUser paramUsers);
 
@@ -29,4 +35,6 @@ public interface BatisUserXmlMapper {
     List<BatisUser> selectBatisUserByParams(Map<String,Object> params);
 
     List<BatisAddress> selectBatisAddressByParams(Map<String,Object> params);
+
+    Map<String, Object> queryResltWithMap();
 }

@@ -17,11 +17,10 @@
     </properties>
 
     <dependencies>
-        <!--nacos-->
+        <!-- nacos客户端依赖包 -->
         <dependency>
-            <groupId>org.springframework.cloud</groupId>
+            <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
-            <version>0.2.2.RELEASE</version>
         </dependency>
 
         <dependency>
@@ -32,6 +31,31 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!--引入Feign的统一api-->
+        <dependency>
+            <groupId>com.boot.adolesce</groupId>
+            <artifactId>my-adolesce-nacos-feign-api</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <!--httpClient的依赖 -->
+        <dependency>
+            <groupId>io.github.openfeign</groupId>
+            <artifactId>feign-httpclient</artifactId>
+        </dependency>
+
+        <!--引入Sentinel依赖-->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
+
+       <!-- 引入Sentinel监听nacos的依赖-->
+        <dependency>
+            <groupId>com.alibaba.csp</groupId>
+            <artifactId>sentinel-datasource-nacos</artifactId>
         </dependency>
     </dependencies>
 </project>

@@ -5,6 +5,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.adolesce.common.entity.User;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import org.junit.Test;
 
 import java.text.ParseException;
@@ -54,6 +55,9 @@ public class SomeTest {
     public void testString1() {
         String s = "hello";
         String ss = s;
+        String sss = "hello";
+
+        System.out.println(s == sss);
         System.out.println(s == ss);
         s = s + " world";
         System.out.println(s == ss);
@@ -107,6 +111,57 @@ public class SomeTest {
     public void testTryFinally() {
         System.out.println("return :" + testReturn5());
     }
+    private int testReturn5() {
+        int i = 1;
+        try {
+            i++;
+            System.out.println("try:" + i);
+            int x = i / 0;
+            return i;
+        } catch (Exception e) {
+            i++;
+            System.out.println("catch:" + i);
+            return i;
+        } finally {
+            i++;
+            System.out.println("finally:" + i);
+            return i;
+        }
+    }
+
+    private int testReturn4() {
+        int i = 1;
+        try {
+            i++;
+            System.out.println("try:" + i);
+            return i;
+        } catch (Exception e) {
+            i++;
+            System.out.println("catch:" + i);
+            return i;
+        } finally {
+            i++;
+            System.out.println("finally:" + i);
+            return i;
+        }
+    }
+
+    private int testReturn3() {
+        int i = 1;
+        try {
+            i++;
+            System.out.println("try:" + i);
+            int x = i / 0;
+        } catch (Exception e) {
+            i++;
+            System.out.println("catch:" + i);
+            return i;
+        } finally {
+            i++;
+            System.out.println("finally:" + i);
+        }
+        return i;
+    }
 
     private int testReturn1() {
         int i = 1;
@@ -138,58 +193,6 @@ public class SomeTest {
             System.out.println("finally:" + list);
         }
         return list;
-    }
-
-    private int testReturn3() {
-        int i = 1;
-        try {
-            i++;
-            System.out.println("try:" + i);
-            int x = i / 0;
-        } catch (Exception e) {
-            i++;
-            System.out.println("catch:" + i);
-            return i;
-        } finally {
-            i++;
-            System.out.println("finally:" + i);
-        }
-        return i;
-    }
-
-    private int testReturn4() {
-        int i = 1;
-        try {
-            i++;
-            System.out.println("try:" + i);
-            return i;
-        } catch (Exception e) {
-            i++;
-            System.out.println("catch:" + i);
-            return i;
-        } finally {
-            i++;
-            System.out.println("finally:" + i);
-            return i;
-        }
-    }
-
-    private int testReturn5() {
-        int i = 1;
-        try {
-            i++;
-            System.out.println("try:" + i);
-            int x = i / 0;
-            return i;
-        } catch (Exception e) {
-            i++;
-            System.out.println("catch:" + i);
-            return i;
-        } finally {
-            i++;
-            System.out.println("finally:" + i);
-            return i;
-        }
     }
 
     @Test
@@ -263,7 +266,7 @@ public class SomeTest {
     }
 
     @Test
-    public void test1() {
+    public void testJsonParse() {
         String str = "[\"aaa\",\"bbb\",\"ccc\"]";
         //方式一
         List<String> strings = JSON.parseObject(str, List.class);
@@ -274,27 +277,37 @@ public class SomeTest {
         strings.forEach(System.err::println);
     }
 
+
     @Test
-    public void test2() throws ParseException {
-        SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat format2 = new SimpleDateFormat("YYYY-MM-dd");
+    public void test3() {
+        String json = "{'a': '\\\\\\\\11111111\\\\aa\\\\bb\\\\cc\\\\dd\\\\cexe.docx'}";
+        System.out.println(json);
+        Map map = JSONObject.parseObject(json,Map.class);
 
-        System.out.println(format1.format(new Date()));
-        System.out.println(format2.format(new Date()));
-
-        String dateStr1 = "2020-12-26";
-        String dateStr2 = "2020-12-27";
-        String formatStr1 = format1.format(format1.parse(dateStr1));
-        String formatStr2 = format1.format(format1.parse(dateStr2));
-
-        String formatStr3 = format2.format(format2.parse(dateStr1));
-        String formatStr4 = format2.format(format2.parse(dateStr2));
-
-        System.out.println(formatStr1);
-        System.out.println(formatStr2);
-        System.out.println(formatStr3);
-        System.out.println(formatStr4);
+        System.err.println(map);
+        System.err.println(map.get("a"));
     }
 
+    @Test
+    public void testJinZhi(){
+        int num = 1;
+        if(num > 0){
+            if(num < 10){
+                System.out.println(String.format("%02x", Integer.valueOf(num)));
+            }else{
+                System.out.println(Integer.toHexString(num));
+            }
+        }
+    }
 
+    @Test
+    public void test4(){
+        String a="abc";
+        String b="abc";
+        if(a==b){
+            String c = a.concat(b);
+            String d = a+b+c;
+            System.out.print(d);
+        }
+    }
 }

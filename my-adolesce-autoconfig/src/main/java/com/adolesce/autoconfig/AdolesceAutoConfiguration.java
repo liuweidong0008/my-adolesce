@@ -1,9 +1,14 @@
 package com.adolesce.autoconfig;
 
 
-import com.adolesce.autoconfig.config.HuyiSMSConfig;
-import com.adolesce.autoconfig.config.YiMeiSMSConfig;
+import com.adolesce.autoconfig.config.AliyunGreenProperties;
+import com.adolesce.autoconfig.config.AliyunVisionProperties;
+import com.adolesce.autoconfig.config.HuyiSMSProperties;
+import com.adolesce.autoconfig.config.YiMeiSMSProperties;
+import com.adolesce.autoconfig.template.AliyunGreenTemplate;
+import com.adolesce.autoconfig.template.AliyunVisionTemplate;
 import com.adolesce.autoconfig.template.SmsTemplate;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
@@ -23,19 +28,40 @@ import org.springframework.context.annotation.Bean;
  * 关于读取配置方面
  *  1、@EnableConfigurationProperties 这个注解和@ConfigurationProperties注解是一个完美组合，@ConfigurationProperties用于以 前缀方式读取配置文件，
  *      而@EnableConfigurationProperties 这个注解可以把被@ConfigurationProperties标注的类注入spring容器
- *  2、@Component可以将Properties类放入spring容器，但是前提是必须要扫描到该properties
+ *  2、@Component可以将Properties类放入spring容器，但是前提是Spring必须要扫描到该properties
  *  3、如果是读取自定义的配置文件，需借助@PropertySource("classpath:sms.properties") 注解指定文件位置及文件名，且必须打上@Component类型的注解进行装配才能读取到配置
  *  4、如果springboot的application文件和自定义的配置文件中有相同的配置项，优先读取spring boot的application文件中的
  */
 @EnableConfigurationProperties({
-        YiMeiSMSConfig.class,
-        HuyiSMSConfig.class
+        YiMeiSMSProperties.class,
+        HuyiSMSProperties.class,
+        AliyunGreenProperties.class,
+        AliyunVisionProperties.class
 })
 public class AdolesceAutoConfiguration {
     @Bean
-    public SmsTemplate smsTemplate(YiMeiSMSConfig yiMeiSMSConfig,
-                                   HuyiSMSConfig huyiSMSConfig ) {
-        return new SmsTemplate(yiMeiSMSConfig,huyiSMSConfig);
+    public SmsTemplate smsTemplate(YiMeiSMSProperties yiMeiSMSProperties,
+                                   HuyiSMSProperties huyiSMSProperties) {
+        return new SmsTemplate(yiMeiSMSProperties, huyiSMSProperties);
     }
 
+    /**
+     * 检测配置文件中，是否具有tanhua.green开头的配置
+     *      同时，其中的enable属性 = true
+     */
+    @Bean
+    @ConditionalOnProperty(prefix = "content-security.green",value = "enable", havingValue = "true")
+    public AliyunGreenTemplate aliyunGreenTemplate(AliyunGreenProperties properties) {
+        return new AliyunGreenTemplate(properties);
+    }
+
+    /**
+     * 检测配置文件中，是否具有tanhua.vision开头的配置
+     *      同时，其中的enable属性 = true
+     */
+    @Bean
+    @ConditionalOnProperty(prefix = "content-security.vision",value = "enable", havingValue = "true")
+    public AliyunVisionTemplate aliyunVisionTemplate(AliyunVisionProperties properties) {
+        return new AliyunVisionTemplate(properties);
+    }
 }

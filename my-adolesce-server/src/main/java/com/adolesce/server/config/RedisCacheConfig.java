@@ -11,7 +11,6 @@ import java.util.Map;
 
 @Configuration
 public class RedisCacheConfig {
-
     //设置失效时间
     private static final Map<String, Duration> cacheMap;
 

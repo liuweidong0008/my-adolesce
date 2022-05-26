@@ -12,11 +12,11 @@
     <artifactId>my-adolesce-eureka</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>my-adolesce-eureka-provider</module>
         <module>my-adolesce-eureka-server</module>
         <module>my-adolesce-eureka-server2</module>
-        <module>my-adolesce-hystrix-monitor</module>
+        <module>my-adolesce-eureka-provider</module>
         <module>my-adolesce-eureka-consumer</module>
+        <module>my-adolesce-hystrix-monitor</module>
     </modules>
 
     <properties>

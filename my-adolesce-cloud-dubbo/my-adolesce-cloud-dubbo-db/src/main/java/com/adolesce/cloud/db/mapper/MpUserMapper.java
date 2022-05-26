@@ -5,7 +5,6 @@ import com.adolesce.cloud.dubbo.domain.db.MpAddress;
 import com.adolesce.cloud.dubbo.domain.db.MpUser;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -20,9 +19,9 @@ import java.util.Map;
  */
 public interface MpUserMapper extends BaseMapper<MpUser> {
 
-    List<MpUser> queryByNameCustom(@Param("name") String name);
+    List<MpUser> queryByNameCustom(Map<String,Object> params);
 
-    IPage<MpUser> queryByNameCustom(IPage page, @Param("name") String name);
+    IPage<MpUser> queryByNameCustom(IPage page, Map<String,Object> params);
 
     List<MpUser> selectMpUserByParams(Map<String, Object> params);
 

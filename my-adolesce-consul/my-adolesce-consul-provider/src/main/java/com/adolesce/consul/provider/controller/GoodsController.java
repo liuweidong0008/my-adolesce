@@ -19,9 +19,7 @@ public class GoodsController {
 
     @GetMapping("/findOne/{id}")
     public Goods findOne(@PathVariable("id") int id) {
-
         Goods goods = goodsService.findOne(id);
-
         return goods;
     }
 }

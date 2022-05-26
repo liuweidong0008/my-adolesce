@@ -1,11 +1,10 @@
 package com.adolesce.cloud.es.config;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.db.Page;
 import cn.hutool.db.sql.Direction;
-import com.adolesce.cloud.dubbo.domain.db.ESGoods;
-import com.adolesce.cloud.dubbo.domain.es.HotelDoc;
 import com.alibaba.fastjson.JSON;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -23,11 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.io.IOException;
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author Administrator
@@ -37,8 +35,7 @@ import java.util.stream.Collectors;
  */
 @Component
 public class EsSearchCommonService {
-
-    @Autowired(required = false)
+    @Autowired
     private RestHighLevelClient client;
 
     /**
@@ -71,7 +68,7 @@ public class EsSearchCommonService {
      *   - 缺点：会有额外内存消耗，并且搜索结果是非实时的
      */
      public Map<String,Object> excuteQuery(String index, Class<?> mclass, QueryBuilder queryBuilder, Page page,
-                                HighlightBuilder hlBuilder, GeoDistanceSortBuilder distanceSortBuilder) throws IOException {
+                                HighlightBuilder hlBuilder, GeoDistanceSortBuilder distanceSortBuilder) throws Exception {
         //1、构建查询条件
         SearchRequest searchRequest = this.getSearchRequest(index, queryBuilder, page, hlBuilder, distanceSortBuilder);
         //2、执行查询，获取查询结果
@@ -87,7 +84,7 @@ public class EsSearchCommonService {
      * @param searchResponse
      * @return
      */
-    private Map<String,Object> handleResponse(Class<?> mclass, GeoDistanceSortBuilder distanceSortBuilder, SearchResponse searchResponse) {
+    private Map<String,Object> handleResponse(Class<?> mclass, GeoDistanceSortBuilder distanceSortBuilder, SearchResponse searchResponse) throws NoSuchFieldException, IllegalAccessException {
         Map<String,Object> responseResult = new HashMap<>();
         SearchHits searchHits = searchResponse.getHits();
         //1、获取记录数
@@ -101,12 +98,14 @@ public class EsSearchCommonService {
             String json = hit.getSourceAsString();
             //2.1、转为对象
             Object object = JSON.parseObject(json, mclass);
-            //2.2、设置距离信息，四舍五入保留两位小数
+            //2.2、如果设置了按距离排序，设置距离信息（四舍五入保留两位小数）
             if(ObjectUtil.isNotEmpty(distanceSortBuilder)){
                 Object[] sortValues = hit.getSortValues();
-                if (sortValues.length > 0) {
-                    if(object instanceof HotelDoc){
-                        ((HotelDoc)object).setDistance(new BigDecimal((Double)sortValues[0]).setScale(2, RoundingMode.UP));
+                if (ArrayUtil.isNotEmpty(sortValues)) {
+                    Field distance = mclass.getDeclaredField("distance");
+                    if(ObjectUtil.isNotEmpty(distance)){
+                        distance.setAccessible(true);
+                        distance.set(object,new BigDecimal((Double)sortValues[sortValues.length - 1]).setScale(2, RoundingMode.UP));
                     }
                 }
             }
@@ -115,17 +114,15 @@ public class EsSearchCommonService {
             Map<String, HighlightField> map = hit.getHighlightFields();
             if (CollUtil.isNotEmpty(map)) {
                 // 2）根据字段名，获取高亮结果
-                HighlightField highlightField = map.get(map.keySet().stream().collect(Collectors.toList()).get(0));
-                if (highlightField != null) {
-                    // 3）获取高亮结果字符串数组中的第1个元素
-                    String hName = highlightField.getFragments()[0].toString();
-                    // 4）把高亮结果放到HotelDoc中
-                    if(object instanceof HotelDoc){
-                        ((HotelDoc)object).setName(hName);
-                    }else if(object instanceof ESGoods){
-                        ((ESGoods)object).setTitle(hName);
+                map.forEach((fieldName,highlightField) -> {
+                    try {
+                        Field field = mclass.getDeclaredField(fieldName);
+                        field.setAccessible(true);
+                        field.set(object,highlightField.getFragments()[0].toString());
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                }
+                });
             }
             objectList.add(object);
         }
@@ -147,27 +144,28 @@ public class EsSearchCommonService {
         SearchRequest searchRequest = new SearchRequest(index);
         //2、准备查询条件构建器SearchSourceBuilder
         SearchSourceBuilder sourceBulider = new SearchSourceBuilder();
-        //3.1、指定查询条件
+        //3.1、指定查询条件(查询出所有记录总数，默认最多10000)
+        sourceBulider.trackTotalHits(true);
         sourceBulider.query(queryBuilder);
-        //3.2、指定地理位置排序(以当前查询条件中的坐标为距离计算目标点)
-        if(ObjectUtil.isNotEmpty(distanceSortBuilder)){
-            sourceBulider.sort(distanceSortBuilder);
-        }
         if(ObjectUtil.isNotEmpty(page)){
-            //3.3、指定普通排序（排序结果在结果数组中的第一个）
+            //3.2、指定普通排序（排序结果在结果数组中的第一个）
             if (!StringUtils.isEmpty(page.getOrders())) {
                 Arrays.stream(page.getOrders()).forEach(order ->
                         sourceBulider.sort(order.getField(), Direction.DESC.equals(order.getDirection()) ? SortOrder.DESC:SortOrder.ASC)
                 );
             }
-            //3.4、指定分页
+            //3.3、指定分页
             sourceBulider.from(Math.max((page.getPageNumber() - 1) , 0) * page.getPageSize()).size(page.getPageSize());
+        }
+        //3.4、指定地理位置排序(以当前查询条件中的坐标为距离计算目标点)
+        if(ObjectUtil.isNotEmpty(distanceSortBuilder)){
+            sourceBulider.sort(distanceSortBuilder);
         }
         //3.5、设置高亮
         if(ObjectUtil.isNotEmpty(hlBuilder)){
             sourceBulider.highlighter(hlBuilder);
         }
-        //3、添加查询条件构造器
+        //4、添加查询条件构造器
         searchRequest.source(sourceBulider);
         return searchRequest;
     }

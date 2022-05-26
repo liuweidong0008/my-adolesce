@@ -1,20 +1,19 @@
 server:
-  port: 8761  #自定义监听端口,默认8080
+  port: 6761  #自定义监听端口,默认8080
   servlet:
     context-path: /eureka-server #配置项目名
-
 spring:
   application:
     name: eureka-server-ha
 
 # eureka 配置
-# eureka 一共有4部分 配置
+# eureka 一共有4部分配置
 # 1. dashboard:eureka的web控制台配置  默认就是/
 # 2. server:eureka的服务端配置
 # 3. client:eureka的客户端配置
 # 4. instance:eureka的实例配置
 
-#eureka注册中心dashboard默认地址为当前项目根路径（http://localhost:8761/eureka-server）
+#eureka注册中心dashboard默认地址为当前项目根路径（http://localhost:6761/eureka-server）
 eureka:
   instance:
     #hostname: eureka-server
@@ -22,7 +21,7 @@ eureka:
   client:
     service-url:
       defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka-server/eureka # eureka服务端地址，将来客户端使用该地址和eureka进行通信（默认就是该地址，多个可用，分隔）
-      #defaultZone: http://eureka-server2:8762/eureka-server2/eureka #集群模式 相互注册,配置其他节点地址（此处的第一个eureka-server2是域名，要在hosts文件中进行域名配置）
+      #defaultZone: http://eureka-server2:6762/eureka-server2/eureka #集群模式 相互注册,配置其他节点地址（此处的第一个eureka-server2是域名，要在hosts文件中进行域名配置）
     register-with-eureka: false # 是否将自己的路径 注册到eureka上，默认为true。eureka server 不需要的，eureka provider client 才需要
     fetch-registry: false # 是否需要从eureka中抓取路径，默认为true。eureka server 不需要的，eureka consumer client 才需要
   server:
