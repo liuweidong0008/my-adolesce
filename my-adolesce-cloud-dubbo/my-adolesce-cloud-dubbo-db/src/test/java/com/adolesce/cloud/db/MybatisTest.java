@@ -64,7 +64,7 @@ public class MybatisTest {
         user.setCreateTime(LocalDateTime.now());
         user.setUpdateTime(LocalDateTime.now());
         this.usersAnnoMapper.insert(user);
-        this.usersMapper.insert(user);
+        Integer count = this.usersMapper.insert(user);
         System.out.println(user);
     }
 
@@ -137,13 +137,13 @@ public class MybatisTest {
         params.put("ids",idsStr);
         params.put("password",password);
         //this.usersAnnoMapper.deleteByIdsStr2(params);
-        this.usersMapper.deleteByIdsStr2(params);
+        //this.usersMapper.deleteByIdsStr2(params);
 
         BatisUser batisUser = new BatisUser();
         batisUser.setIds(idsStr);
         batisUser.setPassword(password);
         //this.usersAnnoMapper.deleteByIdsStr3(batisUser);
-        //this.usersMapper.deleteByIdsStr3(batisUser);
+        this.usersMapper.deleteByIdsStr3(batisUser);
     }
 
     /**
@@ -264,7 +264,17 @@ public class MybatisTest {
 
     @Test
     public void testQueryResltWithMap(){
-        Map<String,Object> addresses = this.usersMapper.queryResltWithMap();
-        addresses.forEach((k,v) -> System.out.println(k+":"+v));
+        List<Map<String,Object>> addresses = this.usersMapper.queryResltWithMap();
+        System.out.println(addresses);
+        /*for(String key:addresses.keySet()){
+            System.out.println(key + ":" + addresses.get(key));
+        }
+        System.err.println("-----------------------------------");
+        for(Map.Entry<String, Object> entry:addresses.entrySet()){
+            System.out.println(entry.getKey() + ":" +entry.getValue());
+        }
+        System.err.println("-----------------------------------");
+        addresses.forEach((k,v) -> System.out.println(k +":" +v));*/
+
     }
 }

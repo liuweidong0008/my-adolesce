@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 //暴露dubbo服务，
 @DubboService(version = "1.0.0")
 public class UserDemoServiceImpl implements UserDemoApi {
-
     @Autowired
     private UserDemoMapper userMapper;
 

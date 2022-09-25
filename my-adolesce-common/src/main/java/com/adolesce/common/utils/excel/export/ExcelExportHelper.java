@@ -10,8 +10,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.jxls.common.Context;
+import org.jxls.util.JxlsHelper;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -236,9 +239,15 @@ public class ExcelExportHelper {
                 throw new Exception("缺少相关参数");
             }
             response.setContentType("application/vnd.ms-excel;charset=utf-8");
-            /*response.setHeader("Content-disposition",
-                    "attachment;filename=" + new String(fileName.getBytes("gb2312"), "ISO-8859-1"));*/
+            //response.setContentType("application/octet-stream");
+            // response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+
+            //response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + URLEncoder.encode("测试", "UTF-8").replaceAll("\\+", "%20") + ".xlsx");
+            //response.addHeader("Content-Disposition", "attachment;filename=" + new String(fileName.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1));
+            /*response.setHeader("Content-disposition", "attachment;filename=" + new String(fileName.getBytes("gb2312"), "ISO-8859-1"));*/
             response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
+
+            response.setCharacterEncoding("utf-8");
             outputStream = response.getOutputStream();
 
             Workbook wb;
@@ -302,18 +311,29 @@ public class ExcelExportHelper {
     public static void export(String[] tempSheetNames, String[] sheetNames, List<List<?>> dataLists, String templateName,
                               String fileName, HttpServletResponse response) {
         InputStream inputStream = getExcelTempInputStream(templateName);
-        List<String> tempSheetNameList = Arrays.asList(tempSheetNames);
-        List<String> sheetNameList = Arrays.asList(sheetNames);
         try {
-            // 模板加载
-            List beanParamsList = new ArrayList();
+            //使用net.sf.jxls.jxls-core进行基于excel模板的导出（模板根据表达式读取配置）
+            /*List beanParamsList = new ArrayList();
             for (int i = 0; i < dataLists.size(); i++) {
                 Map<String, List<?>> map = new HashMap<>();
                 map.put("dataList" + (i + 1), dataLists.get(i));
                 beanParamsList.add(map);
             }
+            List<String> tempSheetNameList = Arrays.asList(tempSheetNames);
+            List<String> sheetNameList = Arrays.asList(sheetNames);
             Workbook workbook = new XLSTransformer().transformXLS(inputStream, tempSheetNameList, sheetNameList, beanParamsList);
-            outputFile(response, fileName, workbook);
+            outputFile(response, fileName, workbook);*/
+
+
+            //使用org.jxls进行基于excel模板的导出（模板根据批注读取配置）
+            Context context = new Context();
+            for (int i = 0; i < dataLists.size(); i++) {
+                context.putVar("dataList" + (i + 1), dataLists.get(i));
+            }
+            response.setContentType("application/octet-stream");
+            response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
+
+            JxlsHelper.getInstance().processTemplate(inputStream, new BufferedOutputStream(response.getOutputStream()), context);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

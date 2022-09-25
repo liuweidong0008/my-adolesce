@@ -1,0 +1,10 @@
+spring:
+  profiles:
+    active: dev
+  application:
+    name: cloud-dubbo-es
+  cloud:
+    nacos:
+      config:
+        server-addr: localhost:8848
+        file-extension: yml

@@ -1,6 +1,7 @@
 package com.adolesce.cloud.dubbo.dto;
 
 import com.adolesce.cloud.dubbo.domain.db.HeiMaStudentMsg;
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -10,6 +11,7 @@ import lombok.Data;
  * @date 2022/2/28 13:49
  */
 @Data
+@Builder
 public class HeiMaStudentMsgDto extends HeiMaStudentMsg {
     private static final long serialVersionUID = 1L;
     /**

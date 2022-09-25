@@ -11,5 +11,14 @@ import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 public class DBTest {
     public static void main(String[] args) {
         System.out.println(IdWorker.getIdStr());
+
+        /*long time = DateUtil.offsetMinute(new Date(), 5).getTime();
+        System.out.println((time - System.currentTimeMillis())/1000);
+
+        long time1 = DateUtils.addMinutes(new Date(), 5).getTime();
+        System.out.println((time1 - System.currentTimeMillis())/1000);
+
+
+        DateUtil.between(new Date(), new Date(), DateUnit.SECOND);*/
     }
 }

@@ -33,14 +33,14 @@ public class YMSmsSenderUtil {
         params.setUrl("http://shmtn.b2m.cn/inter/sendSingleSMS");
 
         //602423
-        //params.setAppId("EUCP-EMY-SMS1-1IOG0");
-        //params.setSecretKey("366FC3E3AC0F03CE");
+        params.setAppId("EUCP-EMY-SMS1-1IOG0");
+        params.setSecretKey("366FC3E3AC0F03CE");
 
         //649142
-        params.setAppId("EUCP-EMY-SMS1-391UA");
-        params.setSecretKey("759B0349B84719D4");
-        params.setSignName("【饿了么】");
-        params.setMobile("18573985801"); //18390952800  18569412474
+        //params.setAppId("EUCP-EMY-SMS1-391UA");
+        //params.setSecretKey("759B0349B84719D4");
+        params.setSignName("【测试】");
+        params.setMobile("18301327332");
         params.setContent("有商家希望和您的童趣手工制作小店进行合作，有意向请联系010-82903982。");
 
         // 发送单条短信

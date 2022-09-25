@@ -1,4 +1,4 @@
-package com.adolesce.server.tanhuaquestion;
+package com.adolesce.server.meetquestion;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -11,18 +11,18 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Run {
-    private static List<TanhuaQuestion> tanhuaQuestionList;
+    private static List<MeetQuestion> meetQuestionList;
     private static Set<Integer> questionNos = new HashSet<>();
 
     static {
         BufferedReader in = null;
         try {
-            tanhuaQuestionList = new ArrayList<>();
-            File fileIn = new File("D://meet-question.txt");
+            meetQuestionList = new ArrayList<>();
+            File fileIn = new File("D:/some-test-file/txt/meet-question.txt");
             in = new BufferedReader(new FileReader(fileIn));
             String line = null;
-            TanhuaQuestion child;
-            TanhuaQuestion parent = new TanhuaQuestion();
+            MeetQuestion child;
+            MeetQuestion parent = new MeetQuestion();
             Integer count = 0;
 
             while ((line = in.readLine()) != null) {
@@ -30,13 +30,13 @@ public class Run {
                 if (StringUtils.isEmpty(line))
                     continue;
                 if (!line.startsWith("\t")) {
-                    parent = new TanhuaQuestion();
+                    parent = new MeetQuestion();
                     parent.setNo(++count);
                     parent.setQuestion(line.split("\\、")[1]);
                     parent.setIsParent(true);
-                    tanhuaQuestionList.add(parent);
+                    meetQuestionList.add(parent);
                 } else if (line.startsWith("\t")) {
-                    child = new TanhuaQuestion();
+                    child = new MeetQuestion();
                     child.setNo(++count);
                     child.setQuestion(StringUtils.trim(line));
                     parent.getChildQuestion().add(child);
@@ -70,18 +70,18 @@ public class Run {
     public static void main(String[] args) {
         while (true) {
             //主问题集合
-            Map<Integer, TanhuaQuestion> parentMap = tanhuaQuestionList.stream().collect(Collectors.toMap(
+            Map<Integer, MeetQuestion> parentMap = meetQuestionList.stream().collect(Collectors.toMap(
                     question -> question.getNo(), Function.identity()
             ));
             //获取主问题编号
             Integer no = getInteger(parentMap);
             //主问题已经获取完毕
             if (Objects.isNull(no)) {
-                System.err.println("所有题库已被读取完毕~你觉得项目一自己有没有毕业?");
+                System.err.println("所有题库已被读取完毕~你觉得自己有没有毕业?");
                 break;
             }
             //获取主问题
-            TanhuaQuestion parent = parentMap.get(no);
+            MeetQuestion parent = parentMap.get(no);
             //打印主问题
             System.err.println(parent.getQuestion());
             System.err.println("--------------------------------------");
@@ -89,7 +89,7 @@ public class Run {
                 String result = scanner("是否继续此话题的相关问题?(Y/N)");
                 if (StringUtils.equalsIgnoreCase("Y", result)) {
                     //获取该主问题的子问题集合
-                    Map<Integer, TanhuaQuestion> childMap = parent.getChildQuestion().stream().collect(Collectors.toMap(
+                    Map<Integer, MeetQuestion> childMap = parent.getChildQuestion().stream().collect(Collectors.toMap(
                             question -> question.getNo(), Function.identity()
                     ));
                     //获取子问题编号
@@ -114,7 +114,7 @@ public class Run {
      * @param questionMap
      * @return
      */
-    private static Integer getInteger(Map<Integer, TanhuaQuestion> questionMap) {
+    private static Integer getInteger(Map<Integer, MeetQuestion> questionMap) {
         //问题编号集合
         List<Integer> questionNoList = questionMap.keySet().stream().collect(Collectors.toList());
         //随机获取问题编号

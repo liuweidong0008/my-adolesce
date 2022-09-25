@@ -4,6 +4,7 @@ import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.adolesce.common.entity.User;
+import com.adolesce.common.entity.course.Lesson;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.junit.Test;
@@ -108,9 +109,10 @@ public class SomeTest {
     }
 
     @Test
-    public void testTryFinally() {
+    public void testTryFinally1() {
         System.out.println("return :" + testReturn5());
     }
+
     private int testReturn5() {
         int i = 1;
         try {
@@ -193,6 +195,25 @@ public class SomeTest {
             System.out.println("finally:" + list);
         }
         return list;
+    }
+
+    @Test
+    public void testTryFinally2() {
+        List<Integer> list = Arrays.asList(new Integer[]{1, 2, 3, 4, 5, 6});
+        Integer taskNo = 0;
+        try {
+            while (true) {
+                taskNo++;
+                if (taskNo == 3) {
+                    int a = 3 / 0;
+                }
+                System.out.println("正在处理任务：" + taskNo);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            System.out.println("任务" + taskNo + "处理失败，进行补偿");
+        }
     }
 
     @Test
@@ -282,32 +303,85 @@ public class SomeTest {
     public void test3() {
         String json = "{'a': '\\\\\\\\11111111\\\\aa\\\\bb\\\\cc\\\\dd\\\\cexe.docx'}";
         System.out.println(json);
-        Map map = JSONObject.parseObject(json,Map.class);
+        Map map = JSONObject.parseObject(json, Map.class);
 
         System.err.println(map);
         System.err.println(map.get("a"));
     }
 
     @Test
-    public void testJinZhi(){
+    public void testJinZhi() {
         int num = 1;
-        if(num > 0){
-            if(num < 10){
+        if (num > 0) {
+            if (num < 10) {
                 System.out.println(String.format("%02x", Integer.valueOf(num)));
-            }else{
+            } else {
                 System.out.println(Integer.toHexString(num));
             }
         }
     }
 
     @Test
-    public void test4(){
-        String a="abc";
-        String b="abc";
-        if(a==b){
+    public void test4() {
+        String a = "abc";
+        String b = "abc";
+        if (a == b) {
             String c = a.concat(b);
-            String d = a+b+c;
+            String d = a + b + c;
             System.out.print(d);
         }
+    }
+
+    @Test
+    public void test5() throws ParseException {
+        List<Lesson> basicLessons = Lesson.getBasicLessons();
+        List<Lesson> seniorLessons = Lesson.getSeniorLessons();
+        Map<String, String> holidays = Lesson.getHolidays("2022-08-24");
+        System.out.println(holidays);
+    }
+
+    @Test
+    public void test6() {
+        Long i = 1L;
+        System.out.println(String.format("%04d", 23222));
+    }
+
+    @Test
+    public void test7() throws ParseException {
+        //格式化类
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+
+        //初始化四个时间
+        Date date1 = dateFormat.parse("20:00:00");
+        Date date2 = dateFormat.parse("20:00:00");
+        Date date3 = dateFormat.parse("20:00:01");
+        Date date4 = dateFormat.parse("20:30:00");
+
+        //打印格式化好的时间
+        System.out.println(dateFormat.format(date1));
+        System.out.println(dateFormat.format(date2));
+        System.out.println(dateFormat.format(date3));
+        System.out.println(dateFormat.format(date4));
+
+        //对四个时间进行比较
+        System.out.println(date1.compareTo(date2));  //0 ： 说明date1和date2一样大
+        System.out.println(date2.compareTo(date3));  // -1 ： 说明date2比date3小
+        System.out.println(date4.compareTo(date3));  // 1 ： 说明date4比date3 大
+    }
+
+    /**
+     * 分解一个数字，得到该数字的“状态位”
+     */
+    @Test
+    public void parseNum() {
+        int num = 10;
+        List<Integer> parseResult = new ArrayList<>();
+
+        for (int i = 0; num != 0; num = num >> 1,i++){
+            if((num&1) == 1){
+                parseResult.add((int) Math.pow(2,i));
+            }
+        }
+        parseResult.forEach(System.err::println);
     }
 }

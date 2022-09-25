@@ -109,4 +109,28 @@ public class NumberTest {
         Long b = Long.valueOf(a.toString());
         System.out.println(b);
     }
+
+    @Test
+    public void testBigDecimal() {
+        BigDecimal a = new BigDecimal(10.897);
+        BigDecimal b = new BigDecimal("10.897");
+        BigDecimal c = BigDecimal.valueOf(10.897);
+
+        System.out.println(a);
+        System.out.println(b);
+        System.out.println(c);
+    }
+
+    @Test
+    public void test2() {
+       Integer i01 = 59;
+       int i02 = 59;
+       Integer i03 = Integer.valueOf(59);
+       Integer i04 = new Integer(59);
+
+        System.out.println(i02 == i04);
+        System.out.println(i03 == i04);
+        System.out.println(i01 == i03);
+        System.out.println(i01 == i02);
+    }
 }

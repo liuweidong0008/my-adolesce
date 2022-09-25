@@ -4,7 +4,7 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Data
-@ConfigurationProperties("content-security.vision")
+@ConfigurationProperties("aliyun.content-security.vision")
 public class AliyunVisionProperties {
     /**
      * 账号

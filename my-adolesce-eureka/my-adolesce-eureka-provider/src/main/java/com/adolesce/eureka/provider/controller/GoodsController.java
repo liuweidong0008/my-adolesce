@@ -46,7 +46,7 @@ public class GoodsController {
     @GetMapping("/findOne/{id}")
     @HystrixCommand(fallbackMethod = "findOneFallback", commandProperties = {
             //设置Hystrix的超时时间，超过该时间会触发服务降级，默认是1s (其他相关配置项可到 HystrixCommandProperties 类进行查找)
-            @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "1000"),
+            @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "2000"),
             //监控时间 默认5000 毫秒
             @HystrixProperty(name = "circuitBreaker.sleepWindowInMilliseconds", value = "5000"),
             //失败次数。默认20次
@@ -58,9 +58,9 @@ public class GoodsController {
         System.err.println("调用服务方....");
         //1、超时（休眠2秒）
         if(id == 1){
-            Thread.sleep(1000);
+            Thread.sleep(3000);
         }
-        //2、造异常测试熔断（当id == 1 则出现异常）
+        //2、造异常测试熔断（当id == 2 则出现异常）
         if(id  == 2){
             int i = 3/0;
         }

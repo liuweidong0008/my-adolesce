@@ -32,7 +32,7 @@ public class RabbitMQSender {
     public void sendStrToHelloQueue() {
         String context = "hello " + new SimpleDateFormat("yyyy-MM-dd").format(new Date());
         System.err.println("Sender : " + context);
-        this.rabbitTemplate.convertAndSend("boot-hello-queue22", context);
+        this.rabbitTemplate.convertAndSend("boot-hello-queue", context);
     }
 
     /**
@@ -57,9 +57,11 @@ public class RabbitMQSender {
 
             //另一种设置消息持久化的方式
             // 1.准备消息
-            /*Message message2 = MessageBuilder.withBody("hello, spring".getBytes(StandardCharsets.UTF_8))
+           /* Message message2 = MessageBuilder.withBody("hello, spring".getBytes(StandardCharsets.UTF_8))
                     .setDeliveryMode(MessageDeliveryMode.PERSISTENT)
-                    .build();*/
+                    .build();
+
+            this.rabbitTemplate.convertAndSend("boot-work-queue", message2, new CorrelationData(uuid));*/
 
             System.err.println("Sender : " + user);
         }
@@ -156,7 +158,8 @@ public class RabbitMQSender {
                 .withBody("hello, ttl messsage".getBytes(StandardCharsets.UTF_8))
                 .setDeliveryMode(MessageDeliveryMode.PERSISTENT)
                 .setExpiration("5000")
-                .build();*/
+                .build();
+        rabbitTemplate.convertAndSend("ttl.direct", "ttl",message);*/
 
         // 1.发送消息
         rabbitTemplate.convertAndSend("ttl.direct", "ttl", "hello, ttl messsage", message -> {
@@ -179,7 +182,8 @@ public class RabbitMQSender {
                 .withBody("hello, ttl messsage".getBytes(StandardCharsets.UTF_8))
                 .setDeliveryMode(MessageDeliveryMode.PERSISTENT)
                 .setHeader("x-delay",7000)
-                .build();*/
+                .build();
+        rabbitTemplate.convertAndSend("delay.direct", "delay",message);*/
 
         // 1.发送消息
         rabbitTemplate.convertAndSend("delay.direct", "delay", "hello, delay messsage", message -> {

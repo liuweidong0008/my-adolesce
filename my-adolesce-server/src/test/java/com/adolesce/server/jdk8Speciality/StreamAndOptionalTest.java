@@ -3,6 +3,7 @@ package com.adolesce.server.jdk8Speciality;
 import com.adolesce.common.entity.User;
 import org.junit.Test;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -146,6 +147,48 @@ public class StreamAndOptionalTest {
         //7、peek 接受Consumer，修改其中属性的值，返回新的集合
         myUsers.stream().peek(user -> user.setAge(50)).forEach(System.err::println);
         //myUsers.forEach(System.err::println);
+    }
+
+
+    @Test
+    public void mytest1() throws InvocationTargetException, IllegalAccessException {
+        List<User> users = this.getUsers();
+        users.forEach(System.out::println);
+        System.out.println("--------------------------------");
+
+        List<User> users2 = users.stream().map(user -> {
+            user.setUserName("bozai");
+            return user;
+        }).collect(Collectors.toList());
+
+        List<User> users3 = users;
+
+        users2.forEach(u -> u.setAge(88));
+
+        System.out.println(users);
+        System.out.println(users2);
+        System.out.println(users3);
+    }
+
+
+    @Test
+    public void mytest2() {
+        List<User> users = this.getUsers();
+        users.forEach(System.out::println);
+        System.out.println("--------------------------------");
+
+        List<User> users2 = users.stream().map(user -> {
+            user.setUserName("bozai");
+            return user;
+        }).filter(u -> u.getAge() > 5).collect(Collectors.toList());
+
+        List<User> users3 = users;
+
+        users2.forEach(u -> u.setAge(88));
+
+        System.out.println(users);
+        System.out.println(users2);
+        System.out.println(users3);
     }
 
     /**
@@ -399,13 +442,13 @@ public class StreamAndOptionalTest {
     private List<User> getUsers() {
         List<User> userList = new ArrayList<>();
         for (int i = 1; i <= 10; i++) {
-            getUsers(userList, i,"zhangsan");
+            getUsers(userList, i, "zhangsan");
         }
         /*for (int i = 6; i <= 10; i++) {
             getUsers(userList, i);
         }*/
         for (int i = 1; i <= 5; i++) {
-            getUsers(userList, i,"lisi");
+            getUsers(userList, i, "lisi");
         }
        /* for (int i = 11; i <= 15; i++) {
             getUsers(userList, i);
@@ -413,7 +456,7 @@ public class StreamAndOptionalTest {
         return userList;
     }
 
-    private void getUsers(List<User> userList, int i,String name) {
+    private void getUsers(List<User> userList, int i, String name) {
         User users = new User();
         users.setId(Long.valueOf(i));
         users.setUserName(name + i);
@@ -681,11 +724,4 @@ public class StreamAndOptionalTest {
         //style 2 使用JDK8新特性
         Map<Integer, Employee> employeeMap = employees.stream().collect(Collectors.toMap(e -> e.getAge(), Function.identity()));
     }*/
-    @Test
-    public void mytest() {
-        List<User> list1 = getUsers();
-        Map<Long, User> list1Map = list1.stream().collect(Collectors.toMap(u -> u.getId(), Function.identity(),(u1,u2) -> u2));
-        list1Map.forEach((k,v) -> System.out.println(k + ":" +v));
-
-    }
 }

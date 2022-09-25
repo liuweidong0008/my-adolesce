@@ -160,34 +160,29 @@ public class RabbitMQListener {
             //业务处理代码
             System.err.println("work-queue队列消费者1 消费消息：" + user);
 
-            *//**
-     * 手动ACK 确认一条消息
-     * channel.basicAck(deliveryTag, false);
-     * deliveryTag:该消息的index
-     * multiple：是否批量.true:将一次性ack所有小于deliveryTag的消息
-     *//*
+            //手动ACK 确认一条消息
+            //channel.basicAck(deliveryTag, false);
+            //deliveryTag:该消息的index
+            //multiple：是否批量.true:将一次性ack所有小于deliveryTag的消息
             channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
-            int i = 1/0;
+            int i = 1 / 0;
         } catch (Exception e) {
             //消费者处理出了问题，需要告诉队列信息消费失败
-            *//**
-     * 拒绝确认消息:<br>
-     * channel.basicNack(long deliveryTag, boolean multiple, boolean requeue) ; <br>
-     *      deliveryTag:该消息的index<br>
-     *      multiple：是否批量.true:将一次性拒绝所有小于deliveryTag的消息。<br>
-     *      requeue：被拒绝的是否重新入队列 <br>
-     *//*
+
+            //拒绝确认消息:<br>
+            //channel.basicNack(long deliveryTag, boolean multiple, boolean requeue) ;
+            //     deliveryTag:该消息的index<br>
+            //     multiple：是否批量.true:将一次性拒绝所有小于deliveryTag的消息。
+            //     requeue：被拒绝的是否重新入队列
             log.error("消息即将再次返回队列处理...", e);
             channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, false);
 
-            *//**
-     * 拒绝一条消息：<br>
-     * channel.basicReject(long deliveryTag, boolean requeue);<br>
-     *      deliveryTag:该消息的index<br>
-     *      requeue：被拒绝的是否重新入队列
-     *//*
-     *//*log.error("消息已重复处理失败,拒绝再次接收...", e);
-            channel.basicReject(message.getMessageProperties().getDeliveryTag(), false); *//*
+            //拒绝一条消息：<br>
+            //channel.basicReject(long deliveryTag, boolean requeue);<br>
+            //     deliveryTag:该消息的index<br>
+            //     requeue：被拒绝的是否重新入队列
+            log.error("消息已重复处理失败,拒绝再次接收...", e);
+            channel.basicReject(message.getMessageProperties().getDeliveryTag(), false);
         }
     }*/
 }

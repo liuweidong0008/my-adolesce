@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.Date;
 
@@ -23,7 +22,7 @@ public class MyUser implements java.io.Serializable {
     private ObjectId id;
     //用户ID
     private ObjectId userId;
-    @Field("name")
+    //@Field("name")
     //用戶名
     private String userName;
     //年龄

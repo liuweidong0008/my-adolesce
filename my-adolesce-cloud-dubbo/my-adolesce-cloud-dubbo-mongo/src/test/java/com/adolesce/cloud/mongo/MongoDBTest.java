@@ -175,6 +175,21 @@ public class MongoDBTest {
     }
 
     /**
+     * 替换并返回最新记录
+     */
+    @Test
+    public void testFindAndReplaceMyUser() {
+        Query query = Query.query(Criteria.where("userName").is("刘威东"));
+
+        //设置更新参数
+        FindAndModifyOptions options = new FindAndModifyOptions();
+        options.returnNew(true);//获取更新后的最新数据
+
+        MyUser myUser = this.mongoTemplate.findAndReplace(query,new MyUser());
+        System.err.println(myUser);
+    }
+
+    /**
      * 查询数量
      */
     @Test
@@ -632,6 +647,7 @@ public class MongoDBTest {
         System.err.println(myUser);
 
         this.testDebug2(myUser);
+
         System.err.println(myUser);
     }
 
@@ -639,16 +655,17 @@ public class MongoDBTest {
         myUser.setUserName("诸葛亮");
         myUser.setSex(1);
         myUser.setAge(24);
-        this.testDebug3(100);
-        myUser.setAddress(new Address("长沙市", "天心区"));
 
+        this.testDebug3(100);
+
+        myUser.setAddress(new Address("长沙市", "天心区"));
         Long id = idWorker.getNextId("test");
         System.err.println(id);
     }
 
     private void testDebug3(int count) {
-        System.err.println(count);
-        List<MyUser> myUserList = this.testDebug4(100);
+        List<MyUser> myUserList = this.testDebug4(count);
+
         for(MyUser user: myUserList){
             System.out.println(user.getUserId());
             System.out.println(user.getAge());

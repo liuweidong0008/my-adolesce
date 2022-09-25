@@ -68,8 +68,80 @@ public class CollectionTest {
         map.values();
         map.entrySet();
 
-        map.forEach((k,v) -> System.out.println(k +":" +v));
+        map.forEach((key,value) -> System.out.println(key +":" +value));
+
+        for(String key:map.keySet()){
+            System.out.println(key + ":" + map.get(key));
+        }
+
+        for(Map.Entry<String, String> entry:map.entrySet()){
+            System.out.println(entry.getKey() + ":" + entry.getValue());
+        }
+
         return users;
+    }
+
+    private void getUsers(List<User> userList, int i,String name) {
+        User users = new User();
+        users.setId(Long.valueOf(i));
+        users.setUserName(name + i);
+        users.setAge(i);
+        users.setSex(i % 2 + 1);
+        userList.add(users);
+    }
+
+    private List<User> getDBUser() {
+        List<User> userList = new ArrayList<>();
+        for (int i = 1; i <= 5; i++) {
+            getUsers(userList, i,"zhangsan");
+        }
+        return userList;
+    }
+
+    private List<User> getDisanfangUser() {
+        List<User> userList = new ArrayList<>();
+        for (int i = 1; i <= 15; i++) {
+            getUsers(userList, i,"lisi");
+        }
+        return userList;
+    }
+
+    @Test
+    public void testDeleteBeanFromList() {
+        List<User> dbUser = this.getDBUser();
+        List<User> disanfangUser = this.getDisanfangUser();
+        Set<Long> dbUserIds = dbUser.stream().map(u -> u.getId()).collect(Collectors.toSet());
+
+        //方式一：用另一个集合接受第三方集合过滤后的结果集
+        /*List<User> result = disanfangUser.stream().filter(u -> !dbUserIds.contains(u.getId())).collect(Collectors.toList());
+        result.forEach(System.out::println);*/
+
+        //方式二：在第三方集合本身中去删除重复数据，有如下两种方式（注意：不能用增强for去删除本集合的数据）
+        //2.1、普通for循环删除本集合数据
+        /*for (int i = 0; i < disanfangUser.size(); i++) {
+            if(dbUserIds.contains(disanfangUser.get(i).getId())){
+                disanfangUser.remove(disanfangUser.get(i));
+                i--;  //由于删除了当前元素，集合大小再发生变化，迭代的角标要向前退一
+            }
+        }*/
+
+        //2.2、利用迭代器去删除本集合数据
+        /*Iterator<User> iterator = disanfangUser.iterator();
+        while (iterator.hasNext()){
+            if(dbUserIds.contains(iterator.next().getId())){
+                iterator.remove();
+            }
+        }*/
+
+        //2.3、利用增强for删除（报异常：ConcurrentModificationException）
+        for(User user:disanfangUser){
+            if(dbUserIds.contains(user.getId())){
+                disanfangUser.remove(user);
+            }
+        }
+
+        //打印第三方集合结果
+        disanfangUser.forEach(System.out::println);
     }
 
 

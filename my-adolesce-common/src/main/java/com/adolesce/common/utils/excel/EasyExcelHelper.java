@@ -65,8 +65,8 @@ public class EasyExcelHelper {
      * @param <T>      数据类型
      * @return
      */
-    public static <T> List<T> readExcel(String fileName, Class<T> clazz) {
-        return readExcel(fileName, clazz, null);
+    public static <T> List<T> readExcel(String fileName, Class<T> clazz,Integer sheetNo) {
+        return readExcel(fileName, clazz, null,sheetNo);
     }
 
     /**
@@ -79,9 +79,9 @@ public class EasyExcelHelper {
      * @param <T>          数据类型
      * @return
      */
-    public static <T> List<T> readExcel(String fileName, Class<T> clazz, ReadListener<T> readListener) {
+    public static <T> List<T> readExcel(String fileName, Class<T> clazz, ReadListener<T> readListener,Integer sheetNo) {
         try (FileInputStream fis = new FileInputStream(fileName)) {
-            return read(fis, clazz, readListener);
+            return read(fis, clazz, readListener,sheetNo);
         } catch (Exception exception) {
             exception.printStackTrace();
             return null;
@@ -180,9 +180,9 @@ public class EasyExcelHelper {
      * @param <T>
      * @return
      */
-    public static <T> List<T> importExcel(MultipartFile multipartFile, Class<T> clazz, ReadListener<T> readListener) {
+    public static <T> List<T> importExcel(MultipartFile multipartFile, Class<T> clazz, ReadListener<T> readListener,Integer sheetNo) {
         try (InputStream inputStream = multipartFile.getInputStream()) {
-            return read(inputStream, clazz, readListener);
+            return read(inputStream, clazz, readListener,sheetNo);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -198,7 +198,7 @@ public class EasyExcelHelper {
         write.registerWriteHandler(new LongestMatchColumnWidthStyleStrategy()).sheet(sheetName).doWrite(data);
     }
 
-    private static <T> List<T> read(InputStream in, Class<T> clazz, ReadListener<T> readListener) {
+    private static <T> List<T> read(InputStream in, Class<T> clazz, ReadListener<T> readListener,Integer sheetNo) {
         List<T> list = new ArrayList<>();
         Optional<ReadListener> optional = Optional.ofNullable(readListener);
         EasyExcel.read(in, clazz, optional.orElse(new AnalysisEventListener<T>() {
@@ -211,7 +211,7 @@ public class EasyExcelHelper {
             public void doAfterAllAnalysed(AnalysisContext context) {
                 System.out.println("解析完成");
             }
-        })).sheet().doRead();
+        })).sheet(sheetNo).doRead();
         return list;
     }
 

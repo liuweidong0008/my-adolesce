@@ -1,22 +1,23 @@
 server:
   port: 3000
 spring:
-  application:
-    name: cloud-dubbo-provider
   cloud:
     nacos:
       discovery:
         server-addr: localhost:8848
+  application:
+    name: cloud-dubbo-provider
+#dubbo提供者
 dubbo:
-  protocol:
-    name: dubbo
-    port: 20884
   #注册中心的地址
   registry:
     address: spring-cloud://localhost  #使用springcloud中注册中心的地址
   scan:
     base-packages: com.adolesce.cloud.provider.service
-
+  #内置netty对外协议及对外端口
+  protocol:
+    name: dubbo
+    port: 20884
 logging:
   level:
     cn.itcast: debug

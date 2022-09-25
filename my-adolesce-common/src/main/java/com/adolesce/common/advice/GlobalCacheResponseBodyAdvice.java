@@ -34,22 +34,22 @@ public class GlobalCacheResponseBodyAdvice implements ResponseBodyAdvice {
     /**
      * 判断是否需要增强支持
      *
-     * @param returnType
+     * @param methodParameter
      * @param converterType
      * @return 是否需要增强
      */
     @Override
-    public boolean supports(MethodParameter returnType, Class converterType) {
+    public boolean supports(MethodParameter methodParameter, Class converterType) {
         // 全局缓存开关处于开启状态&是get请求&包含了@Cache注解
-        return enable && returnType.hasMethodAnnotation(GetMapping.class)
-                && returnType.hasMethodAnnotation(Cache.class);
+        return enable && methodParameter.hasMethodAnnotation(GetMapping.class)
+                && methodParameter.hasMethodAnnotation(Cache.class);
     }
 
     /**
      * 响应体增强方法
      *
      * @param body
-     * @param returnType
+     * @param methodParameter
      * @param selectedContentType
      * @param selectedConverterType
      * @param request
@@ -57,7 +57,7 @@ public class GlobalCacheResponseBodyAdvice implements ResponseBodyAdvice {
      * @return
      */
     @Override
-    public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType, Class selectedConverterType,
+    public Object beforeBodyWrite(Object body, MethodParameter methodParameter, MediaType selectedContentType, Class selectedConverterType,
                                   ServerHttpRequest request, ServerHttpResponse response) {
         if (ObjectUtils.isEmpty(body)) { return null; }
         try {
@@ -71,7 +71,7 @@ public class GlobalCacheResponseBodyAdvice implements ResponseBodyAdvice {
             //构建缓存Key
             String cacheKey = GlobalCacheInterceptor.createCacheKey(((ServletServerHttpRequest) request).getServletRequest());
             //获取Cache注解
-            Cache cache = returnType.getMethodAnnotation(Cache.class);
+            Cache cache = methodParameter.getMethodAnnotation(Cache.class);
             //存入缓存，缓存的时间单位是秒
             this.redisTemplate.opsForValue().set(cacheKey, cacheData, Duration.ofSeconds(Long.valueOf(cache.time())));
         } catch (Exception e) {

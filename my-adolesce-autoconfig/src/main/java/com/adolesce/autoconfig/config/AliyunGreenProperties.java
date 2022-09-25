@@ -4,7 +4,7 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Data
-@ConfigurationProperties("content-security.green")
+@ConfigurationProperties("aliyun.content-security.green")
 public class AliyunGreenProperties {
     /**
      * 账号
@@ -14,7 +14,6 @@ public class AliyunGreenProperties {
      * 密钥
      */
     String accessKeySecret;
-
     /**
      * 场景
      */

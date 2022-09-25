@@ -40,12 +40,6 @@
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
-        <!--httpClient的依赖 -->
-        <dependency>
-            <groupId>io.github.openfeign</groupId>
-            <artifactId>feign-httpclient</artifactId>
-        </dependency>
-
         <!--引入Sentinel依赖-->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>

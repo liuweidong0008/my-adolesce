@@ -1,40 +1,36 @@
 package com.adolesce.server.controller;
 
-import com.adolesce.cloud.dubbo.api.db.HeiMaStudentMsgApi;
 import com.adolesce.cloud.dubbo.dto.HeiMaStudentMsgDto;
 import com.adolesce.common.vo.Response;
-import com.adolesce.server.service.impl.ExcelService;
+import com.adolesce.server.dto.CourseExportParams;
+import com.adolesce.server.service.impl.HeiMaStudentMsgService;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
 @Slf4j
 @RestController
-@RequestMapping("heiMaStudentMsg")
+@RequestMapping
 public class HeiMaStudentMsgController {
-    @DubboReference
-    private HeiMaStudentMsgApi heiMaStudentMsgApi;
     @Autowired
-    private ExcelService excelService;
+    private HeiMaStudentMsgService heiMaStudentMsgService;
 
     /**
      * 分页查询
      * @throws Exception
      */
-    @RequestMapping("/queryByParams")
+    @RequestMapping("/heiMaStudentMsg/queryByParams")
     public String queryByParams(HeiMaStudentMsgDto studentMsgDto){
         Response response;
         try {
-            response = heiMaStudentMsgApi.queryByParams(studentMsgDto);
+            response = heiMaStudentMsgService.queryByParams(studentMsgDto);
         }catch (Exception e){
             response = Response.failure();
             log.error("查询学生信息出错：{}",e);
@@ -48,11 +44,11 @@ public class HeiMaStudentMsgController {
      * 保存学生信息
      * @throws Exception
      */
-    @RequestMapping("/save")
+    @RequestMapping("/heiMaStudentMsg/save")
     public String save(HeiMaStudentMsgDto studentMsgDto){
         Response response;
         try {
-            heiMaStudentMsgApi.saveStudentMsg(studentMsgDto);
+            heiMaStudentMsgService.saveStudentMsg(studentMsgDto);
             response = Response.success();
         }catch (Exception e){
             response = Response.failure();
@@ -67,11 +63,11 @@ public class HeiMaStudentMsgController {
      * 根据ID删除
      * @throws Exception
      */
-    @RequestMapping("/delete")
+    @RequestMapping("/heiMaStudentMsg/delete")
     public String delete(HeiMaStudentMsgDto studentMsgDto){
         Response response;
         try {
-            heiMaStudentMsgApi.deleteById(studentMsgDto.getId());
+            heiMaStudentMsgService.deleteById(studentMsgDto.getId());
             response = Response.success();
         }catch (Exception e){
             response = Response.failure();
@@ -86,11 +82,11 @@ public class HeiMaStudentMsgController {
      * 根据用户ID查询详情
      * @throws Exception
      */
-    @RequestMapping("/queryById")
+    @RequestMapping("/heiMaStudentMsg/queryById")
     public String queryById(HeiMaStudentMsgDto studentMsgDto){
         Response response;
         try {
-            response = heiMaStudentMsgApi.queryById(studentMsgDto);
+            response = heiMaStudentMsgService.queryById(studentMsgDto);
         }catch (Exception e){
             response = Response.failure();
             log.error("根据ID查询学生信息出错：{}",e);
@@ -105,7 +101,7 @@ public class HeiMaStudentMsgController {
      * @param offerFile
      * @return
      */
-    @PostMapping("/upload")
+    @PostMapping("/heiMaStudentMsg/upload")
     public void upload(MultipartFile offerFile){
         //file是一个临时文件，需要转存到指定位置，否则本次请求完成后临时文件会删除
         log.info(offerFile.toString());
@@ -137,13 +133,17 @@ public class HeiMaStudentMsgController {
      * excel导入
      * @return
      */
-    @RequestMapping("/importExcel")
+    @RequestMapping("/heiMaStudentMsg/importExcel")
     public Response importExcel(MultipartFile excelFile) throws Exception {
-        /*Response response = this.excelService.importStyle1(excelFile);
-        if(response.getSuccess()){
-            heiMaStudentMsgApi.saveBatch((List<HeiMaStudentMsg>)response.getData());
-        }*/
-        System.out.println("123123123");
-        return Response.success();
+        return this.heiMaStudentMsgService.importStyle(excelFile);
+    }
+
+    /**
+     * 导出老师课表
+     */
+    @ResponseBody
+    @GetMapping(value = "/teacher/course/export")
+    public void courseExport(HttpServletResponse response, CourseExportParams params) throws Exception{
+        this.heiMaStudentMsgService.courseExport(response,params);
     }
 }

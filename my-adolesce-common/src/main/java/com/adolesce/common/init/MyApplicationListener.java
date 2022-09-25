@@ -19,7 +19,7 @@ public class MyApplicationListener implements ApplicationListener<ApplicationEve
     @Override
     public void onApplicationEvent(ApplicationEvent event) {
         if (event instanceof ContextRefreshedEvent) {
-            System.err.println("4、通过ApplicationListener初始化执行....");
+            System.err.println("4、通过ApplicationListener初始化执行....启动会执行多次");
             ApplicationContext applicationContext = ((ContextRefreshedEvent) event).getApplicationContext();
             RedisTemplate redisTemplate = applicationContext.getBean(StringRedisTemplate.class);
             redisTemplate.opsForValue().get("name");

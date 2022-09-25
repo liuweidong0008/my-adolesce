@@ -11,22 +11,47 @@ import java.util.Arrays;
 public class MoveMdFile {
     public static void main(String[] args) {
         String[] images = {
-                "image-20211027194244117.png",
-                "image-20211027194322769.png",
-                "image-20211027202727463.png",
-                "image-20211027203028715.png",
-                "image-20211027194720796.png",
-                "image-20211027194900612.png",
-                "image-20211027195500042.png",
-                "image-20211027195926224.png",
-                "image-20211027200403564.png",
-                "image-20211027200603438.png"
+                "image-20220811010037696",
+                "image-20220811010041681",
+                "image-20220811010046506",
+                "image-20220811005843495",
+                "image-20220811005848580",
+                "image-20220811005814934",
+                "image-20220811005633014",
+                "image-20220811005626710",
+                "image-20220811005620097",
+                "image-20220811005549903",
+                "image-20220811005532239",
+                "image-20220811005521604",
+                "image-20220811005512791",
+                "image-20220811005504703",
+                "image-20220811005456261",
+                "image-20220811005447166",
+                "image-20220811005440519",
+                "image-20220811005413892",
+                "image-20220811005332242",
+                "image-20220811005310007",
+                "image-20220811005249460",
+                "image-20220811005229184",
+                "image-20220811005211577",
+                "image-20220811005143256",
+                "image-20220811005138663",
+                "image-20220811005149489",
+                "image-20220811005131483",
+                "image-20220811005111366",
+                "image-20220811005116293",
+                "image-20220811005120612",
+                "image-20220811005037747",
+                "image-20220811005030552",
+                "image-20220811005025758",
+                "image-20220811005017932",
+                "image-20220811004957139",
+                "image-20220811004950691"
         };
         String sourcePath = "C:\\Users\\Administrator\\AppData\\Roaming\\Typora\\typora-user-images\\";
-        String destPath = "D:\\b探花\\探花交友5.0-new\\探花项目课程建议及疑问\\assets";
+        String destPath = "C:\\Users\\Administrator\\Desktop\\git\\images";
 
-        Arrays.stream(images).map(s -> "move " + sourcePath + s + " "+ destPath)
-                .forEach(System.out::println);
+        Arrays.stream(images).map(s -> "move " + sourcePath + s + ".png "+ destPath).forEach(System.out::println);
 
      /*   String sourcePath = "D:\\a前置\\SpringCloud\\SpringCloud\\day02\\讲义\\img\\";
         String destPath = "D:\\b探花\\5.0双元\\day9双元\\assets";

@@ -1,5 +1,7 @@
 package com.adolesce.server.mutithread;
 
+import org.junit.jupiter.api.Test;
+
 import java.util.concurrent.*;
 
 /**
@@ -9,6 +11,8 @@ import java.util.concurrent.*;
  * @date 2021/8/14 16:45
  */
 public class ThreadTest {
+    private static int count = 0;
+
     public static void main(String[] args) {
         Ticket ticket = new Ticket(100);
 
@@ -78,5 +82,20 @@ public class ThreadTest {
                 }
             }, 3, TimeUnit.SECONDS);
         }
+    }
+
+    @Test
+    public void test2() throws InterruptedException {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                count++;
+            }
+        };
+        for (int i = 0; i < 10000; i++) {
+            new Thread(runnable).start();
+        }
+        Thread.sleep(20000);
+        System.out.println(count);
     }
 }

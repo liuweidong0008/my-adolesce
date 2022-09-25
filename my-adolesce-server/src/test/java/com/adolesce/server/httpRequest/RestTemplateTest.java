@@ -3,10 +3,13 @@ package com.adolesce.server.httpRequest;
 import com.adolesce.common.entity.User;
 import com.adolesce.server.config.RestTemplateConfig;
 import org.apache.commons.io.FileUtils;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -15,10 +18,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -39,7 +43,6 @@ public class RestTemplateTest {
     private final static String SERVER_UTL = "http://127.0.0.1:8081/my_adolesce/requestStyle/";
 
     //RestTemplate GET请求测试
-
     /**
      * 测试GET请求：getForObject 请求参数放在url上
      */
@@ -47,7 +50,7 @@ public class RestTemplateTest {
     public void testGet1() {
         String url = SERVER_UTL + "test1" + "?userName=刘威东&age=4";
         String result = RestTemplateConfig.TEMPLATE.getForObject(url, String.class);
-        //ResponseEntity<String> responseEntity = RestTemplateConfig.TEMPLATE.exchange(url,HttpMethod.GET,null,String.class);
+        //ResponseEntity<String> result = RestTemplateConfig.TEMPLATE.exchange(url,HttpMethod.GET,null,String.class);
         System.out.println(result);
     }
 
@@ -58,7 +61,7 @@ public class RestTemplateTest {
     public void testGet2() {
         String url = SERVER_UTL + "test1" + "?userName={?}&age={?}";
         String result = RestTemplateConfig.TEMPLATE.getForObject(url, String.class, "lwd", 22);
-        //ResponseEntity<String> responseEntity = RestTemplateConfig.TEMPLATE.exchange(url,HttpMethod.GET,null,String.class,"lwd",22);
+        //ResponseEntity<String> result = RestTemplateConfig.TEMPLATE.exchange(url,HttpMethod.GET,null,String.class,"lwd",22);
         System.out.println(result);
     }
 
@@ -140,8 +143,6 @@ public class RestTemplateTest {
         paramMap.put("userName", "张三");
         paramMap.put("age", "25");
 
-        //MultiValueMap requestMap = new LinkedMultiValueMap();
-        //requestMap.add("age",25);
         String result = RestTemplateConfig.TEMPLATE.postForObject(url, null, String.class, paramMap);
         System.out.println(result);
     }
@@ -180,11 +181,11 @@ public class RestTemplateTest {
      */
     @Test
     public void testPost6() {
-        String url = SERVER_UTL + "test12?age={?}";  //test4  test5
+        String url = SERVER_UTL + "test5?age={?}&sex={?}";  //test4  test5
         MultiValueMap requestBody = new LinkedMultiValueMap();
         requestBody.add("userName", "张三");
 
-        ResponseEntity<String> responseEntity = RestTemplateConfig.TEMPLATE.postForEntity(url, requestBody, String.class, 30);
+        ResponseEntity<String> responseEntity = RestTemplateConfig.TEMPLATE.postForEntity(url, requestBody, String.class, 30,1);
         System.out.println(responseEntity.getBody());
     }
 
@@ -195,25 +196,25 @@ public class RestTemplateTest {
      */
     @Test
     public void testPost7() {
-       /* String url = SERVER_UTL + "test7";
+        String url = SERVER_UTL + "test7";
         Map requestBody = new HashMap();
         requestBody.put("userName","张三");
-        requestBody.put("age","123");*/
+        requestBody.put("age","123");
 
-        String url = SERVER_UTL + "test8";
+        url = SERVER_UTL + "test8";
         User user = new User();
         user.setUserName("王五");
         user.setAge(88);
 
-        /*url = SERVER_UTL + "test9";
-        List<MyUser> myUsers = new ArrayList<>();
-        myUsers.add(myUser);*/
+        url = SERVER_UTL + "test9";
+        List<User> users = new ArrayList<>();
+        users.add(user);
 
         url = SERVER_UTL + "test10";
         Map<String, User> map = new HashMap<>();
         map.put("mykey", user);
 
-        ResponseEntity<User> responseEntity = RestTemplateConfig.TEMPLATE.postForEntity(url, map, User.class);
+        ResponseEntity<Map> responseEntity = RestTemplateConfig.TEMPLATE.postForEntity(url, map, Map.class);
         System.out.println(responseEntity.getBody());
     }
 
@@ -351,7 +352,6 @@ public class RestTemplateTest {
     }
 
     //RestTemplate 通用方法 exchange
-
     /**
      * 这个方法需要你在调用的时候去指定请求类型，即它既能做 GET 请求，也能做 POST 请求，也能做其它各种类型的请求。
      * 如果开发的时候需要对请求进行封装，使用它再合适不过了
@@ -377,7 +377,6 @@ public class RestTemplateTest {
 
         ResponseEntity<String> responseEntity = RestTemplateConfig.TEMPLATE.exchange(url, HttpMethod.POST, httpEntity, String.class);
 
-
         System.out.println(responseEntity.getBody());
     }
 
@@ -395,26 +394,44 @@ public class RestTemplateTest {
         headers.add("Cookie", "mycookie1=123;mycookie2=456");
 
         //用HttpEntity封装整个请求报文
-        HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(null, headers);
+        HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>( headers);
 
         ResponseEntity<String> responseEntity = RestTemplateConfig.TEMPLATE.exchange(url, HttpMethod.GET, httpEntity, String.class);
         System.out.println(responseEntity.getBody());
     }
 
+    public static class HttpEntityEnclosingDeleteRequest extends HttpEntityEnclosingRequestBase {
+        public HttpEntityEnclosingDeleteRequest(final URI uri) {
+            super();
+            setURI(uri);
+        }
 
-    /**
-     * 测试get请求 设置请求头、Cookie
-     */
-    @Test
-    public void testBigDecimal() {
-        BigDecimal a = new BigDecimal(10.897);
-        BigDecimal b = new BigDecimal("10.897");
-        BigDecimal c = BigDecimal.valueOf(10.897);
-
-        System.out.println(a);
-        System.out.println(b);
-        System.out.println(c);
+        @Override
+        public String getMethod() {
+            return "DELETE";
+        }
     }
 
+    @Test
+    public void bodyWithDeleteRequest() throws Exception {
+        RestTemplate myRestTemplate = new RestTemplate();
+        myRestTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory() {
+            @Override
+            protected HttpUriRequest createHttpUriRequest(HttpMethod httpMethod, URI uri) {
+                if (HttpMethod.DELETE == httpMethod) {
+                    return new HttpEntityEnclosingDeleteRequest(uri);
+                }
+                return super.createHttpUriRequest(httpMethod, uri);
+            }
+        });
+        Map<String,Object> params = new HashMap<>();
+        params.put("userName","赵云");
 
+        ResponseEntity<User> exchange = myRestTemplate.exchange(
+                SERVER_UTL + "test8",
+                HttpMethod.DELETE,
+                new HttpEntity<Map>(params),
+                User.class);
+        System.out.println(exchange.getBody());
+    }
 }

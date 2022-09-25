@@ -4,7 +4,6 @@ import cn.hutool.captcha.AbstractCaptcha;
 import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.generator.MathGenerator;
 import cn.hutool.captcha.generator.RandomGenerator;
-import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.ObjectUtil;
 import com.adolesce.autoconfig.template.SmsTemplate;
 import com.adolesce.cloud.dubbo.api.db.MpUserApi;
@@ -12,6 +11,7 @@ import com.adolesce.cloud.dubbo.domain.db.MpUser;
 import com.adolesce.common.enums.CaptchaType;
 import com.adolesce.common.exception.BusinessException;
 import com.adolesce.common.utils.JwtUtils;
+import com.adolesce.common.utils.ids.IdUtils;
 import com.adolesce.common.vo.ErrorResult;
 import com.adolesce.common.vo.Response;
 import com.google.code.kaptcha.Producer;
@@ -131,7 +131,7 @@ public class LoginService {
     }
 
     public void outputImageCaptcha(HttpServletResponse response, String type) throws IOException {
-        String uuid = UUID.randomUUID().toString(true);
+        String uuid = IdUtils.simpleUUID();
         String verifyKey = "IMAGE_CAPTCHA_" + uuid;
         String capStr, code = null;
         BufferedImage image = null;
@@ -167,6 +167,7 @@ public class LoginService {
             }
             case HUTOOL_RANDOM_NUMBER:{
                 RandomGenerator randomGenerator = new RandomGenerator("0123456789", 4);
+                //线段干扰字符样式
                 captcha = CaptchaUtil.createLineCaptcha(200, 100);
                 captcha.setGenerator(randomGenerator);
                 captcha.createCode();
@@ -185,15 +186,15 @@ public class LoginService {
         if(ObjectUtil.isNotEmpty(captcha)){
             code = captcha.getCode();
             captcha.write(response.getOutputStream());
-            //captcha.getImageBytes();
+            //byte[] imageBytes = captcha.getImageBytes();
         }else{
             // 转换流信息写出
             FastByteArrayOutputStream os = new FastByteArrayOutputStream();
             ImageIO.write(image, "jpg", os);
             response.getOutputStream().write(os.toByteArray());
-            //Base64.encode(os.toByteArray());
+            //String imageBytes = Base64.encode(os.toByteArray());
         }
-        redisTemplate.opsForValue().set(verifyKey, code, 5, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(verifyKey, code, 2, TimeUnit.MINUTES);
        /* Map<String,Object> resultMap = new HashMap<>();
         resultMap.put("uuid",uuid);
         resultMap.put("imageBytes",);

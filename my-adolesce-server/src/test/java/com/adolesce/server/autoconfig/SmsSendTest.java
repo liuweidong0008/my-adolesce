@@ -19,7 +19,35 @@ public class SmsSendTest {
     @Autowired
     private SmsTemplate smsTemplate;
 
+    /**
+     * 测试发送短信验证码
+     */
+    @Test
+    public void testSendCode() {
+        smsTemplate.sendCode("18301327332");
+    }
+
+    /**
+     * 测试通过亿美发送短信
+     */
+    @Test
+    public void testSendByYiMei() {
+        smsTemplate.sendSmsByYimei("18301327332", "有商家希望和您的童趣手工制作小店进行合作，有意向请联系010-82903982。");
+    }
+
+    /**
+     * 测试通过互亿无线发送短信
+     */
+    @Test
+    public void testSendSmsByHuyi() {
+        smsTemplate.sendSmsByHuyi("18301327332", "有商家希望和您的童趣手工制作小店进行合作，有意向请联系010-82903982。");
+    }
+
+    /**
+     * 互亿无线短信发送
+     */
     private static String Url = "http://106.ihuyi.com/webservice/sms.php?method=Submit";
+
     public static void main(String[] args) {
         HttpClient client = new HttpClient();
         PostMethod method = new PostMethod(Url);
@@ -28,12 +56,10 @@ public class SmsSendTest {
         method.setRequestHeader("ContentType", "application/x-www-form-urlencoded;charset=GBK");
 
         int mobile_code = (int) ((Math.random() * 9 + 1) * 100000);
-
-        String content = new String("【美团】您的验证码是：" + mobile_code + "。请不要把验证码泄露给其他人。");
-
+        String content = new String("您的验证码是：" + mobile_code + "。请不要把验证码泄露给其他人。");
         NameValuePair[] data = {//提交短信
-                new NameValuePair("account", "C61078084"), //查看用户名 登录用户中心->验证码通知短信>产品总览->API接口信息->APIID
-                new NameValuePair("password", "d9f159954e1f35921dd3abc483a493ae"), //查看密码 登录用户中心->验证码通知短信>产品总览->API接口信息->APIKEY
+                new NameValuePair("account", "C10663788"), //查看用户名 登录用户中心->验证码通知短信>产品总览->API接口信息->APIID
+                new NameValuePair("password", "6e5e0d90579f77ef10562ad331788c75"), //查看密码 登录用户中心->验证码通知短信>产品总览->API接口信息->APIKEY
                 //new NameValuePair("password", util.StringUtil.MD5Encode("密码")),
                 new NameValuePair("mobile", "18301327332"),
                 new NameValuePair("content", content),
@@ -59,23 +85,7 @@ public class SmsSendTest {
                 System.out.println("短信提交成功");
             }
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-    }
-
-    @Test
-    public void testSendCode(){
-        smsTemplate.sendCode("18301327332");
-    }
-
-    @Test
-    public void testSendByYiMei() {
-        smsTemplate.sendSmsByYimei("18301327332","有商家希望和您的童趣手工制作小店进行合作，有意向请联系010-82903982。");
-    }
-
-    @Test
-    public void testSendSmsByHuyi() {
-        smsTemplate.sendSmsByHuyi("18301327332","有商家希望和您的童趣手工制作小店进行合作，有意向请联系010-82903982。");
     }
 }

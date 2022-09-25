@@ -22,20 +22,8 @@ import java.util.concurrent.TimeUnit;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class RedisTemplateTest {
-    //@Autowired
-    private RedisTemplate<String,Object> redisTemplate;
     @Autowired
-    private RedisTemplate redisTemplate2;
-
-    @Test
-    public void testSaveStr() {
-        redisTemplate2.opsForValue().set("testStr3","liuweidong");
-        redisTemplate2.opsForValue().set("testStr4","刘威东");
-        Object testStr1 = redisTemplate2.opsForValue().get("testStr3");
-        Object testStr2 = redisTemplate2.opsForValue().get("testStr4");
-        System.out.println(testStr1);
-        System.out.println(testStr2);
-    }
+    private RedisTemplate redisTemplate;
 
     /**
      * 测试字符串数据类型
@@ -47,7 +35,7 @@ public class RedisTemplateTest {
         }
 
         //0、获取字符串类型操作对象
-        ValueOperations<String, Object> strOperation = redisTemplate.opsForValue();
+        ValueOperations strOperation = redisTemplate.opsForValue();
 
         //1、设置值
         strOperation.set("strKey1","str1");
@@ -66,6 +54,7 @@ public class RedisTemplateTest {
         //6、上锁并设置有效期
         Boolean result2 = strOperation.setIfAbsent("lock2","lockValue2",1,TimeUnit.MINUTES);
         System.err.println("strOperation.setIfAbsent(\"lock2\",\"lockValue2\",1,TimeUnit.MINUTES) result = "+result2);
+
         Boolean result3 = strOperation.setIfAbsent("lock3","lockValue3",Duration.ofMinutes(1));
         System.err.println("strOperation.setIfAbsent(\"lock3\",\"lockValue3\",1,TimeUnit.MINUTES) result = "+result3);
 
@@ -126,10 +115,10 @@ public class RedisTemplateTest {
         User user  = new User();
         user.setUserName("张三");
         user.setAge(25);
-        user.setSeriNo("Kxd2837298398");
+        user.setSeriNo("KXD2837298398");
         user.setAddress(new Address("辽宁省","吉林市"));
-        strOperation.set("tUser",user);
-        User tUser = (User) strOperation.get("tUser");
+        strOperation.set("myUser",user);
+        User tUser = (User) strOperation.get("myUser");
         System.out.println(tUser);
     }
 
@@ -149,10 +138,12 @@ public class RedisTemplateTest {
         hashOperation.put("hKey1","hashKey1","hash1");
 
         //2、设置键值，当hashkey不存在时才进行设置、返回true，hash存在时不进行设置，返回false
-        Boolean result1 = hashOperation.putIfAbsent("hKey2", "hashKey1", "aaabbbccc");
+        Boolean result1 = hashOperation.putIfAbsent("hKey2", "hashKey1", "111");
         System.err.println("hashOperation.putIfAbsent(\"hKey2\", \"hashKey1\", \"aaabbbccc\") result = "+result1);
-        result1 = hashOperation.putIfAbsent("hKey2", "hashKey1", "123123");
+
+        result1 = hashOperation.putIfAbsent("hKey2", "hashKey1", "222");
         System.err.println("hashOperation.putIfAbsent(\"hKey2\", \"hashKey1\", \"123123\") result = "+result1);
+
         hashOperation.put("hKey2", "hashKey2", "aabbcc");
 
         //3、批量设置键值

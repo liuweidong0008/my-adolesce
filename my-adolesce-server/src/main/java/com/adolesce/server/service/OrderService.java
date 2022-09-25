@@ -33,9 +33,11 @@ import org.springframework.web.bind.annotation.PathVariable;
  * fallback属性用于指定服务的降级处理类
  */
 //@FeignClient(value = "EUREKA-PROVIDER", configuration = FeignLogConfig.class, fallback = OrderServiceFallback.class)
-@FeignClient(value = "nacos-provider", configuration = FeignLogConfig.class, fallback = OrderServiceFallback.class)
+//@FeignClient(value = "nacos-provider", configuration = FeignLogConfig.class, fallback = OrderServiceFallback.class)
+@FeignClient(value = "consul-provider", configuration = FeignLogConfig.class, fallback = OrderServiceFallback.class)
 public interface OrderService {
     //@GetMapping("eureka-provider/goods/findOne/{id}")
-    @GetMapping("nacos-provider/goods/findOne/{id}")
+    //@GetMapping("nacos-provider/goods/findOne/{id}")
+    @GetMapping("/goods/findOne/{id}")
     public Goods findGoodsById(@PathVariable("id") int id);
 }

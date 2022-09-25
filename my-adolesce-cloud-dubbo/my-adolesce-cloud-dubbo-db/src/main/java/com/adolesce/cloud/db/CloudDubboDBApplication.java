@@ -10,7 +10,7 @@ import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 /**
  * 启动类
  */
-@SpringBootApplication(exclude = {MongoDataAutoConfiguration.class, MongoAutoConfiguration.class})
+@SpringBootApplication(exclude = {MongoDataAutoConfiguration.class, MongoAutoConfiguration.class/*, DataSourceAutoConfiguration.class*//*, RedisAutoConfiguration.class*/})
 //1、扫描mybatis mapper接口
 @MapperScan("com.adolesce.cloud.db.mapper")
 //2、在Springboot应用开发中使用JPA时，通常在主应用程序所在包或者其子包的某个位置定义我们的Entity和Repository，这样基于Springboot的自动配置，无需额外配置，我们定义的Entity和Repository即可被发现和使用。但有时候我们需要定义Entity和Repository不在应用程序所在包及其子包，那么这时候就需要使用@EntityScan和@EnableJpaRepositories了。

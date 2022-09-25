@@ -1,0 +1,104 @@
+package com.adolesce.server.encrypt;
+
+import org.junit.Test;
+import org.springframework.mock.web.MockMultipartFile;
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
+
+import java.io.*;
+
+/**
+ * @author Administrator
+ * @version 1.0
+ * @description: TODO
+ * @date 2022/8/27 19:33
+ */
+public class Base64Test {
+    // 测试从Base64编码转换为图片文件
+    @Test
+    public void testGetBase64Str() throws Exception {
+        String base64Str = "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";
+        String imgPath = "D://img/code.png";
+        generateImage(base64Str, imgPath);
+    }
+
+    // 测试从图片文件转换为Base64编码
+    @Test
+    public void testGenerateImage() throws Exception {
+        String imgPath = "D://img/code.png";
+        System.out.println(getBase64Str(imgPath));
+    }
+
+    /**
+     * 测试base64转化为MutipartFile
+     * @throws Exception
+     */
+    @Test
+    public void testTransferMutipartFile() throws Exception {
+        String imgData = "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";
+        BASE64Decoder decoder = new BASE64Decoder();
+        byte[] b = decoder.decodeBuffer(imgData);
+        MockMultipartFile multipartFile = new MockMultipartFile("code.png",b);
+
+        multipartFile.transferTo(new File("D://2.png"));
+    }
+
+    /**
+     * 图片转化成base64字符串
+     * @param imgPath
+     * @return
+     */
+    public static String getBase64Str(String imgPath) throws IOException {// 将图片文件转化为字节数组字符串，并对其进行Base64编码处理
+        InputStream in = null;
+        byte[] data;
+        String encode = null; // 返回Base64编码过的字节数组字符串
+        // 对字节数组Base64编码
+        BASE64Encoder encoder = new BASE64Encoder();
+        try {
+            // 读取图片字节数组
+            in = new FileInputStream(imgPath);
+            data = new byte[in.available()];
+            in.read(data);
+            encode = encoder.encode(data);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            in.close();
+        }
+        return encode;
+    }
+
+    /**
+     * base64字符串转化成图片
+     *
+     * @param imgData 图片编码
+     * @param imgFilePath 存放到本地路径
+     * @return
+     * @throws IOException
+     */
+    public static boolean generateImage(String imgData, String imgFilePath) throws Exception { // 对字节数组字符串进行Base64解码并生成图片
+        if (imgData == null) // 图像数据为空
+            return false;
+        BASE64Decoder decoder = new BASE64Decoder();
+        OutputStream out = null;
+        try {
+            out = new FileOutputStream(imgFilePath);
+            // Base64解码
+            byte[] b = decoder.decodeBuffer(imgData);
+            for (int i = 0; i < b.length; ++i) {
+                if (b[i] < 0) {// 调整异常数据
+                    b[i] += 256;
+                }
+            }
+            out.write(b);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            out.flush();
+            out.close();
+        }
+    }
+
+}

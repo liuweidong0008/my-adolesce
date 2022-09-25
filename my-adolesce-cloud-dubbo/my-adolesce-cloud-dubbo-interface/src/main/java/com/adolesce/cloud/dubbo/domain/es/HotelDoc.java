@@ -6,6 +6,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -23,9 +27,28 @@ public class HotelDoc implements Serializable {
     private String pic;         //酒店形象图片
     private Object distance;
     private Boolean isAD;
+    private List<String> suggestion; //自动补全字段
 
     public HotelDoc(EsHotel hotel) {
-        BeanUtil.copyProperties(hotel,this);
+        BeanUtil.copyProperties(hotel, this);
         this.location = hotel.getLatitude() + ", " + hotel.getLongitude();
+        // 组装suggestion
+        if (this.business.contains("/")) {
+            // business有多个值，需要切割
+            String[] arr = this.business.split("/");
+            // 添加元素
+            this.suggestion = new ArrayList<>();
+            this.suggestion.add(this.brand);
+            Collections.addAll(this.suggestion, arr);
+        }else if (this.business.contains("、")) {
+            // business有多个值，需要切割
+            String[] arr = this.business.split("、");
+            // 添加元素
+            this.suggestion = new ArrayList<>();
+            this.suggestion.add(this.brand);
+            Collections.addAll(this.suggestion, arr);
+        } else {
+            this.suggestion = Arrays.asList(this.brand, this.business);
+        }
     }
 }

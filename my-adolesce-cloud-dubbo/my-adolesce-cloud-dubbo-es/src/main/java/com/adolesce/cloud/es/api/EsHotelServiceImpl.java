@@ -1,11 +1,15 @@
 package com.adolesce.cloud.es.api;
 
 import cn.hutool.db.Page;
+import cn.hutool.db.sql.Direction;
+import cn.hutool.db.sql.Order;
 import com.adolesce.cloud.dubbo.api.es.EsSearchHotelApi;
 import com.adolesce.cloud.dubbo.domain.es.EsPageResult;
 import com.adolesce.cloud.dubbo.domain.es.EsRequestParams;
 import com.adolesce.cloud.dubbo.domain.es.HotelDoc;
-import com.adolesce.cloud.es.config.EsSearchCommonService;
+import com.adolesce.cloud.es.bean.EsQueryResult;
+import com.adolesce.cloud.es.bean.EsResultOperator;
+import com.adolesce.cloud.es.service.EsSearchCommonService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.annotation.DubboService;
@@ -17,24 +21,39 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder;
 import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.Aggregations;
+import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.GeoDistanceSortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 
-import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Slf4j
 @DubboService
+@RefreshScope
 public class EsHotelServiceImpl implements EsSearchHotelApi {
     @Autowired
     private EsSearchCommonService esSearchCommonService;
+    @Value("${elasticsearch.suggestionCount}")
+    private Integer suggestionCount;
+    @Value("${elasticsearch.aggregationCount}")
+    private Integer aggregationCount;
 
+    /**
+     * 条件查询
+     * @param params 查询参数
+     * @return
+     */
     @Override
-    public EsPageResult search(EsRequestParams params) throws Exception {
+    public EsPageResult search(EsRequestParams params)  {
         try {
             // 1.准备请求参数
             // 1.1、构建查询条件
@@ -50,20 +69,76 @@ public class EsHotelServiceImpl implements EsSearchHotelApi {
                         .order(SortOrder.ASC)
                         .unit(DistanceUnit.KILOMETERS);
             }
-            //1.4、构建高亮 Builder
+            //1.4、构建排序
+            String sortBy = params.getSortBy();
+            if(StringUtils.isNotBlank(sortBy) && !StringUtils.equals("default",sortBy)){
+                page.setOrder(new Order(sortBy, "price".equals(sortBy)?Direction.ASC:Direction.DESC));
+            }
+
+            //1.5、构建高亮 Builder
             HighlightBuilder highlightBuilder = new HighlightBuilder()
                         .field("name").requireFieldMatch(false)
                         .field("address").requireFieldMatch(false)   //不会参与高亮，因为该字段映射中未参与搜索
                         .field("business").requireFieldMatch(false); //会参与高亮，但是由于该字段是keyword类型，因此必须跟分词后的某个词条完全匹配才会高亮
 
             //2、执行查询，解析结果
-            Map<String, Object> resultMap = esSearchCommonService.excuteQuery("hotel", HotelDoc.class, queryBuilder, page, highlightBuilder, distanceSortBuilder);
-            List<HotelDoc> results = (List<HotelDoc>) resultMap.get("result");
-            Long total = (Long) resultMap.get("total");
-            return new EsPageResult(total, results);
-        } catch (IOException e) {
+            EsQueryResult queryResult = esSearchCommonService.excuteQuery("hotel", HotelDoc.class, queryBuilder,
+                    EsResultOperator.build().page(page).highLight(highlightBuilder).geoSort(distanceSortBuilder));
+            List<HotelDoc> results = (List<HotelDoc>) queryResult.getResultList();
+            return new EsPageResult(queryResult.getTotal(), results);
+        } catch (Exception e) {
             throw new RuntimeException("搜索数据失败", e);
         }
+    }
+
+    /**
+     * 聚合查询
+     * @param params 查询条件
+     * @return
+     */
+    @Override
+    public Map<String, List<String>> getFilters(EsRequestParams params) {
+        try {
+            // 1、构建查询条件
+            QueryBuilder queryBuilder = buildBasicQuery(params);
+            // 2、构建桶聚合
+            TermsAggregationBuilder brandAgg = AggregationBuilders.terms("brandAgg").field("brand").size(aggregationCount);
+            TermsAggregationBuilder cityAgg = AggregationBuilders.terms("cityAgg").field("city").size(aggregationCount);
+            TermsAggregationBuilder starAgg = AggregationBuilders.terms("starAgg").field("starName").size(aggregationCount);
+
+            Aggregations aggregations = this.esSearchCommonService.getAggregations("hotel",queryBuilder,brandAgg,cityAgg,starAgg);
+
+            Map<String, List<String>> filters = new HashMap<>(3);
+            // 4.1.解析品牌
+            List<String> brandList = this.esSearchCommonService.getAggResultForAggName(aggregations, "brandAgg");
+            filters.put("brand", brandList);
+            // 4.1.解析城市
+            List<String> cityList = this.esSearchCommonService.getAggResultForAggName(aggregations, "cityAgg");
+            filters.put("city", cityList);
+            // 4.1.解析星级
+            List<String> starList = this.esSearchCommonService.getAggResultForAggName(aggregations, "starAgg");
+            filters.put("starName", starList);
+
+            return filters;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 自动补全查询
+     * @param key 补全前缀
+     * @return
+     */
+    @Override
+    public List<String> getSuggestion(String key) {
+        List<String> resultList;
+        try {
+            resultList = this.esSearchCommonService.suggestionQuery("hotel", "mySuggest", "suggestion",key,suggestionCount);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return resultList;
     }
 
     private AbstractQueryBuilder buildBasicQuery(EsRequestParams params) {
@@ -116,72 +191,4 @@ public class EsHotelServiceImpl implements EsSearchHotelApi {
         // 3.返回查询条件
         return functionScoreQuery;
     }
-
-
-    /*public EsPageResult oldSearch(EsRequestParams params) {
-        try {
-            // 1.准备Request
-            SearchRequest request = new SearchRequest("hotel");
-            // 2.准备请求参数
-            // 2.1.query
-            request.source().query(buildBasicQuery(params, request));
-            // 2.2.分页
-            int page = params.getPage();
-            int size = params.getSize();
-            request.source().from((page - 1) * size).size(size);
-            // 2.3.距离排序
-            String location = params.getLocation();
-            if (StringUtils.isNotBlank(location)) {
-                request.source().sort(SortBuilders
-                        .geoDistanceSort("location", new GeoPoint(location))
-                        .order(SortOrder.ASC)
-                        .unit(DistanceUnit.KILOMETERS)
-                );
-            }
-            // 3.发送请求
-            SearchResponse response = restHighLevelClient.search(request, RequestOptions.DEFAULT);
-            // 4.解析响应
-            return handleResponse(response);
-        } catch (IOException e) {
-            throw new RuntimeException("搜索数据失败", e);
-        }
-    }
-
-    private EsPageResult handleResponse(SearchResponse response) {
-        SearchHits searchHits = response.getHits();
-        // 4.1.总条数
-        long total = searchHits.getTotalHits().value;
-        // 4.2.获取文档数组
-        SearchHit[] hits = searchHits.getHits();
-        // 4.3.遍历
-        List<HotelDoc> hotels = new ArrayList<>(hits.length);
-        for (SearchHit hit : hits) {
-            // 4.4.获取source
-            String json = hit.getSourceAsString();
-            // 4.5.反序列化，非高亮的
-            HotelDoc hotelDoc = JSON.parseObject(json, HotelDoc.class);
-            // 4.6.处理高亮结果
-            // 1)获取高亮map
-            Map<String, HighlightField> map = hit.getHighlightFields();
-            if (map != null && !map.isEmpty()) {
-                // 2）根据字段名，获取高亮结果
-                HighlightField highlightField = map.get("name");
-                if (highlightField != null) {
-                    // 3）获取高亮结果字符串数组中的第1个元素
-                    String hName = highlightField.getFragments()[0].toString();
-                    // 4）把高亮结果放到HotelDoc中
-                    hotelDoc.setName(hName);
-                }
-            }
-            // 4.8.排序信息
-            Object[] sortValues = hit.getSortValues();
-            if (sortValues.length > 0) {
-                hotelDoc.setDistance(sortValues[0]);
-            }
-
-            // 4.9.放入集合
-            hotels.add(hotelDoc);
-        }
-        return new EsPageResult(total, hotels);
-    }*/
 }

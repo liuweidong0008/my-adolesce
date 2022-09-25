@@ -107,23 +107,27 @@ public class GlobalCachDemoController {
     }
 
     /**
-     * //@Cacheable将在执行方法之前（此时通过condition 的#result还拿不到返回值）判断condition，如果返回true，则查缓存；
+     * //一、@Cacheable将在执行方法之前（此时通过condition 的#result还拿不到返回值）判断condition，如果返回true，则查缓存；
+     *      @Cacheable将在执行方法之后（此时通过unless 的#result可以拿到返回值）判断unless，如果返回true，则不缓存数据；
      *      @Cacheable(value = "user", key = "#id", condition = "#id lt 10")
      *      public User conditionFindById(final Long id)
-     * //@CachePut将在执行完方法后（#result就能拿到返回值了）判断condition，如果返回true，则放入缓存；
+     *
+     * //二、@CachePut将在执行完方法后（#result就能拿到返回值了）判断condition，如果返回true，则放入缓存；
      *      @CachePut(value = "user", key = "#id", condition = "#result.username ne 'zhang'")
      *      public User conditionSave(final User user)
-     * //@CachePut将在执行完方法后（#result就能拿到返回值了）判断unless，如果返回false，则放入缓存；（即跟condition相反）
+     *
+     * //三、@CachePut将在执行完方法后（#result就能拿到返回值了）判断unless，如果返回false，则放入缓存；（即跟condition相反）
      *      @CachePut(value = "user", key = "#user.id", unless = "#result.username eq 'zhang'")
      *      public User conditionSave2(final User user)
-     * //@CacheEvict 在方法执行之后调用（#result能拿到返回值了）；且判断condition，如果返回true，则移除缓存；
+     *
+     * //四、@CacheEvict 在方法执行之后调用（#result能拿到返回值了）；且判断condition，如果返回true，则移除缓存；
      *      @CacheEvict(value = "user", key = "#user.id", beforeInvocation = false, condition = "#result.username ne 'zhang'")
      *      public User conditionDelete(final User user)
      *
      *      @CacheEvict(value = "user", key = "#user.id", condition = "#root.target.canCache() and #root.caches[0].get(#user.id).get().username ne #user.username", beforeInvocation = true)
      *      public void conditionUpdate(User user)
      *
-     * //@Caching 有时候我们可能组合多个Cache注解使用；比如用户新增成功后，我们要添加id–>user；username—>user；email—>user的缓存；此时就需要@Caching组合多个注解标签了。
+     * //五、@Caching 有时候我们可能组合多个Cache注解使用；比如用户新增成功后，我们要添加id–>user；username—>user；email—>user的缓存；此时就需要@Caching组合多个注解标签了。
      *      @Caching(put = {
      *              @CachePut(value = "user", key = "#user.id"),
      *              @CachePut(value = "user", key = "#user.username"),
@@ -137,11 +141,11 @@ public class GlobalCachDemoController {
      *    methodName      root对象	    当前被调用的方法名	                                                                 #root.methodName
      *    method	      root对象	    当前被调用的方法	                                                                 #root.method.name
      *    target	      root对象	    当前被调用的目标对象	                                                             #root.target
-     *    targetClass	  root对象	    当前被调用的目标对象类	                                                         #root.targetClass
+     *    targetClass	  root对象	    当前被调用的目标对象类	                                                             #root.targetClass
      *    args	          root对象	    当前被调用的方法的参数列表	                                                         #root.args[0] (类似：#p0)
-     *    caches	      root对象	    当前方法调用使用的缓存列表（如@Cacheable(value={“cache1”, “cache2”})），则有两个cache #root.caches[0].name
-     *    argument name   执行上下文      当前被调用的方法的参数，如findById(User user)，我们可以通过#id拿到参数	              #user.id
-     *    result	      执行上下文	    方法执行后的返回值（仅当方法执行之后的判断有效）                                      #result
-     *    T               静态类         项目静态类                                                                        T(静态类类路径).methodName()
+     *    caches	      root对象	    当前方法调用使用的缓存列表（如@Cacheable(value={“cache1”, “cache2”})），则有两个cache   #root.caches[0].name
+     *    argument name   执行上下文      当前被调用的方法的参数，如findById(User user)，我们可以通过#id拿到参数	                 #user.id
+     *    result	      执行上下文	    方法执行后的返回值（仅当方法执行之后的判断有效）                                          #result
+     *    T               静态类         项目静态类                                                                         T(静态类类路径).methodName()
      */
 }

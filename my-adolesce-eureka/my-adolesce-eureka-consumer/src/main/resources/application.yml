@@ -20,6 +20,13 @@ eureka:
       #defaultZone: http://eureka-server:6761/eureka-server/eureka,http://eureka-server2:6762/eureka-server2/eureka  #eureka注册中心集群模式
     #registry-fetch-interval-seconds: 30  #定时更新从eureka注册中心拉取到本地的注册表（ip:port 等信息）默认30
 
+# 设置当前的日志级别为 debug，feign只支持记录debug级别的日志
+logging:
+  level:
+    com.adolesce: debug
+  pattern:
+    dateformat: HH:mm:ss:SSS
+
 #EUREKA-PROVIDER: #为哪个服务设置负载均衡策略（服务应用名称）
 #  ribbon:
 #    NFloadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule  #指定负载均衡策略类
@@ -33,13 +40,6 @@ ribbon:
     enabled: true
     clients:
       - eureka-provider
-
-# 设置当前的日志级别为 debug，feign只支持记录debug级别的日志
-logging:
-  level:
-    com.adolesce: debug
-  pattern:
-    dateformat: HH:mm:ss:SSS
 
 feign:
   # 开启feign对hystrix的支持（客户端服务降级/熔断等）
@@ -55,7 +55,6 @@ feign:
 #      default: # default是针对全局服务，也可配置针对某个微服务
 #        loggerLevel: FULL #  日志级别
 
-
 # 设置Hystrix超时时间（到达该时间服务提供方仍未响应，则走服务降级逻辑）【合理的时间应该设置为 重试次数*ribbon.ReadTimeout，以保证ribbon重试次数都能够执行完】
 hystrix:
   command:
@@ -63,4 +62,4 @@ hystrix:
       execution:
         isolation:
           thread:
-            timeoutInMilliseconds: 1000
+            timeoutInMilliseconds: 2000

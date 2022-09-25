@@ -21,8 +21,8 @@ spring:
     multipart:
       enabled: true  #默认支持文件上传.
       location: D://filetest/ # 上传文件的临时目录
-      max-request-size: 150MB
-      max-file-size: 15MB
+      max-file-size: 100MB # 单个文件最大支持上传大小
+      max-request-size: 500MB # 总数最大支持上传大小
   profiles: #指定使用哪个环境的配置文件
     active: #可永于指定用哪个配置文件  application-{active}.yml or application-{active}.properties
       - dev

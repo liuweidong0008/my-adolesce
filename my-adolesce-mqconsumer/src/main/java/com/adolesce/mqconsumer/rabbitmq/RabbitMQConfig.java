@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 //@EnableRabbit
-public class RabbitMQConfig/* implements RabbitListenerConfigurer */{
+public class RabbitMQConfig /*implements RabbitListenerConfigurer*/ {
     @Bean
     public MessageConverter jsonMessageConverter(){
         return new Jackson2JsonMessageConverter();
@@ -238,4 +238,5 @@ public class RabbitMQConfig/* implements RabbitListenerConfigurer */{
         return QueueBuilder.durable("normal.queue")
                 .build();
     }
+
 }

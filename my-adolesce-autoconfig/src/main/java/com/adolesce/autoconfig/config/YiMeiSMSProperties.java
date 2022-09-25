@@ -8,8 +8,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 //@Component
 //@PropertySource("classpath:sms.properties")
-@ConfigurationProperties(prefix = "sms.yimei")
 @Data
+@ConfigurationProperties(prefix = "sms.yimei")
 public class YiMeiSMSProperties {
     private String appId;
     private String secretKey;

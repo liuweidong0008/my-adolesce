@@ -119,6 +119,14 @@
             <groupId>net.sf.jxls</groupId>
             <artifactId>jxls-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.jxls</groupId>
+            <artifactId>jxls</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jxls</groupId>
+            <artifactId>jxls-poi</artifactId>
+        </dependency>
         <!-- commons-io -->
         <dependency>
             <groupId>commons-io</groupId>

@@ -4,10 +4,20 @@ import com.adolesce.common.utils.XmlReadHelper;
 import com.adolesce.common.utils.excel.ExcelReaderHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.openxml4j.opc.PackageAccess;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.eventusermodel.ReadOnlySharedStringsTable;
+import org.apache.poi.xssf.eventusermodel.XSSFReader;
+import org.apache.poi.xssf.eventusermodel.XSSFSheetXMLHandler;
+import org.apache.poi.xssf.model.StylesTable;
 import org.springframework.web.multipart.MultipartFile;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -37,7 +47,7 @@ public class ExcelImportHelper {
      * @return 返回读取的List
      * @throws Exception
      */
-    public List<ExcelImportBaseBo> importExcel(String configName, MultipartFile file, Integer sheet) throws Exception {
+    public static List<ExcelImportBaseBo> importExcel(String configName, MultipartFile file, Integer sheet) throws Exception {
         List<ExcelImportBaseBo> boList = new ArrayList<>();
         //校验是否有此配置
         ExcelImportConfig importConfig = XmlReadHelper.getExcelImportConfigByName(configName);
@@ -66,8 +76,9 @@ public class ExcelImportHelper {
                 continue;
             }
             //填充baseBo
-            this.fillBaseBo(bo, configFieldList, excelRow);
+            fillBaseBo(bo, configFieldList, excelRow);
             bo.setDataLine(i + 1);
+            System.out.println("当前读取至第" + bo.getDataLine() + "行");
             boList.add(bo);
         }
         return boList;
@@ -80,10 +91,10 @@ public class ExcelImportHelper {
      * @param configFieldList 字段配置集合
      * @param row             数据行
      */
-    public void fillBaseBo(ExcelImportBaseBo baseBo, List<ExcelImportConfig.Field> configFieldList, Row row) {
+    private static void fillBaseBo(ExcelImportBaseBo baseBo, List<ExcelImportConfig.Field> configFieldList, Row row) {
         for (ExcelImportConfig.Field configField : configFieldList) {
             Cell cell = row.getCell(configField.getColumnIndex());
-            this.setBaseObjProperty(baseBo, configField, cell);
+            setBaseObjProperty(baseBo, configField, cell);
         }
     }
 
@@ -94,7 +105,7 @@ public class ExcelImportHelper {
      * @param configField 字段配置
      * @param cell        数据列
      */
-    private void setBaseObjProperty(ExcelImportBaseBo baseBo, ExcelImportConfig.Field configField, Cell cell) {
+    private static void setBaseObjProperty(ExcelImportBaseBo baseBo, ExcelImportConfig.Field configField, Cell cell) {
         Object cellValue = ExcelReaderHelper.getCellValue(cell);
         String fieldName = configField.getFieldName();
         String fieldDesc = configField.getFieldDesc();
@@ -114,7 +125,7 @@ public class ExcelImportHelper {
             if (BigDecimal.class.isAssignableFrom(fieldType)) {
                 requiredType = "整数或小数";
                 if (cellValue instanceof Date) {
-                    this.addFiledError(baseBo, fieldName, requiredType, fieldDesc, "时间/日期");
+                    addFiledError(baseBo, fieldName, requiredType, fieldDesc, "时间/日期");
                 } else if (cellValue instanceof Double) {
                     field.set(baseBo, new BigDecimal(((Double) cellValue).doubleValue()));
                 } else if (cellValue instanceof String) {
@@ -123,9 +134,9 @@ public class ExcelImportHelper {
             } else if (String.class.isAssignableFrom(fieldType)) {
                 requiredType = "文本";
                 if (cellValue instanceof Date) {
-                    this.addFiledError(baseBo, fieldName, requiredType, fieldDesc, "时间/日期");
+                    addFiledError(baseBo, fieldName, requiredType, fieldDesc, "时间/日期");
                 } else if (cellValue instanceof Double) {
-                    this.addFiledError(baseBo, fieldName, requiredType, fieldDesc, "数值");
+                    addFiledError(baseBo, fieldName, requiredType, fieldDesc, "数值");
                 } else if (cellValue instanceof String) {
                     field.set(baseBo, cellValue);
                 }
@@ -134,7 +145,7 @@ public class ExcelImportHelper {
                 if (cellValue instanceof Date) {
                     field.set(baseBo, cellValue);
                 } else if (cellValue instanceof Double) {
-                    this.addFiledError(baseBo, fieldName, requiredType, fieldDesc, "数值");
+                    addFiledError(baseBo, fieldName, requiredType, fieldDesc, "数值");
                 } else if (cellValue instanceof String) {
                     String formartStr;
                     if (((String) cellValue).contains("-")) {
@@ -147,7 +158,7 @@ public class ExcelImportHelper {
             } else if (Integer.class.isAssignableFrom(fieldType) || int.class.isAssignableFrom(fieldType)) {
                 requiredType = "整数";
                 if (cellValue instanceof Date) {
-                    this.addFiledError(baseBo, fieldName, requiredType, fieldDesc, "时间/日期");
+                    addFiledError(baseBo, fieldName, requiredType, fieldDesc, "时间/日期");
                 } else if (cellValue instanceof Double) {
                     field.set(baseBo, ((Double) cellValue).intValue());
                 } else if (cellValue instanceof String) {
@@ -156,7 +167,7 @@ public class ExcelImportHelper {
             } else if (Long.class.isAssignableFrom(fieldType) || long.class.isAssignableFrom(fieldType)) {
                 requiredType = "整数";
                 if (cellValue instanceof Date) {
-                    this.addFiledError(baseBo, fieldName, requiredType, fieldDesc, "时间/日期");
+                    addFiledError(baseBo, fieldName, requiredType, fieldDesc, "时间/日期");
                 } else if (cellValue instanceof Double) {
                     field.set(baseBo, ((Double) cellValue).longValue());
                 } else if (cellValue instanceof String) {
@@ -165,7 +176,7 @@ public class ExcelImportHelper {
             } else if (Double.class.isAssignableFrom(fieldType) || double.class.isAssignableFrom(fieldType)) {
                 requiredType = "整数或小数";
                 if (cellValue instanceof Date) {
-                    this.addFiledError(baseBo, fieldName, requiredType, fieldDesc, "时间/日期");
+                    addFiledError(baseBo, fieldName, requiredType, fieldDesc, "时间/日期");
                 } else if (cellValue instanceof Double) {
                     field.set(baseBo, cellValue);
                 } else if (cellValue instanceof String) {
@@ -193,7 +204,7 @@ public class ExcelImportHelper {
      * @param fieldDesc    字段描述
      * @param nowType      目前类型
      */
-    private void addFiledError(ExcelImportBaseBo baseBo, String fieldName, String requiredType,
+    private static void addFiledError(ExcelImportBaseBo baseBo, String fieldName, String requiredType,
                                String fieldDesc, String nowType) {
         StringBuilder builder = new StringBuilder(fieldDesc);
         builder.append("需要：").append(requiredType).append("类型，当前值为").append(nowType).append("类型");
@@ -226,6 +237,66 @@ public class ExcelImportHelper {
             return configField.getErrorMsg();
         }
         return null;
+    }
+
+    public static void importMaxExcel(String path, int sheetNo, XSSFSheetXMLHandler.SheetContentsHandler sheetContentsHandler) throws Exception {
+        importMaxExcel(path,null,sheetNo,sheetContentsHandler);
+    }
+
+    public static void importMaxExcel(InputStream in,int sheetNo, XSSFSheetXMLHandler.SheetContentsHandler sheetContentsHandler) throws Exception {
+        importMaxExcel(null,in,sheetNo,sheetContentsHandler);
+    }
+
+    /**
+     * 读取数据
+     * @param path 文件路径，和文件流二者传其一
+     * @param in 文件流，和文件路径二者传其一
+     * @param sheetNo 读取第几个sheet（从1开始）
+     * @param sheetContentsHandler sheet处理类
+     * @throws Exception
+     */
+    public static void importMaxExcel(String path, InputStream in, int sheetNo,
+                          XSSFSheetXMLHandler.SheetContentsHandler sheetContentsHandler) throws Exception {
+        //============设置POI的事件模式，指定使用事件驱动去解析EXCEL来做============
+        //1.根据Excel获取OPCPackage对象
+        OPCPackage pkg;
+        if(org.springframework.util.StringUtils.isEmpty(path)){
+            pkg = OPCPackage.open(in);
+        }else{
+            pkg = OPCPackage.open(path, PackageAccess.READ);
+        }
+        //2.创建XSSFReader对象
+        XSSFReader reader = new XSSFReader(pkg);
+
+        //3.获取String类型表格SharedStringsTable对象
+        //SharedStringsTable sst = reader.getSharedStringsTable();
+        ReadOnlySharedStringsTable sst = new ReadOnlySharedStringsTable(pkg);
+
+        //4.获取样式表格StylesTable对象
+        StylesTable styles = reader.getStylesTable();
+
+        //============使用Sax进行解析============
+        //5.创建Sax的XmlReader对象
+        XMLReader parser = XMLReaderFactory.createXMLReader();
+
+        //6.设置Sheet的事件处理器
+        parser.setContentHandler(new XSSFSheetXMLHandler(styles, sst, sheetContentsHandler, false));
+
+        //7.逐行读取(因为有多个sheet所以需要迭代读取)
+        XSSFReader.SheetIterator sheets = (XSSFReader.SheetIterator) reader.getSheetsData();
+        int currentSheet = 0;
+        while (sheets.hasNext()) {
+            currentSheet++;
+            InputStream sheetstream = sheets.next();//每一个sheet的数据流
+            if(currentSheet == sheetNo){
+                InputSource sheetSource = new InputSource(sheetstream);
+                try {
+                    parser.parse(sheetSource);
+                } finally {
+                    sheetstream.close();
+                }
+            }
+        }
     }
 
 }

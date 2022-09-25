@@ -414,7 +414,7 @@ public class SpringDataJpaTest {
      */
     @Test
     public void findByUserNameLike() {
-        List<JpaUser> users = this.jpaUserRepository.findByUserNameLike("zhang%");
+        List<JpaUser> users = this.jpaUserRepository.findByUserNameLike("zhao%");
         System.err.println(users);
     }
 

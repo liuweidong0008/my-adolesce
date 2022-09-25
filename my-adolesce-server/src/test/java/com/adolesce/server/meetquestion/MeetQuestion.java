@@ -1,4 +1,4 @@
-package com.adolesce.server.tanhuaquestion;
+package com.adolesce.server.meetquestion;
 
 import lombok.Data;
 
@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class TanhuaQuestion {
+public class MeetQuestion {
     //问题编号
     private Integer no;
     //问题
@@ -15,6 +15,6 @@ public class TanhuaQuestion {
     private String answer;
     //是否父结点
     private Boolean isParent;
-    private List<TanhuaQuestion> childQuestion = new ArrayList<>();
+    private List<MeetQuestion> childQuestion = new ArrayList<>();
 
 }

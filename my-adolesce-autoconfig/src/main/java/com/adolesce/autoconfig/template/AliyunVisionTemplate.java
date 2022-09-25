@@ -74,7 +74,6 @@ public class AliyunVisionTemplate {
         log.info("文本检测结果：{}", JSON.toJSONString(response, true));
         //服务端接收到请求，并完成处理返回的结果
         Map<String, String> resultMap = new HashMap<>();
-
         try {
             if (response != null) {
                 //根据label和suggestion做相关处理
@@ -86,16 +85,15 @@ public class AliyunVisionTemplate {
                 for (ScanTextResponseBody.ScanTextResponseBodyDataElements element : elements) {
                     ScanTextResponseBody.ScanTextResponseBodyDataElementsResults results = element.getResults().get(0);
                     //根据label和suggestion做相关处理
-                    suggestion = results.getSuggestion();
                     label = results.getLabel();
-                    reason = "";
+                    suggestion = results.getSuggestion();
                     resultMap.put("suggestion", suggestion);
                     if (suggestion.equals("review")) {
-                        resultMap.put("reson", "文章内容中有不确定词汇");
+                        resultMap.put("reason", "文章内容中有不确定词汇");
                         log.info("返回结果，resultMap={}", resultMap);
                         return resultMap;
                     } else if (suggestion.equals("block")) {
-                        String reson = "文字中有敏感词汇";
+                        reason = "文章内容中有敏感词汇";
                         if ("spam".equals(label)) {
                             reason = "文字包含垃圾信息";
                         } else if ("ad".equals(label)) {
@@ -113,14 +111,13 @@ public class AliyunVisionTemplate {
                         } else if ("contraband".equals(label)) {
                             reason = "文字包含违禁内容";
                         } else if ("meaningless".equals(label)) {
-                            reson = "文章内容无意义";
+                            reason = "文章内容无意义";
                         }
                         resultMap.put("reason", reason);
                         log.info("返回结果，resultMap={}", resultMap);
                         return resultMap;
                     }
                 }
-                resultMap.put("suggestion", "pass");
                 resultMap.put("reason", "检测通过");
             }
         } catch (Exception e) {
@@ -149,8 +146,9 @@ public class AliyunVisionTemplate {
         ScanImageRequest scanImageRequest = new ScanImageRequest()
                 .setScene(Arrays.asList(aliyunVisionProperties.getImgScenes().split(","))) //设置要检测的场景
                 .setTask(taskList);
+        log.info("图片检测任务：{}", JSON.toJSONString(scanImageRequest, true));
         ScanImageResponse response = client.scanImage(scanImageRequest);
-        log.info("检测结果内容：{}", JSON.toJSONString(response, true));
+        log.info("图片检测结果：{}", JSON.toJSONString(response, true));
         //服务端接收到请求，并完成处理返回的结果
         Map<String, String> resultMap = new HashMap<>();
         if (response != null) {
@@ -172,5 +170,4 @@ public class AliyunVisionTemplate {
         }
         return resultMap;
     }
-
 }

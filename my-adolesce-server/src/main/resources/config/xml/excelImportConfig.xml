@@ -15,7 +15,7 @@
                 <name>sex</name>
                 <desc>性别</desc>
                 <columnIndex>1</columnIndex>
-                <allowBlank>false</allowBlank>
+                <allowBlank>true</allowBlank>
                 <regex>^[男,女]{1}$</regex>
                 <regexMsg>性别应为{男/女}</regexMsg>
             </field>
@@ -23,7 +23,7 @@
                 <name>age</name>
                 <desc>年龄</desc>
                 <columnIndex>2</columnIndex>
-                <allowBlank>false</allowBlank>
+                <allowBlank>true</allowBlank>
                 <regex>^(?:[1-9][0-9]?|1[01][0-9]|120)$</regex>
                 <regexMsg>年龄填写有误</regexMsg>
             </field>
@@ -31,7 +31,7 @@
                 <name>phone</name>
                 <desc>联系方式</desc>
                 <columnIndex>3</columnIndex>
-                <allowBlank>false</allowBlank>
+                <allowBlank>true</allowBlank>
                 <regex>^1[2|3|5|6|7|8|9]\d{9}$</regex>
                 <regexMsg>手机号格式错误</regexMsg>
             </field>
@@ -39,13 +39,13 @@
                 <name>education</name>
                 <desc>学历</desc>
                 <columnIndex>4</columnIndex>
-                <allowBlank>false</allowBlank>
+                <allowBlank>true</allowBlank>
             </field>
             <field>
                 <name>school</name>
                 <desc>毕业学校</desc>
                 <columnIndex>5</columnIndex>
-                <allowBlank>false</allowBlank>
+                <allowBlank>true</allowBlank>
             </field>
             <field>
                 <name>specialty</name>
@@ -57,15 +57,130 @@
                 <name>graduateTime</name>
                 <desc>毕业时间</desc>
                 <columnIndex>7</columnIndex>
-                <allowBlank>false</allowBlank>
+                <allowBlank>true</allowBlank>
             </field>
             <field>
+                <name>hopeSalary</name>
+                <desc>期望薪资</desc>
+                <columnIndex>8</columnIndex>
+                <allowBlank>true</allowBlank>
+            </field>
+           <!-- <field>
                 <name>salary</name>
                 <desc>薪水</desc>
                 <columnIndex>8</columnIndex>
                 <allowBlank>true</allowBlank>
                 <regex>^[0-9]+(\.[0-9]{1,2})?$</regex>
                 <regexMsg>薪水一栏,请填写正整数或两位小数</regexMsg>
+            </field>-->
+            <field>
+                <name>remark</name>
+                <desc>备注</desc>
+                <columnIndex>9</columnIndex>
+                <allowBlank>true</allowBlank>
+            </field>
+        </fields>
+    </config>
+    <config name="caiwuMsgImportConfiger">
+        <classPath>com.adolesce.server.vo.excel.CaiWuMsgImportVo</classPath>
+        <!-- 实际起始行，第一行就是1 -->
+        <startLine>3</startLine>
+        <fields>
+            <field>
+                <name>seriNo</name>
+                <desc>序号</desc>
+                <columnIndex>0</columnIndex>
+                <allowBlank>true</allowBlank>
+            </field>
+            <field>
+                <name>companyName</name>
+                <desc>单位名称</desc>
+                <columnIndex>1</columnIndex>
+                <allowBlank>true</allowBlank>
+            </field>
+            <field>
+                <name>companyNo</name>
+                <desc>单位编码</desc>
+                <columnIndex>2</columnIndex>
+                <allowBlank>true</allowBlank>
+            </field>
+            <field>
+                <name>systemName</name>
+                <desc>系统名称</desc>
+                <columnIndex>3</columnIndex>
+                <allowBlank>true</allowBlank>
+            </field>
+            <field>
+                <name>systemNo</name>
+                <desc>系统编码</desc>
+                <columnIndex>4</columnIndex>
+                <allowBlank>true</allowBlank>
+            </field>
+            <field>
+                <name>dbName</name>
+                <desc>数据库名称</desc>
+                <columnIndex>5</columnIndex>
+                <allowBlank>true</allowBlank>
+            </field>
+            <field>
+                <name>tableEnName</name>
+                <desc>表英文名</desc>
+                <columnIndex>6</columnIndex>
+                <allowBlank>true</allowBlank>
+            </field>
+            <field>
+                <name>fieldEnName</name>
+                <desc>字段英文名</desc>
+                <columnIndex>8</columnIndex>
+                <allowBlank>true</allowBlank>
+            </field>
+            <field>
+                <name>fieldChName</name>
+                <desc>字段中文名</desc>
+                <columnIndex>9</columnIndex>
+                <allowBlank>true</allowBlank>
+            </field>
+            <field>
+                <name>fieldBusinessDes</name>
+                <desc>字段业务描述</desc>
+                <columnIndex>10</columnIndex>
+                <allowBlank>true</allowBlank>
+            </field>
+            <field>
+                <name>fieldType</name>
+                <desc>字段类型</desc>
+                <columnIndex>11</columnIndex>
+                <allowBlank>true</allowBlank>
+            </field>
+            <field>
+                <name>isPk</name>
+                <desc>是否主键</desc>
+                <columnIndex>12</columnIndex>
+                <allowBlank>true</allowBlank>
+            </field>
+            <field>
+                <name>isRequired</name>
+                <desc>是否必填</desc>
+                <columnIndex>13</columnIndex>
+                <allowBlank>true</allowBlank>
+            </field>
+            <field>
+                <name>isSensitiveField</name>
+                <desc>是否敏感字段</desc>
+                <columnIndex>14</columnIndex>
+                <allowBlank>true</allowBlank>
+            </field>
+            <field>
+                <name>isReferData</name>
+                <desc>是否参考数据</desc>
+                <columnIndex>15</columnIndex>
+                <allowBlank>true</allowBlank>
+            </field>
+            <field>
+                <name>dataMappingRelation</name>
+                <desc>参考数据映射关系</desc>
+                <columnIndex>16</columnIndex>
+                <allowBlank>true</allowBlank>
             </field>
         </fields>
     </config>

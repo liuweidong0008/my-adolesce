@@ -55,8 +55,8 @@
     <insert id="batchInsert" parameterType="List">
         INSERT INTO
             my_batis_user (user_name, password, name, age, email, birthday, create_time, update_time) VALUES
-        <foreach collection="list" item="user" separator=",">
-            (#{user.userName},#{user.password},#{user.name},#{user.age},#{user.email},#{user.birthday},#{user.createTime},#{user.updateTime})
+        <foreach collection="list" item="user" separator="," open="(" close=")" index="num">
+            #{user.userName},#{user.password},#{user.name},#{user.age},#{user.email},#{user.birthday},#{user.createTime},#{user.updateTime}
         </foreach>
     </insert>
 
@@ -155,6 +155,7 @@
             <if test="startTime != null and startTime !=''">
                <!-- <![CDATA[>=]]> -->
                 AND DATE_FORMAT(create_time,'%Y-%m-%d %H:%i:%s') &gt;= #{startTime}
+                <!-- AND DATE_FORMAT(create_time,'%y%m%d') &gt;= DATE_FORMAT(#{startTime},'%y%m%d') -->
             </if>
             <if test="endTime != null and endTime !=''">
                 <!-- <![CDATA[<=]]> -->
@@ -202,6 +203,6 @@
     </select>
 
     <select id="queryResltWithMap" resultType="java.util.Map">
-        SELECT SUM(age) AS agecount,COUNT(1) AS idcount FROM `my_batis_user`
+        SELECT `name`,SUM(age) AS agecount,COUNT(1) AS idcount FROM `my_batis_user`  group by `name`
     </select>
 </mapper>

@@ -8,8 +8,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 //@Component
 //@PropertySource("classpath:sms.properties")
-@ConfigurationProperties(prefix = "sms.huyi")
 @Data
+@ConfigurationProperties(prefix = "sms.huyi")
 public class HuyiSMSProperties {
     private String url;
     private String account;

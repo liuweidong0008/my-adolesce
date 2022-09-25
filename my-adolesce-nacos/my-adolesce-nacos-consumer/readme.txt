@@ -172,7 +172,7 @@ Nacos客户端（服务消费方）
                    flow:     #持久化限流规则到nacos
                      nacos:
                        server-addr: localhost:8848 # nacos地址
-                       dataId: nacos-provider-flow-rules
+                       dataId: nacos-provider-flow-rules #唯一配置文件的标识（不能随便写，格式是固定的：applicationName-flow-rules）
                        groupId: SENTINEL_GROUP
                        rule-type: flow #（流控） 还可以是：degrade（降级）、authority（授权）、param-flow（热点）
                    degrade:  #持久化降级规则到nacos

@@ -1,7 +1,12 @@
 package com.adolesce.cloud.dubbo.domain.db;
 
 import com.adolesce.cloud.dubbo.enums.SexEnum;
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -24,6 +29,7 @@ public class MpUser extends BasePojo {
     /**
      * 主键ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
@@ -35,6 +41,7 @@ public class MpUser extends BasePojo {
     /**
      * 密码
      */
+    //@TableField(select = false)
     private String password;
 
     /**
@@ -46,7 +53,7 @@ public class MpUser extends BasePojo {
     /**
      * 年龄
      */
-//    @TableField(updateStrategy = FieldStrategy.IGNORED)
+    //@TableField(updateStrategy = FieldStrategy.IGNORED)
     private Integer age;
 
     /**

@@ -11,6 +11,10 @@ import java.time.LocalDateTime;
 public abstract class BasePojo implements Serializable {
     @TableField(fill = FieldFill.INSERT) //MP自动填充
     private LocalDateTime createTime;
+
+    /*@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)*/
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
 }

@@ -3,6 +3,7 @@ package com.adolesce.common.intercepter;
 import com.adolesce.common.entity.User;
 import com.adolesce.common.threadLocal.UserHolder;
 import com.adolesce.common.utils.JwtUtils;
+import com.alibaba.fastjson.JSON;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,8 @@ public class TokenInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+
+        System.err.println("当前访问URL："+ request.getRequestURI() + "参数：【" + JSON.toJSONString(request.getParameterMap())+"】");
         System.out.println("访问了："+request.getRequestURI());
         //1、获取请求头
         String token = request.getHeader("Authorization");

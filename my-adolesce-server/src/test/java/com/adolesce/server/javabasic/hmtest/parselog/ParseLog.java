@@ -54,15 +54,13 @@ public class ParseLog {
         String logmsg = "2015-05-28 16:13:45,873 [main][INFO ] sender.EtermSessionConnectPool - 准备初始化 EtermSessionConnectPool";
         Matcher m = p.matcher(logmsg);
         System.out.println(m.matches());
-        if (m.matches() && m.groupCount() == 6) {
+        if (m.matches() && m.groupCount() == 5) {
             String date = m.group(1);
-            String time = m.group(2);
-            String threadId = m.group(3);
-            String logLevel = m.group(4);
-            String className = m.group(5);
-            String message = m.group(6);
+            String threadId = m.group(2);
+            String logLevel = m.group(3);
+            String className = m.group(4);
+            String message = m.group(5);
             System.out.println("date: " + date);
-            System.out.println("time: " + time);
             System.out.println("threadId: " + threadId);
             System.out.println("logLevel: " + logLevel);
             System.out.println("className: " + className);
@@ -74,7 +72,7 @@ public class ParseLog {
     public void parseLog3() throws IOException {
         BufferedReader in = null;
         try {
-            File logFile = new File("D:/test-q.log");
+            File logFile = new File("D:/some-test-file/log/test-q.log");
             in = new BufferedReader(new FileReader(logFile));
             String line;
             StringBuffer stringBuffer = new StringBuffer();

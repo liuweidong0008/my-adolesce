@@ -9,7 +9,8 @@ spring:
         service-name: ${spring.application.name} # 当前应用注册到consul的名称
         prefer-ip-address: true # 是否以ip形式注册
         ip-address: 127.0.0.1 # 设置当前实例的ip
+      #consul中目录为: myconfig/${spring.application.name}/mydata
       config:
         format: yaml
-        prefix: config  #默认读取config
-        data-key: data
+        prefix: myconfig  #默认读取config
+        data-key: mydata

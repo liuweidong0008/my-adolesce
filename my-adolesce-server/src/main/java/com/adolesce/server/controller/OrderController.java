@@ -33,21 +33,19 @@ public class OrderController {
     @GetMapping("/{id}")
     public Order findOrderById(@PathVariable("id") int id) {
         System.out.println("findOrderById..." + id);
+        String centerName = "consul";
+
         Order order = new Order();
         order.setOrderNo("10001L");
         order.setOrderName("小明的订单");
 
         //远程调用Goods服务中的findOne接口
-
-        String url = "http://localhost:4000/consul-provider/goods/findOne/1";
-        url = "http://localhost:6000/eureka-provider/goods/findOne/1";
-        url = "http://localhost:7000/nacos-provider/goods/findOne/1";
+        String url = this.getStaticUrl(centerName);
         //Goods goods = restTemplate.getForObject(url, Goods.class);
 
         //演示discoveryClient 使用（启动类上标注@EnableDiscoveryClient注解）
-        //List<ServiceInstance> instances = discoveryClient.getInstances("CONSUL-PROVIDER"); //Application name
-        //List<ServiceInstance> instances = discoveryClient.getInstances("EUREKA-PROVIDER"); //Application name
-        List<ServiceInstance> instances = discoveryClient.getInstances("nacos-provider"); //Application name
+        List<ServiceInstance> instances = this.getInstances(centerName);
+
         //判断集合是否有数据
         if (CollectionUtil.isEmpty(instances)) {
             //集合没有数据
@@ -59,9 +57,7 @@ public class OrderController {
         int port = instance.getPort();
         System.out.println("IP 端口：" + host + ":" + port);
 
-        url = "http://" + host + ":" + port + "/eureka-provider/goods/findOne/" + id;
-        url = "http://" + host + ":" + port + "/consul-provider/goods/findOne/" + id;
-        url = "http://" + host + ":" + port + "/nacos-provider/goods/findOne/" + id;
+        url = getDynamicUrl(centerName,id, host, port);
         Goods goods = restTemplate.getForObject(url, Goods.class);
         order.setGoods(goods);
         return order;
@@ -102,9 +98,7 @@ public class OrderController {
         order.setOrderName("小本的订单");
 
         //1、定义url
-        //String url = "http://CONSUL-PROVIDER/goods/findOne/"+id;        //consul 整合rabbion进行调用时加上自定义的项目路径会报错,目前只能用根路径（待解决）
-        //String url = "http://EUREKA-PROVIDER/eureka-provider/goods/findOne/"+id;
-        String url = "http://nacos-provider/nacos-provider/goods/findOne/" + id;
+        String url = this.getFeignUrl("consul", id);
         // 2. 调用方法
         Goods goods = restTemplate.getForObject(url, Goods.class);
         order.setGoods(goods);
@@ -128,5 +122,78 @@ public class OrderController {
         Goods goods = orderService.findGoodsById(id);
         order.setGoods(goods);
         return order;
+    }
+
+    private String getStaticUrl(String centerName) {
+        String url = "";
+        switch (centerName) {
+            case "consul":
+                url = "http://localhost:4000/goods/findOne/1";
+                break;
+            case "eureka":
+                url = "http://localhost:6000/eureka-provider/goods/findOne/1";
+                break;
+            case "nacos":
+                url = "http://localhost:7000/nacos-provider/goods/findOne/1";
+                break;
+            default:
+                break;
+        }
+        return url;
+    }
+
+    private String getDynamicUrl(String centerName, int id, String host, int port) {
+        String url = "";
+        switch (centerName) {
+            case "consul":
+                url = "http://" + host + ":" + port + "/goods/findOne/" + id;
+                break;
+            case "eureka":
+                url = "http://" + host + ":" + port + "/eureka-provider/goods/findOne/" + id;
+                break;
+            case "nacos":
+                url = "http://" + host + ":" + port + "/nacos-provider/goods/findOne/" + id;
+                break;
+            default:
+                break;
+        }
+        return url;
+    }
+
+    private String getFeignUrl(String centerName, int id) {
+        String url = "";
+        switch (centerName) {
+            case "consul":
+                url = "http://CONSUL-PROVIDER/goods/findOne/"+id;        //consul 整合rabbion进行调用时加上自定义的项目路径会报错,目前只能用根路径（待解决）
+                break;
+            case "eureka":
+                url = "http://EUREKA-PROVIDER/eureka-provider/goods/findOne/"+id;
+                break;
+            case "nacos":
+                url = "http://nacos-provider/nacos-provider/goods/findOne/" + id;
+                break;
+            default:
+                break;
+        }
+        return url;
+    }
+
+    private List<ServiceInstance> getInstances(String centerName) {
+        List<ServiceInstance> instances = null;
+        String url = "";
+        switch (centerName) {
+            case "consul":
+                instances = discoveryClient.getInstances("CONSUL-PROVIDER"); //Application name
+                break;
+            case "eureka":
+                instances = discoveryClient.getInstances("EUREKA-PROVIDER"); //Application name
+                break;
+            case "nacos":
+                instances = discoveryClient.getInstances("nacos-provider"); //Application name
+                break;
+            default:
+                break;
+        }
+        return instances;
     }
 }

@@ -75,8 +75,8 @@ public class MybatisPlusTest {
     @Test
     public void testInsert() {
         MpUser user = new MpUser();
-        user.setUserName("itcast3");
-        user.setPassword("itheima3");
+        user.setUserName("itcast5");
+        user.setPassword("itheima5");
         user.setName("赵云5");
         user.setAge(99);
         user.setSex(SexEnum.WOMAN);
@@ -590,6 +590,7 @@ public class MybatisPlusTest {
 
     /**
      * 自定义分页查询（根据姓名多表分页查询结果集）
+     * mybatis-plus自定义分页查询时，查询参数为map和对象都可以，但是xml中获取属性必须以【参数名.属性】的方式取值
      */
     @Test
     public void testSelectPageyCustom() {

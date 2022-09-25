@@ -6,11 +6,8 @@ import cn.hutool.db.sql.Order;
 import com.adolesce.cloud.dubbo.domain.db.ESGoods;
 import com.adolesce.cloud.dubbo.domain.es.HotelDoc;
 import com.adolesce.cloud.dubbo.domain.es.MyGoods;
-import com.adolesce.cloud.es.config.EsSearchCommonService;
-import com.alibaba.fastjson.JSON;
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.RequestOptions;
+import com.adolesce.cloud.es.bean.EsResultOperator;
+import com.adolesce.cloud.es.service.EsSearchCommonService;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.geo.GeoPoint;
 import org.elasticsearch.common.lucene.search.function.CombineFunction;
@@ -18,27 +15,17 @@ import org.elasticsearch.common.unit.DistanceUnit;
 import org.elasticsearch.index.query.*;
 import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder;
 import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
-import org.elasticsearch.search.aggregations.Aggregation;
-import org.elasticsearch.search.aggregations.AggregationBuilder;
-import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.Aggregations;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms;
-import org.elasticsearch.search.aggregations.metrics.ParsedMax;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.GeoDistanceSortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 /**
  * ES 高级操作
@@ -71,16 +58,17 @@ import java.util.Map;
  *     }
  */
 @SpringBootTest
-class ElasticsearchHighTest {
+@RunWith(SpringRunner.class)
+public class EsSearchTest {
     @Autowired
     private RestHighLevelClient client;
     @Autowired
     private EsSearchCommonService esSearchCommonService;
-//    @Autowired
-//    private ElasticsearchRestTemplate esTemplate;
+    /*@Autowired
+    private ElasticsearchRestTemplate esTemplate;*/
 
     /**
-     * 查询所有：matchAll
+     * 一、查询所有：matchAll
      * 分页。默认显示10条
      *
      * DSL：
@@ -97,7 +85,7 @@ class ElasticsearchHighTest {
         QueryBuilder query = QueryBuilders.matchAllQuery();
 
         //执行查询
-        excuteGoodsQuery(query, null,null,null);
+        excuteGoodsQuery(query, null);
     }
 
     @Test
@@ -105,19 +93,19 @@ class ElasticsearchHighTest {
         //查询所有酒店文档
         QueryBuilder query = QueryBuilders.matchAllQuery();
         //执行查询
-        excuteHotelQuery(query, null,null,null);
+        excuteHotelQuery(query, null);
     }
 
 
     /**
-     * 全文检索-单字段查询：match（对传入的查询条件先进行分词，然后根据每个分词进行词条的等值匹配）
+     * 二、全文检索查询-单字段查询：match（对传入的查询条件先进行分词，然后根据每个分词进行词条的等值匹配）
      * 默认为OR查询：求并集，可修改为AND查询：求交集
      *
      * GET /indexName/_search
      * {
      *   "query": {
      *     "match": {
-     *       "FIELD": "TEXT"
+     *       "title": "华为手机"
      *     }
      *   }
      * }
@@ -128,11 +116,11 @@ class ElasticsearchHighTest {
         MatchQueryBuilder query = QueryBuilders.matchQuery("title", "华为手机");
         query.operator(Operator.AND);//默认求并集，可以指定求交集
         //执行查询
-        excuteGoodsQuery(query, null,null,null);
+        excuteGoodsQuery(query, null);
     }
 
     /**
-     * 全文检索-多字段查询：mulit_match(任意一个字段符合条件就算符合查询条件)
+     * 三、全文检索-多字段查询：mulit_match(任意一个字段符合条件就算符合查询条件)
      * 以下两种查询结果是一样的，为什么？
      * 因为我们将brand、name、business值都利用copy_to复制到了all字段中。因此你根据三个字段搜索，和根据all字段搜索效果当然一样了。
      * 但是，搜索字段越多，对查询性能影响越大，因此建议采用copy_to，然后单字段查询的方式。
@@ -145,19 +133,38 @@ class ElasticsearchHighTest {
      *  - 高亮是对关键字高亮，因此**搜索条件必须带有关键字**，而不能是范围这样的查询。
      *  - 默认情况下，**高亮的字段，必须与搜索指定的字段一致**，否则无法高亮
      *  - 如果要对非搜索字段高亮，则需要添加一个属性：require_field_match=false
+     *  - 设置高亮三要素（默认前后缀 ：em）
+     *      高亮字段、前缀、后缀
+     *  - 将高亮了的字段数据，替换原有数据
      *
      * DSL:
-     *      GET /indexName/_search
+     *      GET /hotel/_search
      *      {
      *        "query": {
      *          "multi_match": {
-     *            "query": "文字",
-     *            "fields": ["FIELD1", " FIELD12"]
+     *            "query": "外滩如家",
+     *            "fields": ["name", " brand", "business"]
      *          }
-     *        }
+     *        },
+     *        "highlight": {
+     *          "fields": {                                     // 指定要高亮的字段
+     *            "name": {
+     *              "pre_tags": "<em>",                         // 用来标记高亮字段的前置标签
+     *              "post_tags": "</em>",                       // 用来标记高亮字段的后置标签
+     *              "require_field_match": "false"              //高亮字段是name，不是搜索字段，默认不会高亮，要想高亮，需要加该配置
+     *            }
+     *          }
+     *        },
+     *        "from": 0,
+     *        "size": 100,
+     *        "sort": [
+     *          {
+     *            "price": "desc"
+     *          }
+     *        ]
      *      }
      *
-     *      GET /indexName/_search
+     *      GET /hotel/_search
      *      {
      *        "query": {
      *          "match": {
@@ -172,7 +179,14 @@ class ElasticsearchHighTest {
      *              "require_field_match": "false"     //高亮字段是name，不是搜索字段，默认不会高亮，要想高亮，需要加该配置
      *            }
      *          }
-     *        }
+     *        },
+     *        "from": 0,
+     *        "size": 100,
+     *        "sort": [
+     *          {
+     *            "price": "desc"
+     *          }
+     *        ]
      *      }
      */
     @Test
@@ -187,47 +201,27 @@ class ElasticsearchHighTest {
         highlighter.postTags("</em>");
         //对于高亮字段和搜索字段不一致的情况，需要如下配置才会进行高亮处理
         highlighter.requireFieldMatch(false);
+
         //执行查询
-        excuteHotelQuery(multiQueryBuilder, null,highlighter,null);
+        Page page = new Page(0,100,new Order("price",Direction.DESC));
+        excuteHotelQuery(multiQueryBuilder, EsResultOperator.build().highLight(highlighter).page(page));
     }
 
     /**
-     * 高亮查询：
-     * 1. 设置高亮三要素（默认前后缀 ：em）
-     *      高亮字段
-     *      前缀
-     *      后缀
-     * 2. 将高亮了的字段数据，替换原有数据
-     */
-    @Test
-    public void testHighLightQuery() throws Exception {
-        MatchQueryBuilder query = QueryBuilders.matchQuery("title", "手机");
-
-        HighlightBuilder highlighter = new HighlightBuilder();
-        //设置title字段中匹配的词条高亮
-        highlighter.field("title");
-        highlighter.preTags("<font color='red'>");
-        highlighter.postTags("</font>");
-        //执行查询
-        excuteGoodsQuery(query, null,highlighter,null);
-    }
-
-    /**
-     * 精确查询-词条查询 : termQuery（对传入的查询条件进行词条的等值匹配）
-     * 精确查询一般是查找keyword、数值、日期、boolean等类型字段。所以不会对搜索条件分词。常见的有：
+     * 四、精确查询-词条查询 : termQuery（对传入的查询条件进行词条的等值匹配）
+     *    精确查询一般是查找keyword、数值、日期、boolean等类型字段。所以不会对搜索条件分词。常见的有：
      *      - term：根据词条精确值查询
      *      - range：根据值的范围查询
-     *
-     * 因为精确查询的字段搜是不分词的字段，因此查询的条件也必须是**不分词**的词条。
-     * 查询时，用户输入的内容跟自动值完全匹配时才认为符合条件。如果用户输入的内容过多，反而搜索不到数据。
+     *    因为精确查询的字段搜是不分词的字段，因此查询的条件也必须是【不分词】的词条。
+     *    查询时，用户输入的内容跟自动值完全匹配时才认为符合条件。如果用户输入的内容过多，反而搜索不到数据。
      *
      * DSL：
-     *      GET /indexName/_search
+     *      GET /hotel/_search
      *      {
      *        "query": {
      *          "term": {
-     *            "FIELD": {
-     *              "value": "文本"
+     *            "city": {
+     *              "value": "上海"
      *            }
      *          }
      *        }
@@ -236,26 +230,26 @@ class ElasticsearchHighTest {
     @Test
     public void testTermQuery1() throws Exception {
         QueryBuilder query = QueryBuilders.termQuery("title", "华为");//term词条查询
-        excuteGoodsQuery(query, null,null,null);
+        excuteGoodsQuery(query, null);
     }
     @Test
     public void testTermQuery2() throws Exception {
         QueryBuilder query = QueryBuilders.termQuery("city", "上海");//term词条查询
         //执行查询
-        excuteHotelQuery(query, null,null,null);
+        excuteHotelQuery(query, null);
     }
 
     /**
-     * 精确查询-范围查询：rangeQuery 根据值的范围进行查询，可以排序
+     * 五、精确查询-范围查询：rangeQuery 根据值的范围进行查询，可以排序
      *
      * DSL:
-     *      GET /indexName/_search
+     *      GET /hotel/_search
      *      {
      *        "query": {
      *          "range": {
-     *            "FIELD": {
-     *              "gte": 10, // 这里的gte代表大于等于，gt则代表大于
-     *              "lte": 20 // lte代表小于等于，lt则代表小于
+     *            "price": {
+     *              "gte": 1000, // 这里的gte代表大于等于，gt则代表大于
+     *              "lte": 3000 // lte代表小于等于，lt则代表小于
      *            }
      *          }
      *        }
@@ -268,7 +262,7 @@ class ElasticsearchHighTest {
         //指定分页(默认20条)
         Page page = new Page(1,30,new Order("price",Direction.DESC));
         //执行查询
-        excuteGoodsQuery(query, page,null,null);
+        excuteGoodsQuery(query, EsResultOperator.build().page(page));
     }
 
     @Test
@@ -279,43 +273,74 @@ class ElasticsearchHighTest {
         Page page = new Page(1,30,new Order("price",Direction.DESC));
 
         //执行查询
-        excuteHotelQuery(query, page,null,null);
+        excuteHotelQuery(query, EsResultOperator.build().page(page));
     }
 
     /**
-     * 模糊查询 - WildcardQuery: *、？通配符匹配查询
+     * 六：模糊查询 - WildcardQuery: *、？通配符匹配查询
      *  ?（任意单个字符） 和  * （0个或多个字符）如：
      *  "*华*"  包含华字的
      *  "华*"   华字后边多个字符
      *  "华?"   华字后边一个字符
+     *
      *  "*华"或"?华" 注意：这两个会引发全表（全索引）扫描 注意效率问题
+     *
+     *  GET /goods/_search
+     *  {
+     *   "query": {
+     *      "wildcard": {
+     *        "title": {
+     *          "value": "*华*"
+     *        }
+     *      }
+     *    }
+     *  }
      */
     @Test
     public void testWildcardQuery() throws Exception {
         WildcardQueryBuilder query = QueryBuilders.wildcardQuery("title", "华*");
         //执行查询
-        excuteGoodsQuery(query, null,null,null);
+        excuteGoodsQuery(query, null);
     }
 
     /**
-     * 模糊查询 - regexpQuery:正则匹配查询（用得比较少）
+     * 七、模糊查询 - regexpQuery:正则匹配查询（用得比较少）
+     *
+     *  GET /goods/_search
+     * {
+     *   "query": {
+     *     "regexp": {
+     *       "title": "\\w+(.)*"
+     *     }
+     *   }
+     * }
      */
     @Test
     public void testRegexpQuery() throws Exception {
         //以单个字符开头的
         RegexpQueryBuilder query = QueryBuilders.regexpQuery("title", "\\w+(.)*");
         //执行查询
-        excuteGoodsQuery(query, null,null,null);
+        excuteGoodsQuery(query, null);
     }
 
     /**
-     * 模糊查询 - perfixQuery：前缀匹配查询，对keyword类型字段支持的比较好
+     * 八、模糊查询 - perfixQuery：前缀匹配查询，对keyword类型字段支持的比较好
+     *  GET /hotel/_search
+     * {
+     *   "query": {
+     *     "prefix": {
+     *       "brandName": {
+     *         "value": "三"
+     *       }
+     *     }
+     *   }
+     * }
      */
     @Test
     public void testPrefixQuery() throws Exception {
         PrefixQueryBuilder query = QueryBuilders.prefixQuery("brandName", "三");
         //执行查询
-        excuteGoodsQuery(query, null,null,null);
+        excuteGoodsQuery(query, null);
     }
 
     /**
@@ -342,20 +367,23 @@ class ElasticsearchHighTest {
         //SimpleQueryStringBuilder query = QueryBuilders.simpleQueryStringQuery("华为手机").field("title").field("categoryName").field("brandName").defaultOperator(Operator.AND);
         //SimpleQueryStringBuilder query = QueryBuilders.simpleQueryStringQuery("华为手机").field("title").field("categoryName").field("brandName").defaultOperator(Operator.OR);
         //执行查询
-        excuteGoodsQuery(query, new Page(1,800),null,null);
+        Page page = new Page(1,800);
+        excuteGoodsQuery(query, EsResultOperator.build().page(page));
     }
 
 
     /**
-     * 地理位置查询 - 矩形范围查询：geo_bounding_box，查询坐标落在某个矩形范围的所有文档
-     * 查询时，需要指定矩形的**左上**、**右下**两个点的坐标，然后画出一个矩形，落在该矩形内的都是符合条件的点。
+     * 地理坐标查询，其实就是根据经纬度查询，官方文档：https://www.elastic.co/guide/en/elasticsearch/reference/current/geo-queries.html
+     *
+     * 九、地理位置查询 - 矩形范围查询：geo_bounding_box，查询坐标落在某个矩形范围的所有文档
+     * 查询时，需要指定矩形的【左上】、【右下】两个点的坐标，然后画出一个矩形，落在该矩形内的都是符合条件的点。
      *
      * DSL:
-     *     GET /indexName/_search
+     *     GET /hotel/_search
      *     {
      *       "query": {
      *         "geo_bounding_box": {
-     *           "FIELD": {
+     *           "location": {
      *             "top_left": { // 左上点
      *               "lat": 31.1,
      *               "lon": 121.5
@@ -367,6 +395,8 @@ class ElasticsearchHighTest {
      *           }
      *         }
      *       },
+     *       "from": 0
+     *       "size": 30,
      *       "sort": [
      *        {
      *          "price": "asc"  // 普通字段排序，排序方式ASC、DESC , 排序条件是一个数组，也就是可以写多个排序条件。按照声明的顺序，当第一个条件相等时，再按照第二个条件排序，以此类推
@@ -375,7 +405,7 @@ class ElasticsearchHighTest {
      *     }
      */
     @Test
-    public void testGeoQuery1() throws Exception {
+    public void testGeoBpxQuery() throws Exception {
         //范围查询
         GeoBoundingBoxQueryBuilder query = QueryBuilders.geoBoundingBoxQuery("location")
                 .setCorners(new GeoPoint(31.1,121.5),new GeoPoint(30.9,121.7));
@@ -383,19 +413,19 @@ class ElasticsearchHighTest {
         Page page = new Page(1,30,new Order("price",Direction.ASC));
 
         //执行查询
-        excuteHotelQuery(query, page,null,null);
+        excuteHotelQuery(query, EsResultOperator.build().page(page));
     }
 
     /**
-     * 地理位置查询 - 圆形范围查询：geo_distance，查询到指定中心点小于某个距离值的所有文档。
+     * 十、地理位置查询 - 圆形范围查询：geo_distance，查询到指定中心点小于某个距离值的所有文档。
      * 在地图上找一个点作为圆心，以指定距离为半径，画一个圆，落在圆内的坐标都算符合条件：
      *
      * DSL:
-     *     GET /indexName/_search
+     *     GET /hotel/_search
      *     {
      *       "query": {
      *         "geo_distance": {
-     *           "FIELD": "31.21,121.5", // 圆心
+     *           "location": "31.21,121.5", // 圆心
      *           "distance": "15km" // 半径
      *         }
      *       },
@@ -421,17 +451,16 @@ class ElasticsearchHighTest {
         GeoDistanceQueryBuilder query = QueryBuilders.geoDistanceQuery("location")
                 .point(new GeoPoint("31.21,121.5"))
                 .distance(15, DistanceUnit.KILOMETERS);
-        //指定分页(默认20条)
-        Page page = new Page(1,30);
+        //指定按地理位置排序
         GeoDistanceSortBuilder geoDistanceSortBuilder = SortBuilders.geoDistanceSort(query.fieldName(),query.point())
                 .order(SortOrder.ASC)
                 .unit(DistanceUnit.KILOMETERS);
         //执行查询
-        excuteHotelQuery(query, page,null,geoDistanceSortBuilder);
+        excuteHotelQuery(query, EsResultOperator.build().geoSort(geoDistanceSortBuilder));
     }
 
     /**
-     * 复合查询 - 相关性算分查询：fuction score，可以控制文档相关性算分，控制文档排名
+     * 十一、复合查询 - 相关性算分查询：fuction score，可以控制文档相关性算分，控制文档排名
      * 复合（compound）查询：复合查询可以将其它简单查询组合起来，实现更复杂的搜索逻辑。常见的有两种：
      *      - fuction score：算分函数查询，可以控制文档相关性算分，控制文档排名
      *      - bool query：布尔查询，利用逻辑关系组合多个其它的查询，实现复杂搜索
@@ -443,10 +472,10 @@ class ElasticsearchHighTest {
      *  es 5.1 以后：BM25算法，在TF-IDF的基础上能降低词频过大对算分的影响，让词频得分曲线更平滑
      *
      * function score的运行流程如下：
-     *  - 1）根据**原始条件**查询搜索文档，并且计算相关性算分，称为**原始算分**（query score）
-     *  - 2）根据**过滤条件**，过滤文档
-     *  - 3）符合**过滤条件**的文档，基于**算分函数**运算，得到**函数算分**（function score）
-     *  - 4）将**原始算分**（query score）和**函数算分**（function score）基于**运算模式**做运算，得到最终结果，作为相关性算分。
+     *  - 1）根据【原始条件】查询搜索文档，并且计算相关性算分，称为【原始算分】（query score）
+     *  - 2）根据【过滤条件】，过滤文档
+     *  - 3）符合【过滤条件】的文档，基于【算分函数】运算，得到【函数算分】（function score）
+     *  - 4）将【原始算分】（query score）和【函数算分】（function score）基于【运算模式】做运算，得到最终结果，作为相关性算分。
      *
      * 因此，其中的关键三要素是：
      *  - 过滤条件：决定哪些文档的算分被修改
@@ -454,7 +483,7 @@ class ElasticsearchHighTest {
      *  - 运算模式：决定最终算分结果：function score 与 query score如何运算
      *
      * DSL:
-     *     GET /indexName/_search
+     *     GET /hotel/_search
      *     {
      *      "query":{
      *        "function_score":{
@@ -486,17 +515,14 @@ class ElasticsearchHighTest {
                 }
         ).boostMode(CombineFunction.SUM);
 
-        //指定分页(默认20条)
-        Page page = new Page(1,30,new Order("price",Direction.DESC));
-
         //执行查询
-        excuteHotelQuery(functionScoreQuery, page,null,null);
+        excuteHotelQuery(functionScoreQuery,null);
     }
 
     /**
-     * 复合查询 - 布尔查询：boolQuery
+     * 十二：复合查询 - 布尔查询：boolQuery
      * 每一个不同的字段，其查询的条件、方式都不一样，必须是多个不同的查询，而要组合这些查询，就必须用bool查询了
-     * 需要注意的是，搜索时，参与**打分的字段越多，查询的性能也越差**。因此这种多条件查询时，建议这样做：
+     * 需要注意的是，搜索时，参与打分的字段越多，查询的性能也越差。因此这种多条件查询时，建议这样做：
      *      - 搜索框的关键字搜索，是全文检索查询，使用must查询，参与算分
      *      - 其它过滤条件，采用filter查询。不参与算分
      *
@@ -547,7 +573,7 @@ class ElasticsearchHighTest {
         query.filter(rangeQuery);
 
         //3.执行查询
-        excuteGoodsQuery(query, null,null,null);
+        excuteGoodsQuery(query, null);
     }
 
     /**
@@ -574,9 +600,12 @@ class ElasticsearchHighTest {
      *            ],
      *            "filter": [
      *              { "range": {"score": { "gte": 45 } }}
-     *            ]
+     *            ],
+     *            "minimum_should_match": 1
      *          }
-     *        }
+     *        },
+     *        "from": 0,
+     *        "size": 100
      *      }
      */
     @Test
@@ -602,8 +631,10 @@ class ElasticsearchHighTest {
         QueryBuilder matchQuery = QueryBuilders.rangeQuery("score").gte(45);
         query.filter(matchQuery);
 
+        query.minimumShouldMatch(1);
+
         //3.执行查询
-        excuteHotelQuery(query, null,null,null);
+        excuteHotelQuery(query, EsResultOperator.build().page(new Page(0,100)));
     }
 
 
@@ -611,6 +642,7 @@ class ElasticsearchHighTest {
      * DSL:
      *    GET /hotel/_search
      *    {
+     *     "track_total_hits": true,
      *     "query":{
      *       "function_score":{
      *         "query": {
@@ -621,7 +653,8 @@ class ElasticsearchHighTest {
      *              "should": [
      *                {"term": {"brand": "喜来登" }},
      *                {"term": {"brand": "君悦" }},
-     *                {"term": {"brand": "万怡" }}
+     *                {"term": {"brand": "万怡" }},
+     *                {"term": {"brand": "如家" }}
      *              ],
      *              "must_not": [
      *                { "range": { "price": { "lte": 200 } }}
@@ -633,7 +666,10 @@ class ElasticsearchHighTest {
      *                    "distance": "15km"
      *                  }
      *                }
-     *              ]
+     *              ],
+     *  #当should所属的bool处于query上下文，且should同级存在must或者filter，属于must或者filter范围内的数据也会被列出来，加上该属性标识should必须匹配至少一个
+     *  #此时，也可以把should放在filter或者must中的bool查询中，可以实现与minimum_should_match一样的效果
+     *               "minimum_should_match": 1
      *            }
      *         },
      *         "functions":[
@@ -653,18 +689,25 @@ class ElasticsearchHighTest {
      *            "pre_tags": "<font 'color = red'>",
      *            "post_tags": "</font>",
      *            "require_field_match": "false"
+     *          },
+     *          "brand": {
+     *             "pre_tags": "<font 'color = red'>",
+     *             "post_tags": "</font>",
+     *            "require_field_match": "false"
      *          }
      *        }
      *      },
      *      "sort": [
+     *        {"price": "asc"},
+     *          # 如果希望分数也参与排序，可以在sort中加上：{"_score":"desc" }，这样sort了之后分数不会为null
+     *        {"_score":"desc" },
      *        {
      *          "_geo_distance" : {
      *            "location" : "31.21,121.5",
      *            "order" : "asc",
      *            "unit" : "km"
      *          }
-     *        },
-     *        {"price": "asc"}
+     *        }
      *      ]
      *    }
      */
@@ -682,7 +725,8 @@ class ElasticsearchHighTest {
         QueryBuilder termQueryBrand1 = QueryBuilders.termQuery("brand", "喜来登");
         QueryBuilder termQueryBrand2 = QueryBuilders.termQuery("brand", "君悦");
         QueryBuilder termQueryBrand3 = QueryBuilders.termQuery("brand", "万怡");
-        boolQuery.should(termQueryBrand1).should(termQueryBrand2).should(termQueryBrand3);
+        QueryBuilder termQueryBrand4 = QueryBuilders.termQuery("brand", "如家");
+        boolQuery.should(termQueryBrand1).should(termQueryBrand2).should(termQueryBrand3).should(termQueryBrand4);
 
         //2.3 查询价格不小于200
         RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery("price").lte(200);
@@ -691,13 +735,12 @@ class ElasticsearchHighTest {
         //2.4. 查询评分大于等于45
         QueryBuilder matchQuery = QueryBuilders.rangeQuery("score").gte(45);
         boolQuery.filter(matchQuery);
-
         //范围查询
         GeoDistanceQueryBuilder geoQuery = QueryBuilders.geoDistanceQuery("location")
                 .point(new GeoPoint("31.21,121.5"))
                 .distance(15, DistanceUnit.KILOMETERS);
         boolQuery.filter(geoQuery);
-
+        boolQuery.minimumShouldMatch(1);
 
         //3、相关性算分查询
         FunctionScoreQueryBuilder functionScoreQuery = QueryBuilders.functionScoreQuery(
@@ -711,11 +754,19 @@ class ElasticsearchHighTest {
         ).boostMode(CombineFunction.SUM);
 
         //指定分页
-        Page page = new Page(1,30,new Order("price",Direction.ASC));
+        Page page = new Page(1,30);
+        page.addOrder(new Order("price",Direction.ASC));
+        page.addOrder(new Order("_score",Direction.ASC));
 
         HighlightBuilder highlighter = new HighlightBuilder();
         //设置title字段中匹配的词条高亮
         highlighter.field("name");
+        highlighter.preTags("<font color='red'>");
+        highlighter.postTags("</font>");
+        highlighter.requireFieldMatch(false);
+
+        //设置title字段中匹配的词条高亮
+        highlighter.field("brand");
         highlighter.preTags("<font color='red'>");
         highlighter.postTags("</font>");
         highlighter.requireFieldMatch(false);
@@ -726,115 +777,19 @@ class ElasticsearchHighTest {
                 .unit(DistanceUnit.KILOMETERS);
 
         //3.执行查询
-        excuteHotelQuery(functionScoreQuery, page,highlighter,geoDistanceSortBuilder);
+        excuteHotelQuery(functionScoreQuery, EsResultOperator.build().page(page).highLight(highlighter).geoSort(geoDistanceSortBuilder));
     }
 
-    /**
-     * 指标聚合查询 :相当于MySQL的聚合函数。max、min、avg、sum等
-     *
-     * 1. 查询title包含手机的数据
-     * 2. 查询价格最高的
-     */
-    @Test
-    public void testAggQuery1() throws Exception {
-        //查询条件：根据手机匹配titile字段
-        MatchQueryBuilder query = QueryBuilders.matchQuery("title", "手机");
-        //创建统计Builder对象，查询price最大值，起个别名叫：max_price
-        AggregationBuilder agg = AggregationBuilders.max("max_price").field("price");
-        //执行聚合查询，返回聚合结果Map
-        Map<String, Aggregation> aggregationMap = this.getAggregationMap("goods",query,agg);
 
-        ParsedMax max_price = (ParsedMax) aggregationMap.get("max_price");
-        double maxPrice = max_price.getValue();
-        System.out.println( maxPrice);
-    }
-
-    /**
-     * 查询聚合结果
-     * @param indexName 索引名称
-     * @param query 查询条件对象
-     * @param aggs 聚合参数列表
-     * @return
-     * @throws Exception
-     */
-    private Map<String, Aggregation> getAggregationMap(String indexName,QueryBuilder query,AggregationBuilder ... aggs) throws Exception {
-        SearchRequest searchRequest = new SearchRequest(indexName);
-        SearchSourceBuilder sourceBulider = new SearchSourceBuilder();
-
-        // 1、指定查询条件和分页
-        sourceBulider.query(query);
-        sourceBulider.from(0);
-        sourceBulider.size(100);
-
-        // 2. 指定聚合参数
-        Arrays.stream(aggs).forEach(agg -> sourceBulider.aggregation(agg));
-
-        searchRequest.source(sourceBulider);
-        SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
-        SearchHits searchHits = searchResponse.getHits();
-
-        //3、获取记录数
-        long value = searchHits.getTotalHits().value;
-        System.out.println("总记录数：" + value);
-
-        List<ESGoods> goodsList = new ArrayList<>();
-        SearchHit[] hits = searchHits.getHits();
-        for (SearchHit hit : hits) {
-            String sourceAsString = hit.getSourceAsString();
-            //转为java
-            ESGoods goods = JSON.parseObject(sourceAsString, ESGoods.class);
-            goodsList.add(goods);
-        }
-        goodsList.forEach(System.out::println);
-
-        //4、获取聚合结果
-        Aggregations aggregations = searchResponse.getAggregations();
-        Map<String, Aggregation> aggregationMap = aggregations.asMap();
-        return aggregationMap;
-    }
-
-    /**
-     * 桶聚合查询 :相当于MySQL的 group by 操作。不要对text类型的数据进行分组，会失败
-     *
-     * 1. 查询title包含手机的数据
-     * 2. 查询品牌列表
-     */
-    @Test
-    public void testAggQuery2() throws Exception {
-        //查询条件：根据手机匹配titile字段
-        MatchQueryBuilder query = QueryBuilders.matchQuery("title", "手机");
-        //创建统计Builder对象，根据brandName分组，查询brandName列表，起个别名叫：goods_brands
-        AggregationBuilder agg1 = AggregationBuilders.terms("goods_brands").field("brandName");
-        //创建统计Builder对象，查询price最大值，起个别名叫：max_price
-        AggregationBuilder agg2 = AggregationBuilders.max("max_price").field("price");
-        //执行聚合查询，返回聚合结果Map
-        Map<String, Aggregation> aggregationMap = this.getAggregationMap("goods",query,agg1,agg2);
-        //获取桶聚合结果
-        Terms goods_brands = (Terms) aggregationMap.get("goods_brands");
-        List<? extends Terms.Bucket> buckets = goods_brands.getBuckets();
-
-        List brands = new ArrayList();
-        for (Terms.Bucket bucket : buckets) {
-            Object key = bucket.getKey();
-            brands.add(key);
-        }
-        brands.stream().forEach(System.err::println);
-
-        //获取指标聚合结果
-        ParsedMax max_price = (ParsedMax) aggregationMap.get("max_price");
-        double maxPrice = max_price.getValue();
-        System.err.println( maxPrice);
-    }
-
-    private void excuteGoodsQuery(QueryBuilder query, Page page, HighlightBuilder hlBuilder,GeoDistanceSortBuilder distanceSortBuilder) throws Exception {
+    private void excuteGoodsQuery(QueryBuilder query, EsResultOperator resultOperator) throws Exception {
         List<ESGoods> goods = (List<ESGoods>)esSearchCommonService.excuteQuery("goods", ESGoods.class,
-                query, page, hlBuilder,distanceSortBuilder).get("result");
+                query, resultOperator).getResultList();
         goods.forEach(System.err::println);
     }
 
-    private void excuteHotelQuery(QueryBuilder query, Page page, HighlightBuilder hlBuilder,GeoDistanceSortBuilder distanceSortBuilder) throws Exception {
+    private void excuteHotelQuery(QueryBuilder query, EsResultOperator resultOperator) throws Exception {
         List<HotelDoc> hotels = (List<HotelDoc>)esSearchCommonService.excuteQuery("hotel", HotelDoc.class,
-                query, page, hlBuilder,distanceSortBuilder).get("result");
+                query, resultOperator).getResultList();
         hotels.forEach(System.err::println);
     }
 
@@ -852,8 +807,10 @@ class ElasticsearchHighTest {
         highlighter.postTags("</font>");
         highlighter.requireFieldMatch(false);
 
+        EsResultOperator resultOperator = new EsResultOperator(page,null,highlighter);
+
         List<MyGoods> myGoods = (List<MyGoods>)esSearchCommonService.excuteQuery("mygoods", MyGoods.class,
-                matchQuer, page, highlighter,null).get("result");
+                matchQuer, resultOperator).getResultList();
         myGoods.forEach(System.err::println);
     }
 

@@ -29,8 +29,8 @@ public class RequestStyleController {
      *
      * @param userName 姓名
      * @param age      年龄
-     *
-     * 备注：参数可不传
+     *                 <p>
+     *                 备注：参数可不传
      */
     @RequestMapping("test1")
     public String requestTest1(String userName, Integer age,
@@ -38,8 +38,8 @@ public class RequestStyleController {
                                HttpServletResponse response) throws ServletException, IOException {
         //userName = new String(userName.getBytes("ISO-8859-1"),"utf-8");
         System.out.println("userName:" + userName + ",age:" + age);
-        request.getRequestDispatcher("").forward(request,response);  //  请求转发
-        response.sendRedirect("/");  //重定向
+        /*request.getRequestDispatcher("").forward(request,response);  //  请求转发
+        response.sendRedirect("/");  //重定向*/
         return userName;
     }
 
@@ -49,12 +49,12 @@ public class RequestStyleController {
      *
      * @param userName 姓名
      * @param age      年龄
-     *
-     * 备注：@RequestParam用于给参数起别名、设置默认值，并且可设置参数是否是必传，默认为必传，否则请求报400
-     *       @RequestParam(value = "userName", required = false, defaultValue = "World")
+     *                 <p>
+     *                 备注：@RequestParam用于给参数起别名、设置默认值，并且可设置参数是否是必传，默认为必传，否则请求报400
+     * @RequestParam(value = "userName", required = false, defaultValue = "World")
      */
     @RequestMapping("test2")
-        public String requestTest2(@RequestParam String userName,
+    public String requestTest2(@RequestParam String userName,
                                @RequestParam(value = "age", required = false) Integer age1,
                                String age) {
         System.out.println("userName:" + userName + ",age1:" + age1 + "age" + age);
@@ -66,8 +66,8 @@ public class RequestStyleController {
      * 调用示例：http://localhost:8081/my_adolesce/requestStyle/test3?userName=刘威东&age=8&address=湖南省长沙市东方红路
      *
      * @param paramMap 接参map
-     *
-     * 备注：通过Map接参必须标注@RequestParam注解，否则接收不到参数
+     *                 <p>
+     *                 备注：通过Map接参必须标注@RequestParam注解，否则接收不到参数
      */
     @RequestMapping("test3")
     public String requestTest3(Map<String, Object> paramMap) {
@@ -80,8 +80,8 @@ public class RequestStyleController {
      * 调用示例：http://localhost:8081/my_adolesce/requestStyle/test3?userName=刘威东&age=8&address=湖南省长沙市东方红路
      *
      * @param paramMap 接参map
-     *
-     * 备注：参数可不传
+     *                 <p>
+     *                 备注：参数可不传
      */
     @RequestMapping("test4")
     public String requestTest4(@RequestParam Map<String, Object> paramMap) {
@@ -94,8 +94,8 @@ public class RequestStyleController {
      * 调用示例：http://localhost:8081/my_adolesce/requestStyle/test5?userName=刘威东&age=8&address.city=湖南省长沙市&address.street=东方红路
      *
      * @param user 接参对象
-     *
-     * 备注：参数可不传
+     *             <p>
+     *             备注：参数可不传
      */
     @RequestMapping("test5")
     public String requestTest5(User user) {
@@ -108,8 +108,8 @@ public class RequestStyleController {
      * 调用示例：http://localhost:8081/my_adolesce/requestStyle/test5?userName=刘威东&age=8&address.city=湖南省长沙市&address.street=东方红路
      *
      * @param user 接参对象
-     *
-     * 备注：通过对象接参不能标注@RequestParam注解，否则接收不到参数
+     *             <p>
+     *             备注：通过对象接参不能标注@RequestParam注解，否则接收不到参数
      */
     @RequestMapping("test6")
     public String requestTest6(@RequestParam(required = false, value = "user") User user) {
@@ -120,13 +120,11 @@ public class RequestStyleController {
     /**
      * 接参方式7：将参数放在请求体以JSON格式进行传参，使用Map进行接参并标注@RequestBody注解
      * 调用示例：http://localhost:8081/my_adolesce/requestStyle/test7
-     *         {"userName":"张三","age":12}
+     * {"userName":"张三","age":12}
      *
-     * @param paramMap
-     *
-     * 备注：
-     *     1、发起post请求，后端RequestBody方式接参（postman 在Body raw 最右边选JSON）
-     *     2、@RequestBody用于post请求请求体json格式接参，并将其转换成对应的数据类型。不能用于get请求
+     * @param paramMap 备注：
+     *                 1、发起post请求，后端RequestBody方式接参（postman 在Body raw 最右边选JSON）
+     *                 2、@RequestBody用于post请求请求体json格式接参，并将其转换成对应的数据类型。不能用于get请求
      */
     @RequestMapping("test7")
     public Object requestTest7(@RequestBody Map<String, Object> paramMap) {
@@ -137,11 +135,11 @@ public class RequestStyleController {
     /**
      * 接参方式8：将参数放在请求体以JSON格式进行传参，使用对象进行接参并标注@RequestBody注解
      * 调用示例：http://localhost:8081/my_adolesce/requestStyle/test8
-     *         {"userName":"张三","age":12}
+     * {"userName":"张三","age":12}
      *
      * @param user 接参对象
      */
-    @PostMapping("test8")
+    @RequestMapping("test8")
     public Object requestTest8(@RequestBody User user) {
         System.out.println(JSON.toJSONString(user));
         return user;
@@ -150,26 +148,27 @@ public class RequestStyleController {
     /**
      * 接参方式9：将参数放在请求体以JSON格式进行传参，使用List<对象>进行接参并标注@RequestBody注解
      * 调用示例：http://localhost:8081/my_adolesce/requestStyle/test9
-     *      [
-     *         { "userName":"张三","age":12},
-     *         { "userName":"李四","age":18}
-     *      ]
+     * [
+     * { "userName":"张三","age":12},
+     * { "userName":"李四","age":18}
+     * ]
      *
-     * @param  users 接参对象集合
+     * @param users 接参对象集合
      */
     @PostMapping("test9")
     public Object requestTest9(@RequestBody List<User> users) {
         System.out.println(JSON.toJSONString(users));
+        //int i = 1/0;
         return users;
     }
 
     /**
      * 接参方式10：将参数放在请求体以JSON格式进行传参，使用Map<key,对象>进行接参并标注@RequestBody注解
      * 调用方式：http://localhost:8081/my_adolesce/requestStyle/test10
-     *       {
-     *          "1":{ "userName":"张三","age":12},
-     *          "2":{ "userName":"李四","age":18}
-     *       }
+     * {
+     *  "1":{ "userName":"张三","age":12},
+     *  "2":{ "userName":"李四","age":18}
+     * }
      *
      * @param userMap 接参对象Map
      */
@@ -221,6 +220,7 @@ public class RequestStyleController {
 
     /**
      * 接参方式14：测试获取请求头
+     *
      * @param token
      */
     @RequestMapping("test14")
@@ -237,12 +237,13 @@ public class RequestStyleController {
         return token;
     }
 
-     /**
+    /**
      * 接参方式15： 测试获取cookie（Head的Cookie key=value形式，逗号分割）
+     *
      * @param mycookie
      */
     @RequestMapping("test15")
-    public String test15(@CookieValue(value = "mycookie",required = false) String mycookie, HttpServletRequest request) {
+    public String test15(@CookieValue(value = "mycookie", required = false) String mycookie, HttpServletRequest request) {
         System.out.println("mycookie:" + mycookie);
         System.out.println(request.getCookies());
         return mycookie;
@@ -257,9 +258,9 @@ public class RequestStyleController {
      */
     @RequestMapping(value = "test16-1/{msg1}/pets/{msg2}")
     public void test16_1(@PathVariable String msg1,
-                       @PathVariable String msg2,
-                       @MatrixVariable(pathVar = "msg1", value = "name") String name,
-                       @MatrixVariable(pathVar = "msg2", value = "status") String status) {
+                         @PathVariable String msg2,
+                         @MatrixVariable(pathVar = "msg1", value = "name") String name,
+                         @MatrixVariable(pathVar = "msg2", value = "status") String status) {
         System.out.println("name:" + name + ":" + ",status:" + status);
         System.out.println("msg1:" + msg1 + ":" + "msg2:" + msg2);
     }
@@ -280,11 +281,11 @@ public class RequestStyleController {
      */
     @RequestMapping(value = "test16-3/s1/{param1}/s2/{param2}/s3/{param3}")
     public void test16_3(@PathVariable String param1,
-                       @PathVariable String param2,
-                       @PathVariable String param3,
-                       @MatrixVariable(pathVar = "param1", value = "a") String a,
-                       @MatrixVariable(pathVar = "param2", value = "b", required = false) String b,
-                       @MatrixVariable(pathVar = "param3", value = "c", required = false) String c) {
+                         @PathVariable String param2,
+                         @PathVariable String param3,
+                         @MatrixVariable(pathVar = "param1", value = "a") String a,
+                         @MatrixVariable(pathVar = "param2", value = "b", required = false) String b,
+                         @MatrixVariable(pathVar = "param3", value = "c", required = false) String c) {
         System.out.println("param1=====》" + param1);
         System.out.println("param2=====》" + param2);
         System.out.println("param3=====》" + param3);

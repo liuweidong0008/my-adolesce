@@ -5,6 +5,8 @@ server:
 #  servlet:
 #    context-path: /consul-provider #配置项目名
 spring:
+  application:
+    name: consul-provider # 应用名称
   cloud:
     consul:
       host: localhost # consul 服务端的 ip
@@ -13,5 +15,3 @@ spring:
         service-name: ${spring.application.name} # 当前应用注册到consul的名称
         prefer-ip-address: true # 是否以ip形式注册
         ip-address: 127.0.0.1 # 设置当前实例的ip
-  application:
-    name: consul-provider # 应用名称

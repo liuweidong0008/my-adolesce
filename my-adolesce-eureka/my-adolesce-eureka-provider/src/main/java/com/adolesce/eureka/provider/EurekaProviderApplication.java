@@ -13,8 +13,7 @@ public class EurekaProviderApplication {
     public static void main(String[] args) {
         SpringApplication.run(EurekaProviderApplication.class, args);
     }
-
-/*    @Bean
+    /*@Bean
     public ServletRegistrationBean getServlet() {
         HystrixMetricsStreamServlet streamServlet = new HystrixMetricsStreamServlet();
         ServletRegistrationBean registrationBean = new ServletRegistrationBean(streamServlet);

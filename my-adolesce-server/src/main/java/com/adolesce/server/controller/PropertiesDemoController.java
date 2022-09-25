@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * @author Administrator
  * @version 1.0
@@ -18,14 +20,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class PropertiesDemoController {
     @Autowired
     private DemoProperties demoProperties;
+
     @Value("${demo.one}")
     private String one;
+
     @Value("${demo.two}")
     private String two;
+
     @Value("${demo.three}")
     private String three;
 
-    @GetMapping("/printByConfigu")
+    @Value("#{'${adolesce.excludUrlStrs}'.split(',')}")
+    private List<String> excludUrlStrs;
+
+    @GetMapping("/printByConfig")
     public String printByConfigu() {
         return demoProperties.toString();
     }
@@ -34,4 +42,10 @@ public class PropertiesDemoController {
     public String printByValue() {
         return "one:" + one + " two:" + two + " three:" + three;
     }
+
+    @GetMapping("/printExcludUrlStrs")
+    public String printExcludUrlStrs() {
+        return excludUrlStrs.toString() + "@" + demoProperties.getExcludUrls().toString();
+    }
 }
+

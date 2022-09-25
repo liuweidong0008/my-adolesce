@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface BatisUserXmlMapper {
-    void insert(BatisUser paramUsers);
+    Integer insert(BatisUser paramUsers);
 
     void batchInsert(List<BatisUser> usersList);
 
@@ -36,5 +36,5 @@ public interface BatisUserXmlMapper {
 
     List<BatisAddress> selectBatisAddressByParams(Map<String,Object> params);
 
-    Map<String, Object> queryResltWithMap();
+    List<Map<String,Object>> queryResltWithMap();
 }

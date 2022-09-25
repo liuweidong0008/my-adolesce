@@ -43,32 +43,27 @@ public class TestJWT {
                 //.setExpiration(new Date(System.currentTimeMillis() + 3000)) //设置过期时间，3秒后过期
                 .setExpiration(new DateTime().offset(DateField.HOUR, 12)) //设置过期时间，12小时后过期
                 .compact();
-
         System.out.println(jwt);
     }
 
     @Test
     public void testDecodeToken() {
-        String token = "eyJhbGciOiJIUzI1NiJ9.eyJtb2JpbGUiOiIxMzMzMzMzMzMzIiwiaWQiOiIyIiwiZXhwIjoxNjUyNTc2OTEwfQ.np3TqMAs-ikoACgpuH1V6Ikd2iUVGxFbtvElwigHo00";
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJtb2JpbGUiOiIxMzMzMzMzMzMzIiwiaWQiOiIyIiwiZXhwIjoxNjYxNTYzMDg0fQ.O4dPfeIqVphhnQUdO1I5h3DKD_V_JHEMZsJdJsp359g";
         try {
             // 通过token解析数据
             Claims body = Jwts.parser()
                     .setSigningKey(secret)
                     .parseClaimsJws(token)
                     .getBody();
-
-//            System.out.println(body.getExpiration().getTime()-System.currentTimeMillis());
-//            System.out.println( body.getExpiration().getTime()-System.currentTimeMillis()> 300*1000);
-
             System.out.println(body); //{mobile=1333333333, id=2, exp=1605513392}
             //long timeoutSecond = (body.getExpiration().getTime() - System.currentTimeMillis())/1000;
-            long timeoutSecond = (Long.valueOf(body.get("exp").toString()) * 1000 - System.currentTimeMillis())/1000;
-            double timoutMinute = BigDecimal.valueOf(timeoutSecond).divide(BigDecimal.valueOf(60),2).doubleValue();
-            double timoutHour = BigDecimal.valueOf(timoutMinute).divide(BigDecimal.valueOf(60),2).doubleValue();
-            System.out.println("有效期还剩："+timeoutSecond+"秒");
-            System.out.println("有效期还剩："+timeoutSecond+"秒");
-            System.out.println("有效期还剩："+timoutMinute+"分");
-            System.out.println("有效期还剩："+timoutHour+"小时");
+            long timeoutSecond = (Long.valueOf(body.get("exp").toString()) * 1000 - System.currentTimeMillis()) / 1000;
+            double timoutMinute = BigDecimal.valueOf(timeoutSecond).divide(BigDecimal.valueOf(60), 2).doubleValue();
+            double timoutHour = BigDecimal.valueOf(timoutMinute).divide(BigDecimal.valueOf(60), 2).doubleValue();
+            System.out.println("有效期还剩：" + timeoutSecond + "秒");
+            System.out.println("有效期还剩：" + timeoutSecond + "秒");
+            System.out.println("有效期还剩：" + timoutMinute + "分");
+            System.out.println("有效期还剩：" + timoutHour + "小时");
         } catch (ExpiredJwtException e) {
             System.out.println("token已经过期！");
         } catch (Exception e) {

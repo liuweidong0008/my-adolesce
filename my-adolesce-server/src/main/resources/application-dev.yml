@@ -1,4 +1,24 @@
 spring:
+  freemarker:
+    cache: false  #关闭模板缓存，方便测试
+    settings:
+      template_update_delay: 0 #检查模板更新延迟时间，设置为0表示立即检查，如果时间大于0会有缓存不方便进行模板测试
+    #suffix: .html               #指定Freemarker模板文件的后缀名
+    template-loader-path: classpath:/templates
+  mail:
+    host: smtp.163.com  #发送方SMTP服务器主机，如果是QQ邮箱：smtp.qq.com
+    username: liuweidong0008@163.com # 发件人邮箱
+    password: HLGDMPYGCORVURGW   #开通SMTP功能(授权码，而不是登录密码)
+    default-encoding: UTF-8 #默认MimeMessage编码
+    test-connection: true  #是否在启动时测试邮件服务器是否可用
+    properties:
+      mail:
+        debug: true
+        smtp:
+          socketFactory:
+            class: javax.net.ssl.SSLSocketFactory #配饰 SSL 加密工厂
+          ssl:
+            enable: true #是否开启SSL访问邮件服务器
   #Rabbitmq配置
   rabbitmq:
     host: 127.0.0.1
@@ -30,6 +50,7 @@ spring:
       discovery:
         service-name: ${spring.application.name} # 当前应用注册到consul的名称
         prefer-ip-address: true # 是否以ip形式注册
+        ip-address: 127.0.0.1 # 设置当前实例的ip
     #Nacos注册中心配置
     nacos:
       discovery:
@@ -41,12 +62,6 @@ dubbo:
     address: spring-cloud://localhost  #使用springcloud中注册中心的地址
   consumer:
     check: false
-#RocketMQ相关配置
-rocketmq:
-  name-server: 127.0.0.1:9876
-  producer:
-    group: adolesce-group
-    send-message-timeout: 50000  #消息发送超时时长
 #Eureka客户端相关配置
 eureka:
   instance:
@@ -55,6 +70,13 @@ eureka:
     service-url:
       defaultZone: http://localhost:8761/eureka-server/eureka # eureka服务端地址，将来客户端使用该地址和eureka进行通信
       #defaultZone: http://eureka-server:8761/eureka-server/eureka,http://eureka-server2:8762/eureka-server2/eureka  #eureka注册中心集群模式
+#RocketMQ相关配置
+rocketmq:
+  name-server: 127.0.0.1:9876
+  producer:
+    group: adolesce-group
+    send-message-timeout: 50000  #消息发送超时时长
+
 
 #通过配置的方式设置Ribbon的负载均衡策略（为某个服务单独进行ribbon参数设置）
 #EUREKA-PROVIDER:  #为哪个服务设置负载均衡策略（服务应用名称）
@@ -122,12 +144,42 @@ sms:
 #    secretKey: 366FC3E3AC0F03CE
 #    signName: 【饿了么】
 
+aliyun:
+  content-security:
+    green:
+      enable: true
+      accessKeyID:
+      accessKeySecret:
+      scenes: porn,terrorism #色情，暴力
+    vision:
+      enable: true
+      accessKeyId:
+      accessKeySecret:
+      endpoint: imageaudit.cn-shanghai.aliyuncs.com
+      txtLabels: spam,politics,abuse,terrorism,porn,flood,contraband,ad
+      imgScenes: porn,terrorism,ad,live,logo
+  oss:
+    accessKey:
+    secret:
+    endpoint: oss-cn-beijing.aliyuncs.com
+    bucketName: liuweidong-bucket
+    url: https://${aliyun.oss.bucketName}.oss-cn-beijing.aliyuncs.com
+
+minio:
+  accessKey: minioadmin
+  secretKey: minioadmin
+  endpoint: http://localhost:9000
 
 adolesce:
   jwt:  # jwt秘钥
     secret: 76bd425b6f29f7fcc2e0bfc286043df1
   captcha: #图形验证码
     type: penggle.math
+  excludUrlStrs: /excel/export1,/excel/export2,/excel/export3
+  excludUrls:
+    - /excel/export4
+    - /excel/export5
+    - /excel/export6
 
 #demo:
 #  one: dev-yml-1

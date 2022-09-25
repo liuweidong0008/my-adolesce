@@ -18,14 +18,16 @@ public class Md5Test {
         String salt = "123abc";
 
         //1、spring MD5加密
-        String password1 = DigestUtils.md5DigestAsHex((salt + password).getBytes());
+        String password1 = DigestUtils.md5DigestAsHex((salt+password).getBytes());
+        System.out.println(password1);
+
         //2、Hutool 加密
         String password2 = MD5.create().digestHex(salt + password);
         String password3 = MD5.create().setSalt(salt.getBytes()).digestHex(password);
         String password4 = SecureUtil.md5().digestHex(salt + password);
         String password5 = SecureUtil.md5(salt + password);
 
-        System.out.println(password1);
+
         System.out.println(password2);
         System.out.println(password3);
         System.out.println(password4);

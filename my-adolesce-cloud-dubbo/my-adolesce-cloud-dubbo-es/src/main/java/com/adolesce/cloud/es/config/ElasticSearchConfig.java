@@ -8,6 +8,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * ES配置类：初始化ES客户端
+ */
 @Data
 @Configuration
 @ConfigurationProperties(prefix = "elasticsearch")
@@ -26,5 +29,4 @@ public class ElasticSearchConfig {
                 //HttpHost.create("http://127.0.0.1:9200")
         ));
     }
-
 }

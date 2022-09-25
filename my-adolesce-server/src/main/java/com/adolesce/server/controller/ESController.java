@@ -4,10 +4,10 @@ import com.adolesce.cloud.dubbo.api.es.EsSearchHotelApi;
 import com.adolesce.cloud.dubbo.domain.es.EsPageResult;
 import com.adolesce.cloud.dubbo.domain.es.EsRequestParams;
 import org.apache.dubbo.config.annotation.DubboReference;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Administrator
@@ -22,8 +22,18 @@ public class ESController {
     private EsSearchHotelApi esHotelApi;
 
     @PostMapping("hotel/list")
-    public EsPageResult search(@RequestBody EsRequestParams params) throws Exception {
+    public EsPageResult search(@RequestBody EsRequestParams params){
         EsPageResult pageResult = esHotelApi.search(params);
         return pageResult;
+    }
+
+    @PostMapping("hotel/filters")
+    public Map<String, List<String>> getFilters(@RequestBody EsRequestParams params) {
+        return esHotelApi.getFilters(params);
+    }
+
+    @GetMapping("hotel/suggestion")
+    public List<String> getSuggestion(@RequestParam("key") String key) {
+        return esHotelApi.getSuggestion(key);
     }
 }

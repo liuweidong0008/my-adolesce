@@ -29,6 +29,7 @@ public class ExcelReaderHelper {
     }
 
     public ExcelReaderHelper(InputStream in, String fileSuffix) throws IOException {
+        //this.workBook = WorkbookFactory.create(in);
         this.workBook = StringUtils.equals("xlsx", fileSuffix) ? new XSSFWorkbook(in) : new HSSFWorkbook(in);
     }
 

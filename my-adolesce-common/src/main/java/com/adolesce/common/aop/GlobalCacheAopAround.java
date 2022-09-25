@@ -15,6 +15,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -31,6 +32,7 @@ import java.time.Duration;
  */
 //@Component
 //@Aspect
+@Order(1)
 @Slf4j
 public class GlobalCacheAopAround {
     @Value("${cache.enable}")
@@ -171,6 +173,7 @@ public class GlobalCacheAopAround {
      * @return
      */
     public static String createCacheKey() {
+        //RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
         ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         HttpServletRequest request = servletRequestAttributes.getRequest();
         //请求url

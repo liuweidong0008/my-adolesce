@@ -44,7 +44,7 @@ public class OrderController {
         order.setOrderName("小明的订单");
 
         //远程调用Goods服务中的findOne接口
-        String url  = "http://localhost:4000/consul-provider/goods/findOne/" + id;
+        String url  = "http://localhost:4000/goods/findOne/" + id;
         Goods goods = restTemplate.getForObject(url, Goods.class);
 
         //动态从Eureka Server 中获取 provider 的 ip 和端口
@@ -62,7 +62,7 @@ public class OrderController {
         int port = instance.getPort();
         System.out.println("IP 端口：" + host + ":" +port);
 
-        url = "http://"+host+":"+port+"/consul-provider/goods/findOne/" + id;
+        url = "http://"+host+":"+port+"/goods/findOne/" + id;
         goods = restTemplate.getForObject(url, Goods.class);
         order.setGoods(goods);
         return order;

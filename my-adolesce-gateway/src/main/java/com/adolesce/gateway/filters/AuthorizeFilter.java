@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-// @Order(-1)
+//@Order(-1)
 @Component
 public class AuthorizeFilter implements GlobalFilter, Ordered {
     @Value("${gateway.excludedUrls}")

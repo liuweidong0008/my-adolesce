@@ -7,21 +7,12 @@ package com.adolesce.server.controller;
 import com.adolesce.common.vo.Response;
 import com.adolesce.server.service.impl.ExcelService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StopWatch;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
-
-/**
- * <b>Application name：</b> ExcelExport.java <br>
- * <b>Application describing： </b> <br>
- * <b>Copyright：</b> Copyright &copy; 2019 明医众禾科技（北京）有限责任公司 版权所有。<br>
- * <b>Company：</b> 明医众禾科技（北京）有限责任公司 <br>
- * <b>@Date：</b> 2019年12月18日 17:22 <br>
- * <b>@author：</b> <a href="mailto:lwd@miyzh.com"> liuWeidong </a> <br>
- * <b>@version：</b>V2.0.0 <br>
- */
 
 @Slf4j
 @RestController
@@ -76,9 +67,19 @@ public class ExcelController {
      * @param response
      */
     @GetMapping(value = "/export/style5")
-    public void exportStyle5(HttpServletResponse response) throws Exception {
-        this.excelService.exportStyle5(response);
+    public void exportStyle5(HttpServletResponse response,Integer writeType) throws Exception {
+        this.excelService.exportStyle5(response,writeType);
     }
+
+
+    /**
+     * 导入页面跳转
+     */
+    @GetMapping(value = "/import/jumpPage")
+    public String jumpPage(){
+        return "excel/import/uploadPage";
+    }
+
 
     /**
      * 导入方式一
@@ -96,8 +97,55 @@ public class ExcelController {
      * @param file
      */
     @PostMapping(value = "/import/style2")
-    public Response importStyle2(@RequestParam("file") MultipartFile file) throws Exception {
-        return this.excelService.importStyle2(file);
+    public Response importStyle2(@RequestParam("file") MultipartFile file,Integer readType) throws Exception {
+        return this.excelService.importStyle2(file,readType);
     }
+
+
+    /**
+     * 大量数据导入方式一（用户模式读取，只适合导入15W以内的excel）
+     *
+     * @param file
+     */
+    @PostMapping(value = "/import/max/style1")
+    public Response importMaxStyle1(@RequestParam("file") MultipartFile file) throws Exception {
+        long startTime = System.currentTimeMillis();
+        Response response = this.excelService.importMaxStyle1(file);
+        long endTime = System.currentTimeMillis();
+        System.out.println("耗时：" + (endTime - startTime) / 1000 + "秒");
+        return response;
+    }
+
+    /**
+     * 大量数据导入方式二(sax 事件驱动模式读取)
+     *
+     * @param file
+     */
+    @PostMapping(value = "/import/max/style2")
+    public Response importMaxStyle2(@RequestParam("file") MultipartFile file) throws Exception {
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+
+        Response response = this.excelService.importMaxStyle2(file);
+
+        stopWatch.stop();
+        System.out.println("耗时：" + stopWatch.getTotalTimeSeconds() + "秒");
+        return response;
+    }
+
+    /**
+     * 大量数据导入方式三（easyExcel方式读取）
+     *
+     * @param file
+     */
+    @PostMapping(value = "/import/max/style3")
+    public Response importMaxStyle3(@RequestParam("file") MultipartFile file){
+        long startTime = System.currentTimeMillis();
+        Response response = this.excelService.importMaxStyle3(file);
+        long endTime = System.currentTimeMillis();
+        System.out.println("耗时：" + (endTime - startTime) / 1000 + "秒");
+        return response;
+    }
+
 
 }

@@ -78,7 +78,7 @@ import static com.adolesce.cloud.es.constants.IndexMappingConstants.*;
  */
 @SpringBootTest
 @RunWith(SpringRunner.class)
-public class ElasticSearchBasicTest {
+public class EsIndexAndDocTest {
     @Autowired
     private RestHighLevelClient client;
     @DubboReference
@@ -110,6 +110,20 @@ public class ElasticSearchBasicTest {
         //3.根据返回值判断结果
         System.err.println("索引创建结果：" + (response.isAcknowledged() ? "成功" : "失败"));
     }
+
+
+    /**
+     * 删除索引
+     * DSL：
+     *  DELETE 索引名
+     */
+    @Test
+    public void testDeleteIndex() throws IOException {
+        DeleteIndexRequest request = new DeleteIndexRequest("itheima");
+        AcknowledgedResponse response = client.indices().delete(request, RequestOptions.DEFAULT);
+        System.err.println("索引删除结果：" + response.isAcknowledged());
+    }
+
 
     /**
      * 创建索引同时指定mapping映射，常见的mapping属性包括：
@@ -167,25 +181,6 @@ public class ElasticSearchBasicTest {
         request.source(HOTEL_MAPPING, XContentType.JSON);
         CreateIndexResponse response = client.indices().create(request, RequestOptions.DEFAULT);
         System.err.println("索引创建结果：" + response.isAcknowledged());
-    }
-
-    /**
-     * 删除索引
-     * DSL：
-     *  DELETE 索引名
-     */
-    @Test
-    public void testDeleteIndex1() throws IOException {
-        DeleteIndexRequest request = new DeleteIndexRequest("itheima");
-        AcknowledgedResponse response = client.indices().delete(request, RequestOptions.DEFAULT);
-        System.err.println("索引删除结果：" + response.isAcknowledged());
-    }
-
-    @Test
-    public void testDeleteIndex2() throws IOException {
-        DeleteIndexRequest request = new DeleteIndexRequest("hotel");
-        AcknowledgedResponse response = client.indices().delete(request, RequestOptions.DEFAULT);
-        System.err.println("索引删除结果：" + response.isAcknowledged());
     }
 
     /**

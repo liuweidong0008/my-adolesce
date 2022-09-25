@@ -2,22 +2,25 @@ package com.adolesce.server.properties;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * @ConfigurationProperties注解读取application.yml或application.propertis
- * 1、加上@Configuration 或 @Component注解 或者使用类如Controller上加上 @EnableConfigurationProperties({DemoProperties.class})注解
- *    将配置类加入到spring容器中
- * 2、加上@ConfigurationProperties(prefix="")注解读取application.yml或application.propertis
+ * 1、加上@Configuration 或 @Component注解 或者在使用类如Controller上加上 @EnableConfigurationProperties({DemoProperties.class})注解，
+ *    目的是：将Properties配置类加入到spring容器中
+ * 2、配置类加上@ConfigurationProperties(prefix="")注解读取application.yml或application.propertis
  * 3、另外可结合@PropertySource读取自定义配置文件(只要能被spring容器扫描到，放在哪里都可以)
  * 4、如果各配置文件中有相同属性配置，属性优先级为
  *
  *    config:application-dev.propertis > config:application-dev.yml > application-dev.propertis >  application-dev.yml >
  *    config:application.propertis > config:application.yml > config:application.yaml >
- *    application.propertis > application.yml > application.yaml > 自定义配置文件
+ *    application.propertis        > application.yml        > application.yaml >       自定义配置文件
+ *
+ *
  *    属性优先级结论：
- *      0）、位置优先级：
+ *      0）、前提：位置优先级
  *          -file:./config/
  *          -file:./
  *          -classpath:/config/
@@ -31,10 +34,11 @@ import org.springframework.stereotype.Component;
  */
 @Data
 @Component
-@ConfigurationProperties(prefix = "demo")
-@PropertySource({"classpath:demo.properties"})
+@ConfigurationProperties(prefix = "adolesce")//(prefix = "demo")
+//@PropertySource({"classpath:demo.properties"})
 public class DemoProperties {
     private String one;
     private String two;
     private String three;
+    private List<String> excludUrls;
 }

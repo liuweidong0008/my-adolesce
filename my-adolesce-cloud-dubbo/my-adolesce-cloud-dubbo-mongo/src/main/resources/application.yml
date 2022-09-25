@@ -1,7 +1,12 @@
 server:
   port: 3003  #自定义监听端口,默认8080
-
 spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+  application:
+    name: cloud-dubbo-mongo
   #MongoDB配置
   data:
     mongodb:
@@ -12,17 +17,16 @@ spring:
       port: 27017
       host: 127.0.0.1
       #uri: mongodb://127.0.0.1:27017/adolesce   #无权限设置
-  cloud:
-    nacos:
-      discovery:
-        server-addr: localhost:8848
-  application:
-    name: cloud-dubbo-mongo
 dubbo:
-  protocol:
-    name: dubbo
-    port: 20883
   registry:
     address: spring-cloud://localhost  #使用springcloud中注册中心的地址
   scan:
     base-packages: com.adolesce.cloud.mongo.api
+  protocol:
+    name: dubbo
+    port: 20883
+logging:
+  level:
+    cn.itcast: debug
+  pattern:
+    dateformat: HH:mm:ss:SSS

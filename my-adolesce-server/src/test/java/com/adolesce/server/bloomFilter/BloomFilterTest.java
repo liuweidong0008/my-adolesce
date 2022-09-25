@@ -54,7 +54,7 @@ public class BloomFilterTest {
             fileter.add(String.valueOf(i));
         }
         int count = 0;
-        for (int i = 1000000; i < 2000000; i++) {
+        for (int i = 2000000; i < 3000000; i++) {
             boolean flag = fileter.check(String.valueOf(i));
             if (!flag) {
                 count++;
@@ -102,7 +102,7 @@ public class BloomFilterTest {
     @Test
     public void test4() {
         int dataCount = 1000000;//预计要插入多少数据
-        double fpp = 0.000000000000001;//期望的误判率
+        double fpp = 0.5;//期望的误判率
 
         BloomFilter<String> bloomFilter = BloomFilter.create(Funnels.stringFunnel(Charset.forName("UTF-8")), dataCount, fpp);
         //插入数据

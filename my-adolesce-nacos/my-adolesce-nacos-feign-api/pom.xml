@@ -28,5 +28,4 @@
             <artifactId>feign-httpclient</artifactId>
         </dependency>
     </dependencies>
-
 </project>
